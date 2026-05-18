@@ -17,22 +17,32 @@ export type PageKey =
   | "media-video"
   | "media-infografis"
   | "layanan"
-  | "kontak";
+  | "kontak"
+  | "laporan"
+  | "news-detail"
+  | "service-detail";
 
 interface PageRouterState {
   currentPage: PageKey;
+  detailId: string | null;
   navigate: (page: PageKey) => void;
+  navigateToDetail: (page: PageKey, id: string) => void;
   goHome: () => void;
 }
 
 export const usePageRouter = create<PageRouterState>((set) => ({
   currentPage: "home",
+  detailId: null,
   navigate: (page: PageKey) => {
-    set({ currentPage: page });
+    set({ currentPage: page, detailId: null });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  },
+  navigateToDetail: (page: PageKey, id: string) => {
+    set({ currentPage: page, detailId: id });
     window.scrollTo({ top: 0, behavior: "smooth" });
   },
   goHome: () => {
-    set({ currentPage: "home" });
+    set({ currentPage: "home", detailId: null });
     window.scrollTo({ top: 0, behavior: "smooth" });
   },
 }));
@@ -55,4 +65,7 @@ export const pageTitles: Record<PageKey, string> = {
   "media-infografis": "Infografis",
   layanan: "Layanan Publik",
   kontak: "Kontak",
+  laporan: "Laporan Masyarakat",
+  "news-detail": "Detail Berita",
+  "service-detail": "Detail Layanan",
 };

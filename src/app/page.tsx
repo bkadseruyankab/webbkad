@@ -15,12 +15,15 @@ import ProfilPage from "@/components/bkad/pages/ProfilPage";
 import PejabatPage from "@/components/bkad/pages/PejabatPage";
 import PublikasiPage from "@/components/bkad/pages/PublikasiPage";
 import MediaPage from "@/components/bkad/pages/MediaPage";
+import NewsDetailPage from "@/components/bkad/pages/NewsDetailPage";
+import ServiceDetailPage from "@/components/bkad/pages/ServiceDetailPage";
+import LaporanPage from "@/components/bkad/pages/LaporanPage";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
 
 function PageRouter() {
-  const { currentPage } = usePageRouter();
+  const { currentPage, detailId } = usePageRouter();
 
   // Home page sections
   if (currentPage === "home") {
@@ -43,7 +46,17 @@ function PageRouter() {
   if (currentPage === "profil-struktur") return <ProfilPage slug="struktur-organisasi" />;
   if (currentPage === "profil-pejabat") return <PejabatPage />;
 
-  // Berita - scroll to section on home
+  // News detail page
+  if (currentPage === "news-detail" && detailId) {
+    return <NewsDetailPage id={detailId} />;
+  }
+
+  // Service detail page
+  if (currentPage === "service-detail" && detailId) {
+    return <ServiceDetailPage id={detailId} />;
+  }
+
+  // Berita - all news
   if (currentPage === "berita") {
     return (
       <div className="py-12">
@@ -89,6 +102,11 @@ function PageRouter() {
         <ServicesSection />
       </div>
     );
+  }
+
+  // Laporan
+  if (currentPage === "laporan") {
+    return <LaporanPage />;
   }
 
   // Kontak

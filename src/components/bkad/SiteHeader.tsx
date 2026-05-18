@@ -14,6 +14,7 @@ import {
   Image,
   Users,
   Phone,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -92,6 +93,12 @@ const navItems: NavItem[] = [
     label: "Layanan",
     page: "layanan",
     icon: Users,
+    children: null,
+  },
+  {
+    label: "Laporan",
+    page: "laporan",
+    icon: MessageSquare,
     children: null,
   },
   {

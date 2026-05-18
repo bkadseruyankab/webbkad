@@ -24,6 +24,7 @@ import {
   Users,
   BookOpen,
   Video,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +61,7 @@ interface NewsItem {
   id: string;
   title: string;
   excerpt: string;
+  content: string;
   date: string;
   category: string;
   image: string;
@@ -102,6 +104,7 @@ interface ServiceItem {
   icon: string;
   title: string;
   description: string;
+  content: string;
   color: string;
   bgColor: string;
   order: number;
@@ -165,6 +168,19 @@ interface InfographicItem {
   active: boolean;
 }
 
+interface LaporanItem {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+  category: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 type Section =
   | "dashboard"
   | "hero-slides"
@@ -178,7 +194,8 @@ type Section =
   | "officials"
   | "publications"
   | "videos"
-  | "infographics";
+  | "infographics"
+  | "laporan";
 
 // ─── Icon Map ────────────────────────────────────────────────────────────────
 
@@ -237,6 +254,22 @@ const publicationCategoryOptions = [
   { value: "peraturan", label: "Peraturan" },
 ];
 
+const laporanCategoryOptions = [
+  { value: "umum", label: "Umum" },
+  { value: "keuangan", label: "Keuangan Daerah" },
+  { value: "aset", label: "Aset Daerah" },
+  { value: "pajak", label: "Pajak & Retribusi" },
+  { value: "anggaran", label: "Anggaran" },
+  { value: "pelayanan", label: "Pelayanan Publik" },
+  { value: "pengaduan", label: "Pengaduan" },
+];
+
+const laporanStatusOptions = [
+  { value: "baru", label: "Baru" },
+  { value: "diproses", label: "Diproses" },
+  { value: "selesai", label: "Selesai" },
+];
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function AdminPanel({ onClose }: { onClose: () => void }) {
@@ -258,6 +291,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   const [publications, setPublications] = useState<PublicationItem[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [infographics, setInfographics] = useState<InfographicItem[]>([]);
+  const [laporan, setLaporan] = useState<LaporanItem[]>([]);
 
   // ─── Modal States ─────────────────────────────────────────────────────────
 
@@ -271,7 +305,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
 
   const fetchData = useCallback(async () => {
     try {
-      const [heroRes, newsRes, agendaRes, galleryRes, statsRes, servicesRes, financeRes, pcRes, offRes, pubRes, vidRes, infoRes] =
+      const [heroRes, newsRes, agendaRes, galleryRes, statsRes, servicesRes, financeRes, pcRes, offRes, pubRes, vidRes, infoRes, lapRes] =
         await Promise.all([
           fetch("/api/hero-slides?all=true"),
           fetch("/api/news?all=true"),
@@ -285,9 +319,10 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
           fetch("/api/publications?all=true"),
           fetch("/api/videos?all=true"),
           fetch("/api/infographics?all=true"),
+          fetch("/api/laporan?all=true"),
         ]);
 
-      const [heroData, newsData, agendaData, galleryData, statsData, servicesData, financeData, pcData, offData, pubData, vidData, infoData] =
+      const [heroData, newsData, agendaData, galleryData, statsData, servicesData, financeData, pcData, offData, pubData, vidData, infoData, lapData] =
         await Promise.all([
           heroRes.json(),
           newsRes.json(),
@@ -301,6 +336,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
           pubRes.json(),
           vidRes.json(),
           infoRes.json(),
+          lapRes.json(),
         ]);
 
       setHeroSlides(heroData.data || []);
@@ -315,6 +351,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       setPublications(pubData.data || []);
       setVideos(vidData.data || []);
       setInfographics(infoData.data || []);
+      setLaporan(lapData.data || []);
     } catch (err) {
       console.error("Failed to fetch data:", err);
     }
@@ -341,6 +378,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       publications: "/api/publications",
       videos: "/api/videos",
       infographics: "/api/infographics",
+      laporan: "/api/laporan",
     };
     return map[section];
   };
@@ -446,6 +484,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     { key: "publications", label: "Publikasi", icon: BookOpen, count: publications.length },
     { key: "videos", label: "Video", icon: Video, count: videos.length },
     { key: "infographics", label: "Infografis", icon: BarChart3, count: infographics.length },
+    { key: "laporan", label: "Laporan", icon: MessageSquare, count: laporan.length },
   ];
 
   // ─── Render Form Fields ───────────────────────────────────────────────────
@@ -526,6 +565,15 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                 onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                 placeholder="Ringkasan berita"
                 rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Konten Lengkap</label>
+              <Textarea
+                value={formData.content || ""}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Konten berita lengkap"
+                rows={6}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -832,6 +880,15 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Deskripsi layanan"
                 rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Konten Detail</label>
+              <Textarea
+                value={formData.content || ""}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Detail informasi layanan"
+                rows={6}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -1250,6 +1307,93 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                   <SelectContent>
                     <SelectItem value="true">Aktif</SelectItem>
                     <SelectItem value="false">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        );
+
+      case "laporan":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Nama Pelapor</label>
+              <Input
+                value={formData.name || ""}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Nama pelapor"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Email</label>
+                <Input
+                  value={formData.email || ""}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="email@contoh.com"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Telepon</label>
+                <Input
+                  value={formData.phone || ""}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="08xxxxxxxxxx"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Subjek</label>
+              <Input
+                value={formData.subject || ""}
+                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                placeholder="Subjek laporan"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Pesan</label>
+              <Textarea
+                value={formData.message || ""}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                placeholder="Isi laporan"
+                rows={4}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Kategori</label>
+                <Select
+                  value={formData.category || "umum"}
+                  onValueChange={(v) => setFormData({ ...formData, category: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {laporanCategoryOptions.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Status</label>
+                <Select
+                  value={formData.status || "baru"}
+                  onValueChange={(v) => setFormData({ ...formData, status: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {laporanStatusOptions.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>
+                        {s.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -1978,6 +2122,56 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
           </div>
         );
 
+      case "laporan":
+        return (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="text-left p-3 font-medium text-gray-600">Nama</th>
+                  <th className="text-left p-3 font-medium text-gray-600">Subjek</th>
+                  <th className="text-left p-3 font-medium text-gray-600">Kategori</th>
+                  <th className="text-left p-3 font-medium text-gray-600">Status</th>
+                  <th className="text-left p-3 font-medium text-gray-600">Tanggal</th>
+                  <th className="text-right p-3 font-medium text-gray-600">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {laporan.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="p-3">{item.name}</td>
+                    <td className="p-3">{item.subject}</td>
+                    <td className="p-3"><Badge variant="outline">{item.category}</Badge></td>
+                    <td className="p-3">
+                      <Badge className={
+                        item.status === "baru" ? "bg-sky-100 text-sky-700" :
+                        item.status === "diproses" ? "bg-amber-100 text-amber-700" :
+                        "bg-emerald-100 text-emerald-700"
+                      }>
+                        {item.status === "baru" ? "Baru" : item.status === "diproses" ? "Diproses" : "Selesai"}
+                      </Badge>
+                    </td>
+                    <td className="p-3 text-gray-500">{new Date(item.createdAt).toLocaleDateString("id-ID")}</td>
+                    <td className="p-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => openEditModal(item)} className="h-8 w-8">
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => setDeleteConfirm(item.id)} className="h-8 w-8 text-red-500">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {laporan.length === 0 && (
+              <div className="text-center py-8 text-gray-400">Belum ada laporan</div>
+            )}
+          </div>
+        );
+
       default:
         return null;
     }
@@ -2002,6 +2196,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
           { label: "Publikasi", count: publications.length, icon: "📕", color: "bg-fuchsia-50" },
           { label: "Video", count: videos.length, icon: "🎬", color: "bg-red-50" },
           { label: "Infografis", count: infographics.length, icon: "📈", color: "bg-lime-50" },
+          { label: "Laporan", count: laporan.length, icon: "💬", color: "bg-teal-50" },
           {
             label: "Total Item Aktif",
             count:
@@ -2111,10 +2306,12 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                 "Dashboard"}
             </h1>
             <p className="text-xs text-gray-500">
-              Kelola data {menuItems.find((m) => m.key === activeSection)?.label?.toLowerCase() || "website"}
+              {activeSection === "laporan"
+                ? "Laporan masyarakat akan muncul di sini"
+                : `Kelola data ${menuItems.find((m) => m.key === activeSection)?.label?.toLowerCase() || "website"}`}
             </p>
           </div>
-          {activeSection !== "dashboard" && (
+          {activeSection !== "dashboard" && activeSection !== "laporan" && (
             <Button
               onClick={openCreateModal}
               className="bg-bkad-green hover:bg-bkad-dark text-white"

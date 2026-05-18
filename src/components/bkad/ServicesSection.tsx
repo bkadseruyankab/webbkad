@@ -12,12 +12,14 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePageRouter } from "@/stores/usePageRouter";
 
 interface ServiceItemApi {
-  id: number;
+  id: string;
   icon: string;
   title: string;
   description: string;
+  content: string;
   color: string;
   bgColor: string;
   order: number;
@@ -25,9 +27,11 @@ interface ServiceItemApi {
 }
 
 interface ServiceItem {
+  id: string;
   icon: LucideIcon;
   title: string;
   description: string;
+  content: string;
   color: string;
   bgColor: string;
 }
@@ -49,6 +53,7 @@ const iconMap: Record<string, LucideIcon> = {
 export default function ServicesSection() {
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { navigateToDetail, navigate } = usePageRouter();
 
   useEffect(() => {
     async function fetchServices() {
@@ -60,9 +65,11 @@ export default function ServicesSection() {
             .filter((item) => item.active)
             .sort((a, b) => a.order - b.order)
             .map((item) => ({
+              id: item.id,
               icon: iconMap[item.icon] || Landmark,
               title: item.title,
               description: item.description,
+              content: item.content,
               color: item.color,
               bgColor: item.bgColor,
             }));
@@ -142,6 +149,7 @@ export default function ServicesSection() {
               <div
                 key={index}
                 className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
+                onClick={() => navigateToDetail("service-detail", service.id)}
               >
                 <div
                   className={`w-14 h-14 rounded-xl ${service.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
@@ -166,6 +174,7 @@ export default function ServicesSection() {
         {/* CTA Button */}
         <div className="text-center mt-10">
           <Button
+            onClick={() => navigate("layanan")}
             variant="outline"
             className="border-bkad-green text-bkad-green hover:bg-bkad-green hover:text-white font-medium px-8 py-3 rounded-lg"
           >

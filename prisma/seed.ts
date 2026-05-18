@@ -39,6 +39,13 @@ async function seed() {
         {
           title: "Seruyan Raih Opini WTP untuk Laporan Keuangan Tahun 2024",
           excerpt: "Kabupaten Seruyan kembali meraih opini Wajar Tanpa Pengecualian (WTP) atas Laporan Keuangan Pemerintah Daerah tahun 2024. Pencapaian ini menunjukkan komitmen dalam pengelolaan keuangan yang transparan.",
+          content: `Kabupaten Seruyan kembali meraih opini Wajar Tanpa Pengecualian (WTP) atas Laporan Keuangan Pemerintah Daerah tahun 2024. Pencapaian ini menunjukkan komitmen dalam pengelolaan keuangan yang transparan dan akuntabel.
+
+Pencapaian opini WTP ini merupakan hasil dari kerja keras seluruh perangkat daerah dalam menerapkan Standar Akuntansi Pemerintahan (SAP) dan sistem pengendalian intern yang memadai. BPK Republik Indonesia memberikan opini WTP setelah melakukan pemeriksaan menyeluruh terhadap laporan keuangan pemerintah daerah.
+
+Kepala BKAD Kabupaten Seruyan menyampaikan bahwa pencapaian ini merupakan bukti komitmen seluruh aparatur dalam melaksanakan prinsip-prinsip tata kelola keuangan daerah yang baik. "Opini WTP bukan sekadar pencapaian, tetapi tanggung jawab kita kepada masyarakat untuk mengelola keuangan daerah secara transparan," ujarnya.
+
+Dengan capaian ini, Kabupaten Seruyan telah memperoleh opini WTP secara berturut-turut selama 5 tahun terakhir, yang menunjukkan konsistensi dalam pengelolaan keuangan daerah.`,
           date: "15 Januari 2025",
           category: "Keuangan",
           image: "/images/news-1.png",
@@ -48,6 +55,13 @@ async function seed() {
         {
           title: "BKAD Seruyan Luncurkan Sistem E-Budgeting Terpadu",
           excerpt: "Badan Keuangan dan Aset Daerah meluncurkan sistem e-budgeting terpadu untuk meningkatkan efisiensi dan transparansi dalam proses perencanaan anggaran daerah.",
+          content: `Badan Keuangan dan Aset Daerah (BKAD) Kabupaten Seruyan resmi meluncurkan sistem e-budgeting terpadu yang akan digunakan dalam proses perencanaan dan penyusunan anggaran daerah mulai tahun anggaran 2025.
+
+Sistem e-budgeting ini merupakan implementasi dari Peraturan Menteri Dalam Negeri tentang Penganggaran Daerah yang mewajibkan pemerintah daerah untuk mengunakan sistem elektronik dalam penyusunan APBD. Dengan sistem ini, seluruh proses perencanaan dan penganggaran dapat dilakukan secara digital, terintegrasi, dan transparan.
+
+Beberapa keunggulan sistem e-budgeting yang diluncurkan antara lain: proses penyusunan anggaran lebih efisien, pengawasan realisasi anggaran lebih mudah, transparansi anggaran lebih terjamin, dan integrasi data antar perangkat daerah lebih baik.
+
+BKAD telah melaksanakan pelatihan bagi seluruh perangkat daerah mengenai penggunaan sistem ini. Diharapkan dengan penerapan e-budgeting, kualitas penyusunan APBD Kabupaten Seruyan akan semakin meningkat.`,
           date: "10 Januari 2025",
           category: "Teknologi",
           image: "/images/news-2.png",
@@ -57,6 +71,13 @@ async function seed() {
         {
           title: "Sosialisasi PBB P2 di Kecamatan Seruyan Hilir",
           excerpt: "Tim BKAD melaksanakan sosialisasi Pajak Bumi dan Bangunan Perkotaan dan Perdesaan (PBB P2) di Kecamatan Seruyan Hilir untuk meningkatkan kesadaran masyarakat.",
+          content: `Tim Badan Keuangan dan Aset Daerah (BKAD) Kabupaten Seruyan melaksanakan kegiatan sosialisasi Pajak Bumi dan Bangunan Perkotaan dan Perdesaan (PBB P2) di Kecamatan Seruyan Hilir.
+
+Kegiatan sosialisasi ini bertujuan untuk meningkatkan kesadaran dan pemahaman masyarakat mengenai kewajiban pembayaran PBB P2 serta manfaatnya bagi pembangunan daerah. Sebanyak 150 warga dari beberapa kelurahan dan desa mengikuti kegiatan ini.
+
+Dalam sosialisasi tersebut, BKAD menjelaskan mekanisme penilaian PBB, prosedur pembayaran, serta sanksi bagi yang tidak memenuhi kewajiban perpajakannya. Selain itu, masyarakat juga diberikan kesempatan untuk mengajukan keberatan atas penilaian PBB yang dinilai tidak sesuai.
+
+Kepala Bidang Pendapatan BKAD menyampaikan bahwa target penerimaan PBB P2 tahun 2025 meningkat 15% dibandingkan tahun sebelumnya, sehingga sosialisasi menjadi sangat penting untuk mencapai target tersebut.`,
           date: "8 Januari 2025",
           category: "Pajak",
           image: "/images/news-3.png",
@@ -66,6 +87,13 @@ async function seed() {
         {
           title: "Inventarisasi Aset Daerah Tahap II Tahun 2025 Dimulai",
           excerpt: "BKAD Seruyan memulai tahap kedua inventarisasi aset daerah yang mencakup seluruh aset tetap dan aset lainnya di lingkungan Pemerintah Kabupaten Seruyan.",
+          content: `Badan Keuangan dan Aset Daerah (BKAD) Kabupaten Seruyan memulai pelaksanaan inventarisasi aset daerah tahap kedua tahun 2025. Kegiatan ini merupakan lanjutan dari inventarisasi tahap pertama yang telah dilaksanakan pada semester pertama.
+
+Inventarisasi tahap kedua ini mencakup seluruh aset tetap dan aset lainnya yang dimiliki oleh Pemerintah Kabupaten Seruyan, meliputi tanah, bangunan, kendaraan, peralatan, dan konstruksi dalam pengerjaan. Tim inventarisasi akan mendatangi seluruh unit kerja perangkat daerah untuk melakukan verifikasi fisik dan dokumentasi aset.
+
+Kepala Bidang Pengelolaan Aset menyampaikan bahwa inventarisasi ini penting untuk memastikan seluruh aset daerah tercatat dengan baik dalam sistem informasi manajemen barang milik daerah. "Dengan inventarisasi yang akurat, kita dapat mengoptimalkan pemanfaatan aset daerah," ujarnya.
+
+Hasil inventarisasi akan digunakan sebagai dasar untuk penyusunan laporan barang milik daerah dan evaluasi pemanfaatan aset.`,
           date: "5 Januari 2025",
           category: "Aset",
           image: "/images/news-4.png",
@@ -75,6 +103,13 @@ async function seed() {
         {
           title: "Rapat Koordinasi APBD 2025 bersama DPRD Seruyan",
           excerpt: "Rapat koordinasi penyusunan APBD tahun 2025 telah dilaksanakan dengan membahas prioritas pembangunan dan alokasi anggaran yang tepat sasaran.",
+          content: `Rapat koordinasi penyusunan Anggaran Pendapatan dan Belanja Daerah (APBD) tahun 2025 telah dilaksanakan oleh BKAD Kabupaten Seruyan bersama DPRD Kabupaten Seruyan.
+
+Rapat ini membahas beberapa hal penting, antara lain: prioritas pembangunan daerah tahun 2025, alokasi anggaran untuk program prioritas, proyeksi pendapatan daerah, dan kebijakan anggaran yang efisien. Rapat juga membahas rencana pembiayaan dan proyeksi defisit anggaran.
+
+Bupati Seruyan dalam sambutannya menekankan pentingnya pengalokasian anggaran yang tepat sasaran dan berorientasi pada hasil. "APBD harus menjadi instrumen untuk mewujudkan pembangunan yang berkeadilan dan berkelanjutan di seluruh kecamatan," ujarnya.
+
+Hasil rapat koordinasi ini akan menjadi dasar penyusunan rancangan APBD yang akan dibahas lebih lanjut dalam musyawarah perencanaan pembangunan (musrenbang).`,
           date: "3 Januari 2025",
           category: "Anggaran",
           image: "/images/news-5.png",
@@ -84,6 +119,13 @@ async function seed() {
         {
           title: "Festival Budaya Seruyan Dukung PAD Daerah",
           excerpt: "Pemerintah Kabupaten Seruyan menggelar Festival Budaya yang diharapkan mampu meningkatkan Pendapatan Asli Daerah melalui sektor pariwisata.",
+          content: `Pemerintah Kabupaten Seruyan menggelar Festival Budaya Seruyan yang berlangsung selama tiga hari di kawasan wisata Kuala Pembuang. Festival ini diharapkan mampu meningkatkan Pendapatan Asli Daerah (PAD) melalui sektor pariwisata.
+
+Festival ini menampilkan berbagai atraksi budaya, pameran kerajinan lokal, kuliner khas Seruyan, dan kompetisi seni budaya. Sebanyak 5.000 pengunjung dari dalam dan luar daerah hadir dalam acara ini.
+
+Kepala BKAD menyampaikan bahwa kegiatan seperti Festival Budaya memiliki potensi besar untuk meningkatkan PAD melalui retribusi daerah dan pajak hotel serta restoran. "Kami terus berupaya mengoptimalkan seluruh sumber pendapatan daerah untuk mendukung pembangunan," ujarnya.
+
+Dalam kesempatan tersebut, BKAD juga membuka stand pelayanan informasi perpajakan untuk mensosialisasikan kewajiban perpajakan kepada pelaku usaha di sektor pariwisata.`,
           date: "28 Desember 2024",
           category: "PAD",
           image: "/images/news-6.png",
@@ -166,12 +208,146 @@ async function seed() {
   if (existingServices === 0) {
     await db.service.createMany({
       data: [
-        { icon: "Landmark", title: "Pengelolaan APBD", description: "Perencanaan, pelaksanaan, dan pertanggungjawaban Anggaran Pendapatan dan Belanja Daerah Kabupaten Seruyan.", color: "text-emerald-600", bgColor: "bg-emerald-50", order: 1 },
-        { icon: "Receipt", title: "Pengelolaan PAD", description: "Optimalisasi Pendapatan Asli Daerah melalui berbagai sumber pendapatan pajak dan retribusi.", color: "text-amber-600", bgColor: "bg-amber-50", order: 2 },
-        { icon: "Building", title: "Pengelolaan Aset", description: "Inventarisasi, penilaian, dan pengelolaan aset milik daerah secara optimal dan akuntabel.", color: "text-teal-600", bgColor: "bg-teal-50", order: 3 },
-        { icon: "Calculator", title: "PBB P2", description: "Pengelolaan Pajak Bumi dan Bangunan Perkotaan dan Perdesaan untuk pendapatan daerah.", color: "text-violet-600", bgColor: "bg-violet-50", order: 4 },
-        { icon: "FileSpreadsheet", title: "Laporan Keuangan", description: "Penyusunan laporan keuangan daerah yang transparan dan akuntabel sesuai standar SAP.", color: "text-rose-600", bgColor: "bg-rose-50", order: 5 },
-        { icon: "ClipboardList", title: "Perencanaan Anggaran", description: "Penyusunan rencana anggaran daerah yang terukur dan berorientasi pada hasil pembangunan.", color: "text-orange-600", bgColor: "bg-orange-50", order: 6 },
+        {
+          icon: "Landmark",
+          title: "Pengelolaan APBD",
+          description: "Perencanaan, pelaksanaan, dan pertanggungjawaban Anggaran Pendapatan dan Belanja Daerah Kabupaten Seruyan.",
+          content: `Layanan Pengelolaan APBD merupakan salah satu tugas utama Badan Keuangan dan Aset Daerah (BKAD) Kabupaten Seruyan. Layanan ini mencakup seluruh proses perencanaan, pelaksanaan, dan pertanggungjawaban anggaran daerah.
+
+**Proses Perencanaan**
+BKAD menyusun rancangan APBD berdasarkan prioritas pembangunan yang telah ditetapkan dalam Rencana Pembangunan Jangka Menengah Daerah (RPJMD). Proses ini melibatkan seluruh perangkat daerah dan diselaraskan melalui musyawarah perencanaan pembangunan (musrenbang).
+
+**Pelaksanaan Anggaran**
+Setelah APBD ditetapkan, BKAD mengawal pelaksanaan anggaran agar sesuai dengan ketentuan peraturan perundang-undangan. BKAD melakukan monitoring dan evaluasi secara berkala terhadap realisasi anggaran setiap perangkat daerah.
+
+**Pertanggungjawaban**
+BKAD menyusun laporan keuangan pemerintah daerah yang meliputi Laporan Realisasi Anggaran, Neraca, Laporan Perubahan Saldo, Laporan Arus Kas, dan Catatan atas Laporan Keuangan sebagai bentuk pertanggungjawaban pengelolaan APBD.
+
+**Persyaratan Layanan**
+Untuk mengakses layanan terkait APBD, perangkat daerah dapat mengajukan permohonan melalui sistem e-budgeting atau datang langsung ke kantor BKAD pada jam kerja.`,
+          color: "text-emerald-600",
+          bgColor: "bg-emerald-50",
+          order: 1,
+        },
+        {
+          icon: "Receipt",
+          title: "Pengelolaan PAD",
+          description: "Optimalisasi Pendapatan Asli Daerah melalui berbagai sumber pendapatan pajak dan retribusi.",
+          content: `Layanan Pengelolaan PAD bertujuan untuk mengoptimalkan seluruh sumber Pendapatan Asli Daerah Kabupaten Seruyan melalui pungutan pajak dan retribusi daerah.
+
+**Sumber PAD**
+PAD Kabupaten Seruyan berasal dari beberapa sumber utama:
+1. Hasil pajak daerah (PBB P2, BPHTB, pajak restoran, pajak hotel, dll)
+2. Hasil retribusi daerah (retribusi jasa umum, jasa usaha, perizinan)
+3. Hasil pengelolaan kekayaan daerah
+4. Lain-lain PAD yang sah
+
+**Prosedur Pembayaran**
+Masyarakat dapat melakukan pembayaran pajak dan retribusi daerah melalui:
+- Kasir di kantor BKAD
+- Bank persepsi yang telah ditunjuk
+- Sistem pembayaran online (untuk jenis pajak tertentu)
+
+**Informasi Lebih Lanjut**
+Hubungi Bidang Pendapatan BKAD pada jam kerja: Senin-Jumat, 08:00-16:00 WIB`,
+          color: "text-amber-600",
+          bgColor: "bg-amber-50",
+          order: 2,
+        },
+        {
+          icon: "Building",
+          title: "Pengelolaan Aset",
+          description: "Inventarisasi, penilaian, dan pengelolaan aset milik daerah secara optimal dan akuntabel.",
+          content: `Layanan Pengelolaan Aset Daerah mencakup kegiatan inventarisasi, penilaian, pengadministrasian, dan pengelolaan barang milik daerah di lingkungan Pemerintah Kabupaten Seruyan.
+
+**Ruang Lingkup**
+1. Inventarisasi dan pengkodean barang milik daerah
+2. Penilaian aset daerah
+3. Pencatatan dan pelaporan barang milik daerah
+4. Pengamanan dan pemeliharaan aset
+5. Penghapusan dan penjualan aset
+6. Pemanfaatan aset daerah
+
+**Prosedur Pengajuan**
+Perangkat daerah yang memerlukan layanan terkait aset dapat mengajukan permohonan ke Bidang Pengelolaan Aset BKAD dengan melampirkan dokumen pendukung yang diperlukan.
+
+**Layanan Online**
+Sebagian layanan pengelolaan aset sudah dapat diakses melalui Sistem Informasi Manajemen Barang Milik Daerah (SIM BMD).`,
+          color: "text-teal-600",
+          bgColor: "bg-teal-50",
+          order: 3,
+        },
+        {
+          icon: "Calculator",
+          title: "PBB P2",
+          description: "Pengelolaan Pajak Bumi dan Bangunan Perkotaan dan Perdesaan untuk pendapatan daerah.",
+          content: `Layanan PBB P2 (Pajak Bumi dan Bangunan Perkotaan dan Perdesaan) merupakan layanan yang diberikan BKAD dalam pengelolaan pajak atas bumi dan bangunan yang dimiliki, dikuasai, atau dimanfaatkan oleh orang pribadi atau badan.
+
+**Jenis Layanan**
+1. Penerbitan Surat Pemberitahuan Pajak Terutang (SPPT)
+2. Penerimaan pembayaran PBB P2
+3. Pengurangan atau pembebasan PBB P2
+4. Penyelesaian keberatan atas penilaian PBB P2
+
+**Cara Pembayaran**
+- Kantor BKAD Seruyan
+- Bank Persepsi
+- Gerai pembayaran yang ditunjuk
+
+**Pengurangan PBB**
+Wajib pajak yang mengalami kerusakan bangunan atau bumi dapat mengajukan pengurangan PBB dengan melampirkan bukti pendukung.
+
+**Informasi**
+Hubungi Bidang Pendapatan BKAD untuk informasi lebih lanjut mengenai PBB P2.`,
+          color: "text-violet-600",
+          bgColor: "bg-violet-50",
+          order: 4,
+        },
+        {
+          icon: "FileSpreadsheet",
+          title: "Laporan Keuangan",
+          description: "Penyusunan laporan keuangan daerah yang transparan dan akuntabel sesuai standar SAP.",
+          content: `Layanan Laporan Keuangan mencakup penyusunan, pengauditan, dan publikasi laporan keuangan pemerintah daerah Kabupaten Seruyan sesuai Standar Akuntansi Pemerintahan (SAP).
+
+**Komponen Laporan Keuangan**
+1. Laporan Realisasi Anggaran
+2. Neraca
+3. Laporan Perubahan Saldo
+4. Laporan Arus Kas
+5. Catatan atas Laporan Keuangan
+
+**Jadwal Penyusunan**
+- Triwulanan: Laporan keuangan triwulanan disusun setiap akhir kuartal
+- Semesteran: Laporan keuangan semesteran disusun pada akhir semester
+- Tahunan: Laporan keuangan tahunan disusun pada awal tahun berikutnya
+
+**Akses Laporan**
+Laporan keuangan pemerintah daerah dapat diakses oleh masyarakat melalui halaman Publikasi pada website ini atau datang langsung ke kantor BKAD.`,
+          color: "text-rose-600",
+          bgColor: "bg-rose-50",
+          order: 5,
+        },
+        {
+          icon: "ClipboardList",
+          title: "Perencanaan Anggaran",
+          description: "Penyusunan rencana anggaran daerah yang terukur dan berorientasi pada hasil pembangunan.",
+          content: `Layanan Perencanaan Anggaran membantu perangkat daerah dalam menyusun rencana kerja dan anggaran yang terukur, berorientasi pada hasil, dan sesuai dengan prioritas pembangunan daerah.
+
+**Proses Perencanaan**
+1. Penyusunan Rencana Kerja Perangkat Daerah (RKPD)
+2. Penyusunan Rencana Kerja dan Anggaran (RKA)
+3. Musyawarah perencanaan pembangunan
+4. Penetapan APBD
+
+**Sistem E-Budgeting**
+BKAD telah mengimplementasikan sistem e-budgeting untuk mempermudah proses perencanaan anggaran. Perangkat daerah dapat mengakses sistem ini melalui portal yang disediakan.
+
+**Bantuan Teknis**
+BKAD menyediakan bantuan teknis bagi perangkat daerah yang memerlukan panduan dalam menyusun rencana kerja dan anggaran. Hubungi Bidang Anggaran BKAD untuk informasi lebih lanjut.`,
+          color: "text-orange-600",
+          bgColor: "bg-orange-50",
+          order: 6,
+        },
       ],
     });
     console.log("✓ Services seeded");
@@ -486,6 +662,52 @@ Unit yang bertugas memberikan pelayanan administratif dan teknis kepada seluruh 
       ],
     });
     console.log("✓ Infographics seeded");
+  }
+
+  // Seed Laporan
+  const existingLaporan = await db.laporan.count();
+  if (existingLaporan === 0) {
+    await db.laporan.createMany({
+      data: [
+        {
+          name: "Budi Santoso",
+          email: "budi.santoso@email.com",
+          phone: "081234567890",
+          subject: "Pertanyaan tentang Pembayaran PBB",
+          message: "Selamat pagi, saya ingin bertanya tentang cara pembayaran PBB secara online. Apakah saat ini sudah tersedia fasilitas pembayaran PBB melalui internet? Terima kasih.",
+          category: "pajak",
+          status: "selesai",
+        },
+        {
+          name: "Siti Aminah",
+          email: "siti.aminah@email.com",
+          phone: "082345678901",
+          subject: "Pengaduan Pelayanan Publik",
+          message: "Saya ingin mengadukan pelayanan di bagian informasi publik yang kurang responsif. Saat saya datang untuk mengurus surat keterangan, petugas tidak memberikan informasi yang jelas mengenai persyaratan yang diperlukan.",
+          category: "pengaduan",
+          status: "diproses",
+        },
+        {
+          name: "Ahmad Ridwan",
+          email: "ahmad.ridwan@email.com",
+          phone: "083456789012",
+          subject: "Permohonan Data Keuangan Daerah",
+          message: "Dengan hormat, saya selaku peneliti dari Universitas Palangka Raya ingin memohon data keuangan daerah Kabupaten Seruyan tahun 2022-2024 untuk keperluan penelitian. Atas perhatian dan kerjasamanya saya ucapkan terima kasih.",
+          category: "keuangan",
+          status: "baru",
+        },
+        {
+          name: "Dewi Lestari",
+          email: "dewi.lestari@email.com",
+          phone: "",
+          subject: "Saran Penyempurnaan Website",
+          message: "Saya ingin memberikan saran untuk penyempurnaan website BKAD. Sebaiknya ditambahkan fitur pencarian yang lebih baik dan halaman FAQ untuk pertanyaan yang sering diajukan. Terima kasih.",
+          category: "pelayanan",
+          status: "baru",
+        },
+      ],
+    });
+    console.log("✓ Laporan seeded");
   }
 
   console.log("🎉 Seeding complete!");

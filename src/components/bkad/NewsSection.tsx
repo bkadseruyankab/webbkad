@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { Calendar, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { usePageRouter } from "@/stores/usePageRouter";
 import Image from "next/image";
 
 interface NewsItem {
-  id: number;
+  id: string;
   title: string;
   excerpt: string;
+  content: string;
   date: string;
   category: string;
   image: string;
@@ -35,6 +37,7 @@ const categoryColors: Record<string, string> = {
 export default function NewsSection() {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { navigateToDetail, navigate } = usePageRouter();
 
   useEffect(() => {
     async function fetchNews() {
@@ -106,6 +109,7 @@ export default function NewsSection() {
               <article
                 key={item.id}
                 className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300 group cursor-pointer"
+                onClick={() => navigateToDetail("news-detail", item.id)}
               >
                 <div className="relative h-48 overflow-hidden">
                   <Image
@@ -139,6 +143,10 @@ export default function NewsSection() {
                   <p className="text-sm text-gray-500 line-clamp-3">
                     {item.excerpt}
                   </p>
+                  <div className="mt-3 flex items-center text-bkad-green text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    Baca selengkapnya
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </div>
                 </div>
               </article>
             ))}
@@ -147,7 +155,10 @@ export default function NewsSection() {
 
         {/* View All Button */}
         <div className="text-center mt-10">
-          <Button className="bg-bkad-green hover:bg-bkad-dark text-white font-medium px-8 py-3 rounded-lg">
+          <Button
+            onClick={() => navigate("berita")}
+            className="bg-bkad-green hover:bg-bkad-dark text-white font-medium px-8 py-3 rounded-lg"
+          >
             Lihat Semua Berita
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
