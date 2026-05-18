@@ -19,8 +19,12 @@ export type PageKey =
   | "layanan"
   | "kontak"
   | "laporan"
+  | "laporan-dashboard"
   | "news-detail"
-  | "service-detail";
+  | "service-detail"
+  | "agenda-detail"
+  | "publication-detail"
+  | "video-detail";
 
 interface PageRouterState {
   currentPage: PageKey;
@@ -66,6 +70,10 @@ export const pageTitles: Record<PageKey, string> = {
   layanan: "Layanan Publik",
   kontak: "Kontak",
   laporan: "Laporan Masyarakat",
+  "laporan-dashboard": "Dashboard Laporan",
   "news-detail": "Detail Berita",
   "service-detail": "Detail Layanan",
+  "agenda-detail": "Detail Agenda",
+  "publication-detail": "Detail Publikasi",
+  "video-detail": "Detail Video",
 };

@@ -18,6 +18,10 @@ import MediaPage from "@/components/bkad/pages/MediaPage";
 import NewsDetailPage from "@/components/bkad/pages/NewsDetailPage";
 import ServiceDetailPage from "@/components/bkad/pages/ServiceDetailPage";
 import LaporanPage from "@/components/bkad/pages/LaporanPage";
+import AgendaDetailPage from "@/components/bkad/pages/AgendaDetailPage";
+import PublicationDetailPage from "@/components/bkad/pages/PublicationDetailPage";
+import VideoDetailPage from "@/components/bkad/pages/VideoDetailPage";
+import LaporanDashboardPage from "@/components/bkad/pages/LaporanDashboardPage";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
@@ -54,6 +58,21 @@ function PageRouter() {
   // Service detail page
   if (currentPage === "service-detail" && detailId) {
     return <ServiceDetailPage id={detailId} />;
+  }
+
+  // Agenda detail page
+  if (currentPage === "agenda-detail" && detailId) {
+    return <AgendaDetailPage id={detailId} />;
+  }
+
+  // Publication detail page
+  if (currentPage === "publication-detail" && detailId) {
+    return <PublicationDetailPage id={detailId} />;
+  }
+
+  // Video detail page
+  if (currentPage === "video-detail" && detailId) {
+    return <VideoDetailPage id={detailId} />;
   }
 
   // Berita - all news
@@ -107,6 +126,11 @@ function PageRouter() {
   // Laporan
   if (currentPage === "laporan") {
     return <LaporanPage />;
+  }
+
+  // Laporan Dashboard
+  if (currentPage === "laporan-dashboard") {
+    return <LaporanDashboardPage />;
   }
 
   // Kontak

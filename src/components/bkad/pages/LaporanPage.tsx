@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePageRouter, pageTitles } from "@/stores/usePageRouter";
-import { ChevronRight, Send, CheckCircle2, Clock, AlertCircle, FileText, MessageSquare } from "lucide-react";
+import { ChevronRight, Send, CheckCircle2, Clock, AlertCircle, FileText, MessageSquare, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -295,6 +295,22 @@ export default function LaporanPage() {
               <p className="text-sm text-gray-600 leading-relaxed">
                 Laporan Anda akan ditinjau oleh tim BKAD dalam waktu 1-3 hari kerja. Status laporan dapat dilihat di daftar riwayat laporan.
               </p>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+              <h3 className="font-bold text-gray-900 mb-2 text-sm">Dashboard Laporan</h3>
+              <p className="text-sm text-gray-600 mb-3">
+                Lihat ringkasan dan statistik semua laporan masyarakat.
+              </p>
+              <Button
+                onClick={() => usePageRouter.getState().navigate("laporan-dashboard")}
+                variant="outline"
+                size="sm"
+                className="border-bkad-green text-bkad-green hover:bg-bkad-green hover:text-white w-full"
+              >
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Lihat Dashboard
+              </Button>
             </div>
 
             <div className="bg-amber-50 rounded-xl p-5 border border-amber-200">

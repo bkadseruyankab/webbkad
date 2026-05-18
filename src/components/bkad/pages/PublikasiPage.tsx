@@ -25,7 +25,7 @@ const categoryConfig: Record<string, { label: string; color: string }> = {
 };
 
 export default function PublikasiPage({ category }: { category: string }) {
-  const { currentPage } = usePageRouter();
+  const { currentPage, navigateToDetail } = usePageRouter();
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -109,7 +109,8 @@ export default function PublikasiPage({ category }: { category: string }) {
                 {filtered.map((pub) => (
                   <div
                     key={pub.id}
-                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow group"
+                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow group cursor-pointer"
+                    onClick={() => navigateToDetail("publication-detail", pub.id)}
                   >
                     <div className="flex gap-4">
                       <div className="w-24 h-32 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">

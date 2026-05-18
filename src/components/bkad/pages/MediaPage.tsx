@@ -29,7 +29,7 @@ interface InfographicItem {
 type MediaType = "foto" | "video" | "infografis";
 
 export default function MediaPage({ type }: { type: MediaType }) {
-  const { currentPage } = usePageRouter();
+  const { currentPage, navigateToDetail } = usePageRouter();
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [infographics, setInfographics] = useState<InfographicItem[]>([]);
@@ -128,7 +128,8 @@ export default function MediaPage({ type }: { type: MediaType }) {
                     {videos.map((video) => (
                       <div
                         key={video.id}
-                        className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow"
+                        className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => navigateToDetail("video-detail", video.id)}
                       >
                         <div className="relative aspect-video bg-gray-100">
                           <img

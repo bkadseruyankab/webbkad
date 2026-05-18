@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, date, time, location, status } = body;
+    const { title, description, date, time, location, status } = body;
 
     if (!title || !date || !time || !location) {
       return NextResponse.json(
@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
     const data = await db.agenda.create({
       data: {
         title,
+        description: description ?? '',
         date,
         time,
         location,

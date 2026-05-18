@@ -73,6 +73,7 @@ interface NewsItem {
 interface AgendaItem {
   id: string;
   title: string;
+  description: string;
   date: string;
   time: string;
   location: string;
@@ -659,6 +660,15 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                 value={formData.title || ""}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="Judul kegiatan"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Deskripsi</label>
+              <Textarea
+                value={formData.description || ""}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Deskripsi kegiatan"
+                rows={4}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">

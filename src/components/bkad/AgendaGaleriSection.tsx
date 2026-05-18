@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { usePageRouter } from "@/stores/usePageRouter";
 import Image from "next/image";
 
 interface AgendaItem {
@@ -50,6 +51,7 @@ export default function AgendaGaleriSection() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [loadingAgenda, setLoadingAgenda] = useState(true);
   const [loadingGallery, setLoadingGallery] = useState(true);
+  const { navigateToDetail, navigate } = usePageRouter();
 
   useEffect(() => {
     async function fetchAgenda() {
@@ -144,7 +146,8 @@ export default function AgendaGaleriSection() {
                 {agendaItems.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => navigateToDetail("agenda-detail", String(item.id))}
                   >
                     <div className="flex items-start gap-3">
                       <div className="bg-bkad-green text-white rounded-lg w-12 h-12 flex flex-col items-center justify-center flex-shrink-0">
@@ -189,6 +192,7 @@ export default function AgendaGaleriSection() {
                 variant="outline"
                 size="sm"
                 className="border-bkad-green text-bkad-green hover:bg-bkad-green hover:text-white"
+                onClick={() => navigate("home")}
               >
                 Lihat Semua Agenda
                 <ArrowRight className="w-4 h-4 ml-1" />
@@ -258,6 +262,7 @@ export default function AgendaGaleriSection() {
                 variant="outline"
                 size="sm"
                 className="border-bkad-green text-bkad-green hover:bg-bkad-green hover:text-white"
+                onClick={() => navigate("media-foto")}
               >
                 Lihat Semua Galeri
                 <ArrowRight className="w-4 h-4 ml-1" />

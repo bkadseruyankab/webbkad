@@ -99,7 +99,10 @@ const navItems: NavItem[] = [
     label: "Laporan",
     page: "laporan",
     icon: MessageSquare,
-    children: null,
+    children: [
+      { label: "Buat Laporan", page: "laporan" },
+      { label: "Dashboard Laporan", page: "laporan-dashboard" },
+    ],
   },
   {
     label: "Kontak",

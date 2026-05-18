@@ -8,6 +8,7 @@ import {
   Activity,
 } from "lucide-react";
 import Image from "next/image";
+import { usePageRouter } from "@/stores/usePageRouter";
 
 interface DataPointApi {
   id: number;
@@ -190,6 +191,7 @@ function SimpleBarChart({ data }: { data: DataPoint[] }) {
 export default function InfografisSection() {
   const [financialData, setFinancialData] = useState<DataPoint[]>(defaultFinancialData);
   const [loading, setLoading] = useState(true);
+  const { navigate } = usePageRouter();
 
   useEffect(() => {
     async function fetchFinancialData() {
@@ -284,13 +286,16 @@ export default function InfografisSection() {
             ))}
 
             {/* Featured Infographic Image */}
-            <div className="sm:col-span-2 rounded-xl overflow-hidden shadow-sm border border-gray-100">
+            <div
+              className="sm:col-span-2 rounded-xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer group"
+              onClick={() => navigate("media-infografis")}
+            >
               <div className="relative h-48">
                 <Image
                   src="/images/infografis-1.png"
                   alt="Infografis Keuangan Daerah"
                   fill
-                  className="object-cover"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-bkad-dark/70 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
