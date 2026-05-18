@@ -11,6 +11,7 @@ import InfografisSection from "@/components/bkad/InfografisSection";
 import AgendaGaleriSection from "@/components/bkad/AgendaGaleriSection";
 import SiteFooter from "@/components/bkad/SiteFooter";
 import AdminPanel from "@/components/bkad/AdminPanel";
+import SetupWizard from "@/components/bkad/SetupWizard";
 import ProfilPage from "@/components/bkad/pages/ProfilPage";
 import PejabatPage from "@/components/bkad/pages/PejabatPage";
 import PublikasiPage from "@/components/bkad/pages/PublikasiPage";
@@ -28,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
+import { useSetupStore } from "@/stores/useSetupStore";
 
 // Map quick-add section strings from SiteHeader to AdminPanel Section type
 const quickAddSectionMap: Record<string, string> = {
@@ -197,11 +199,13 @@ export default function Home() {
   const [adminSection, setAdminSection] = useState<string | undefined>(undefined);
   const { isAuthenticated, user, verify, logout } = useAuthStore();
   const { currentPage, navigate } = usePageRouter();
+  const { completed: setupCompleted, checked: setupChecked, checkSetupStatus } = useSetupStore();
 
-  // Initialize auth state on mount
+  // Initialize auth state and check setup status on mount
   useEffect(() => {
     verify();
-  }, [verify]);
+    checkSetupStatus();
+  }, [verify, checkSetupStatus]);
 
   const handleAdminClose = useCallback(() => {
     setShowAdmin(false);
@@ -221,6 +225,11 @@ export default function Home() {
     await logout();
     setShowAdmin(false);
   }, [logout]);
+
+  // Show setup wizard if setup is not completed
+  if (setupChecked && !setupCompleted) {
+    return <SetupWizard />;
+  }
 
   // Login page renders standalone (no header/footer)
   const isLoginPage = currentPage === "login";

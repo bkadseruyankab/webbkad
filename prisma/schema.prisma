@@ -250,6 +250,35 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model SetupState {
+  id              String   @id @default(cuid())
+  completed       Boolean  @default(false)
+  currentStep     Int      @default(0)
+  // Step 1: Admin Account
+  adminName       String   @default("")
+  adminEmail      String   @default("")
+  adminPassword   String   @default("")
+  // Step 2: Site Identity
+  appName         String   @default("Badan Keuangan dan Aset Daerah")
+  appShortName    String   @default("BKAD")
+  appSubtitle     String   @default("Kabupaten Seruyan")
+  primaryColor    String   @default("#0D6B3F")
+  secondaryColor  String   @default("#C5960C")
+  darkColor       String   @default("#064E2B")
+  phone           String   @default("")
+  email           String   @default("")
+  address         String   @default("")
+  // Step 3: Initial Menus (JSON string)
+  selectedMenus   String   @default("[]")
+  // Step 4: Extras
+  logoUrl         String   @default("")
+  workHours       String   @default("Senin - Jumat, 08:00 - 16:00 WIB")
+  metaDescription String   @default("")
+  metaKeywords    String   @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 model AppIdentity {
   id                String   @id @default(cuid())
   // Header

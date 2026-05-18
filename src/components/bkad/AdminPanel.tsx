@@ -32,6 +32,7 @@ import {
   WifiOff,
   HardDrive,
   Globe,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +50,7 @@ import { ImageUpload } from "@/components/bkad/ImageUpload";
 import PengaturanIdentitasSection from "@/components/bkad/PengaturanIdentitasSection";
 import { blobStore } from "@/lib/blob-store";
 import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
+import { useSetupStore } from "@/stores/useSetupStore";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -2660,6 +2662,36 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               );
             })}
           </div>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="bg-white rounded-xl p-4 border border-red-200 shadow-sm">
+          <h3 className="text-sm font-semibold text-red-700 mb-2 flex items-center gap-2">
+            <RotateCcw className="w-4 h-4" />
+            Zona Bahaya
+          </h3>
+          <p className="text-xs text-gray-500 mb-3">
+            Tindakan berikut akan mengatur ulang konfigurasi awal aplikasi
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700"
+            onClick={async () => {
+              if (confirm("Apakah Anda yakin ingin mengatur ulang setup wizard? Ini akan menghapus status setup dan Anda akan diminta untuk menjalankan wizard lagi saat reload halaman.")) {
+                try {
+                  await fetch("/api/setup", { method: "DELETE" });
+                  useSetupStore.getState().reset();
+                  toast({ title: "Berhasil", description: "Setup wizard telah direset. Reload halaman untuk menjalankan wizard kembali." });
+                } catch {
+                  toast({ title: "Gagal", description: "Gagal mereset setup wizard", variant: "destructive" });
+                }
+              }
+            }}
+          >
+            <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+            Reset Setup Wizard
+          </Button>
         </div>
       </div>
     );
