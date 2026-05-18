@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,47 +15,29 @@ interface AgendaItem {
   status: "upcoming" | "ongoing" | "completed";
 }
 
-const agendaItems: AgendaItem[] = [
-  {
-    id: 1,
-    title: "Rapat Koordinasi Penyusunan APBD Perubahan 2025",
-    date: "20 Februari 2025",
-    time: "09:00 - 12:00 WIB",
-    location: "Ruang Rapat Utama BKAD",
-    status: "upcoming",
-  },
-  {
-    id: 2,
-    title: "Sosialisasi Permendagri No. 70 Tahun 2024",
-    date: "25 Februari 2025",
-    time: "08:00 - 16:00 WIB",
-    location: "Aula Kantor Bupati",
-    status: "upcoming",
-  },
-  {
-    id: 3,
-    title: "Workshop Sistem Informasi Aset Daerah",
-    date: "5 Maret 2025",
-    time: "09:00 - 15:00 WIB",
-    location: "Ruang Pelatihan BKAD",
-    status: "upcoming",
-  },
-  {
-    id: 4,
-    title: "Audit Kinerja oleh BPK Perwakilan Kalimantan Tengah",
-    date: "10 Maret 2025",
-    time: "08:00 - 17:00 WIB",
-    location: "Kantor BKAD Seruyan",
-    status: "upcoming",
-  },
-];
+interface AgendaApiResponse {
+  success: boolean;
+  data: AgendaItem[];
+}
 
-const galleryItems = [
-  { id: 1, image: "/images/hero-1.png", caption: "Kantor BKAD Kabupaten Seruyan" },
-  { id: 2, image: "/images/layanan.png", caption: "Pelayanan Publik BKAD" },
-  { id: 3, image: "/images/news-5.png", caption: "Rapat Koordinasi APBD 2025" },
-  { id: 4, image: "/images/news-6.png", caption: "Festival Budaya Seruyan" },
-];
+interface GalleryItemApi {
+  id: number;
+  image: string;
+  caption: string;
+  order: number;
+  active: boolean;
+}
+
+interface GalleryItem {
+  id: number;
+  image: string;
+  caption: string;
+}
+
+interface GalleryApiResponse {
+  success: boolean;
+  data: GalleryItemApi[];
+}
 
 const statusConfig = {
   upcoming: { label: "Akan Datang", class: "bg-sky-100 text-sky-700" },
@@ -63,6 +46,57 @@ const statusConfig = {
 };
 
 export default function AgendaGaleriSection() {
+  const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([]);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loadingAgenda, setLoadingAgenda] = useState(true);
+  const [loadingGallery, setLoadingGallery] = useState(true);
+
+  useEffect(() => {
+    async function fetchAgenda() {
+      try {
+        const res = await fetch("/api/agenda");
+        const json: AgendaApiResponse = await res.json();
+        if (json.success && json.data) {
+          if (json.data.length > 0) {
+            setAgendaItems(json.data);
+          }
+        }
+      } catch {
+        // Keep empty state on error
+      } finally {
+        setLoadingAgenda(false);
+      }
+    }
+    fetchAgenda();
+  }, []);
+
+  useEffect(() => {
+    async function fetchGallery() {
+      try {
+        const res = await fetch("/api/gallery");
+        const json: GalleryApiResponse = await res.json();
+        if (json.success && json.data) {
+          const activeItems = json.data
+            .filter((item) => item.active)
+            .sort((a, b) => a.order - b.order)
+            .map((item) => ({
+              id: item.id,
+              image: item.image,
+              caption: item.caption,
+            }));
+          if (activeItems.length > 0) {
+            setGalleryItems(activeItems);
+          }
+        }
+      } catch {
+        // Keep empty state on error
+      } finally {
+        setLoadingGallery(false);
+      }
+    }
+    fetchGallery();
+  }, []);
+
   return (
     <section className="py-16 bg-gray-50 relative">
       <div className="container mx-auto px-4">
@@ -87,49 +121,69 @@ export default function AgendaGaleriSection() {
               <Calendar className="w-5 h-5 mr-2 text-bkad-green" />
               Agenda Kegiatan
             </h3>
-            <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-              {agendaItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="bg-bkad-green text-white rounded-lg w-12 h-12 flex flex-col items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-medium">
-                        {item.date.split(" ")[0]}
-                      </span>
-                      <span className="text-[10px] leading-tight">
-                        {item.date.split(" ")[1]?.substring(0, 3)}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge
-                          className={`text-[10px] ${
-                            statusConfig[item.status].class
-                          }`}
-                        >
-                          {statusConfig[item.status].label}
-                        </Badge>
-                      </div>
-                      <h4 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2">
-                        {item.title}
-                      </h4>
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
-                        <span className="flex items-center">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {item.time}
-                        </span>
-                        <span className="flex items-center">
-                          <MapPin className="w-3 h-3 mr-1" />
-                          {item.location}
-                        </span>
+            {loadingAgenda ? (
+              <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 animate-pulse"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="bg-gray-200 rounded-lg w-12 h-12 flex-shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-1/4" />
+                        <div className="h-4 bg-gray-200 rounded w-3/4" />
+                        <div className="h-3 bg-gray-200 rounded w-1/2" />
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
+                {agendaItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="bg-bkad-green text-white rounded-lg w-12 h-12 flex flex-col items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-medium">
+                          {item.date.split(" ")[0]}
+                        </span>
+                        <span className="text-[10px] leading-tight">
+                          {item.date.split(" ")[1]?.substring(0, 3)}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge
+                            className={`text-[10px] ${
+                              statusConfig[item.status].class
+                            }`}
+                          >
+                            {statusConfig[item.status].label}
+                          </Badge>
+                        </div>
+                        <h4 className="font-semibold text-sm text-gray-900 mb-1 line-clamp-2">
+                          {item.title}
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                          <span className="flex items-center">
+                            <Clock className="w-3 h-3 mr-1" />
+                            {item.time}
+                          </span>
+                          <span className="flex items-center">
+                            <MapPin className="w-3 h-3 mr-1" />
+                            {item.location}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="mt-4">
               <Button
                 variant="outline"
@@ -165,28 +219,40 @@ export default function AgendaGaleriSection() {
               </svg>
               Galeri Kegiatan
             </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {galleryItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="relative rounded-xl overflow-hidden group cursor-pointer"
-                  style={{ aspectRatio: "4/3" }}
-                >
-                  <Image
-                    src={item.image}
-                    alt={item.caption}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+            {loadingGallery ? (
+              <div className="grid grid-cols-2 gap-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="relative rounded-xl overflow-hidden bg-gray-200 animate-pulse"
+                    style={{ aspectRatio: "4/3" }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <p className="text-white text-xs font-medium">
-                      {item.caption}
-                    </p>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {galleryItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="relative rounded-xl overflow-hidden group cursor-pointer"
+                    style={{ aspectRatio: "4/3" }}
+                  >
+                    <Image
+                      src={item.image}
+                      alt={item.caption}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <p className="text-white text-xs font-medium">
+                        {item.caption}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
             <div className="mt-4">
               <Button
                 variant="outline"

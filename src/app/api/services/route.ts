@@ -8,16 +8,16 @@ export async function GET(request: NextRequest) {
 
     const where = showAll ? {} : { active: true };
 
-    const data = await db.stat.findMany({
+    const data = await db.service.findMany({
       where,
       orderBy: { order: 'asc' },
     });
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error('[STATS_GET]', error);
+    console.error('[SERVICES_GET]', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch stats' },
+      { success: false, error: 'Failed to fetch services' },
       { status: 500 }
     );
   }
@@ -26,23 +26,22 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { icon, value, prefix, suffix, label, color, order, active } = body;
+    const { icon, title, description, color, bgColor, order, active } = body;
 
-    if (!icon || !value || !label || !color) {
+    if (!icon || !title || !description || !color || !bgColor) {
       return NextResponse.json(
-        { success: false, error: 'icon, value, label, and color are required' },
+        { success: false, error: 'icon, title, description, color, and bgColor are required' },
         { status: 400 }
       );
     }
 
-    const data = await db.stat.create({
+    const data = await db.service.create({
       data: {
         icon,
-        value,
-        prefix: prefix ?? '',
-        suffix: suffix ?? '',
-        label,
+        title,
+        description,
         color,
+        bgColor,
         order: order ?? 0,
         active: active ?? true,
       },
@@ -50,9 +49,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data }, { status: 201 });
   } catch (error) {
-    console.error('[STATS_POST]', error);
+    console.error('[SERVICES_POST]', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create stat' },
+      { success: false, error: 'Failed to create service' },
       { status: 500 }
     );
   }

@@ -8,16 +8,16 @@ export async function GET(request: NextRequest) {
 
     const where = showAll ? {} : { active: true };
 
-    const data = await db.stat.findMany({
+    const data = await db.heroSlide.findMany({
       where,
       orderBy: { order: 'asc' },
     });
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error('[STATS_GET]', error);
+    console.error('[HERO_SLIDES_GET]', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch stats' },
+      { success: false, error: 'Failed to fetch hero slides' },
       { status: 500 }
     );
   }
@@ -26,23 +26,20 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { icon, value, prefix, suffix, label, color, order, active } = body;
+    const { title, subtitle, image, order, active } = body;
 
-    if (!icon || !value || !label || !color) {
+    if (!title || !subtitle || !image) {
       return NextResponse.json(
-        { success: false, error: 'icon, value, label, and color are required' },
+        { success: false, error: 'title, subtitle, and image are required' },
         { status: 400 }
       );
     }
 
-    const data = await db.stat.create({
+    const data = await db.heroSlide.create({
       data: {
-        icon,
-        value,
-        prefix: prefix ?? '',
-        suffix: suffix ?? '',
-        label,
-        color,
+        title,
+        subtitle,
+        image,
         order: order ?? 0,
         active: active ?? true,
       },
@@ -50,9 +47,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data }, { status: 201 });
   } catch (error) {
-    console.error('[STATS_POST]', error);
+    console.error('[HERO_SLIDES_POST]', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create stat' },
+      { success: false, error: 'Failed to create hero slide' },
       { status: 500 }
     );
   }

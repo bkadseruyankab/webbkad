@@ -5,46 +5,73 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-const heroSlides = [
-  {
-    image: "/images/hero-1.png",
-    title: "Mewujudkan Tata Kelola Keuangan Daerah yang Transparan",
-    subtitle:
-      "BKAD Kabupaten Seruyan berkomitmen mengelola keuangan dan aset daerah secara profesional, akuntabel, dan transparan untuk kemakmuran masyarakat.",
-  },
-  {
-    image: "/images/hero-2.png",
-    title: "Pengelolaan Aset Daerah yang Optimal",
-    subtitle:
-      "Mengoptimalkan pemanfaatan aset daerah untuk mendukung pembangunan dan pelayanan publik di Kabupaten Seruyan.",
-  },
-  {
-    image: "/images/hero-3.png",
-    title: "Bersama Membangun Seruyan yang Maju",
-    subtitle:
-      "Dengan pengelolaan keuangan yang baik, kita wujudkan pembangunan Kabupaten Seruyan yang berkelanjutan dan berkeadilan.",
-  },
-];
+interface HeroSlide {
+  id: number;
+  title: string;
+  subtitle: string;
+  image: string;
+  order: number;
+  active: boolean;
+}
+
+interface HeroApiResponse {
+  success: boolean;
+  data: HeroSlide[];
+}
+
+const defaultSlide: HeroSlide = {
+  id: 0,
+  title: "Mewujudkan Tata Kelola Keuangan Daerah yang Transparan",
+  subtitle:
+    "BKAD Kabupaten Seruyan berkomitmen mengelola keuangan dan aset daerah secara profesional, akuntabel, dan transparan untuk kemakmuran masyarakat.",
+  image: "/images/hero-1.png",
+  order: 0,
+  active: true,
+};
 
 export default function HeroSection() {
+  const [slides, setSlides] = useState<HeroSlide[]>([defaultSlide]);
+  const [loading, setLoading] = useState(true);
   const [current, setCurrent] = useState(0);
   const [isAnimating, setIsAnimating] = useState(true);
+
+  useEffect(() => {
+    async function fetchSlides() {
+      try {
+        const res = await fetch("/api/hero-slides");
+        const json: HeroApiResponse = await res.json();
+        if (json.success && json.data && json.data.length > 0) {
+          const activeSlides = json.data
+            .filter((s) => s.active)
+            .sort((a, b) => a.order - b.order);
+          if (activeSlides.length > 0) {
+            setSlides(activeSlides);
+          }
+        }
+      } catch {
+        // Keep default slide on error
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchSlides();
+  }, []);
 
   const nextSlide = useCallback(() => {
     setIsAnimating(false);
     setTimeout(() => {
-      setCurrent((prev) => (prev + 1) % heroSlides.length);
+      setCurrent((prev) => (prev + 1) % slides.length);
       setIsAnimating(true);
     }, 100);
-  }, []);
+  }, [slides.length]);
 
   const prevSlide = useCallback(() => {
     setIsAnimating(false);
     setTimeout(() => {
-      setCurrent((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+      setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
       setIsAnimating(true);
     }, 100);
-  }, []);
+  }, [slides.length]);
 
   useEffect(() => {
     const timer = setInterval(nextSlide, 6000);
@@ -61,8 +88,8 @@ export default function HeroSection() {
           }`}
         >
           <Image
-            src={heroSlides[current].image}
-            alt={heroSlides[current].title}
+            src={slides[current].image}
+            alt={slides[current].title}
             fill
             className="object-cover"
             priority
@@ -85,10 +112,10 @@ export default function HeroSection() {
                 BKAD KABUPATEN SERUYAN
               </span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-                {heroSlides[current].title}
+                {slides[current].title}
               </h2>
               <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 leading-relaxed">
-                {heroSlides[current].subtitle}
+                {slides[current].subtitle}
               </p>
               <div className="flex space-x-3">
                 <Button className="bg-bkad-gold hover:bg-bkad-gold/90 text-white font-medium px-6 py-2.5">
@@ -127,7 +154,7 @@ export default function HeroSection() {
 
         {/* Indicators */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
-          {heroSlides.map((_, index) => (
+          {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => {

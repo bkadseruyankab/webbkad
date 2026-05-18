@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Landmark,
   Calculator,
@@ -8,69 +9,76 @@ import {
   Receipt,
   ClipboardList,
   ArrowRight,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+interface ServiceItemApi {
+  id: number;
+  icon: string;
+  title: string;
+  description: string;
+  color: string;
+  bgColor: string;
+  order: number;
+  active: boolean;
+}
+
 interface ServiceItem {
-  icon: React.ElementType;
+  icon: LucideIcon;
   title: string;
   description: string;
   color: string;
   bgColor: string;
 }
 
-const services: ServiceItem[] = [
-  {
-    icon: Landmark,
-    title: "Pengelolaan APBD",
-    description:
-      "Perencanaan, pelaksanaan, dan pertanggungjawaban Anggaran Pendapatan dan Belanja Daerah Kabupaten Seruyan.",
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-50",
-  },
-  {
-    icon: Receipt,
-    title: "Pengelolaan PAD",
-    description:
-      "Optimalisasi Pendapatan Asli Daerah melalui berbagai sumber pendapatan pajak dan retribusi.",
-    color: "text-amber-600",
-    bgColor: "bg-amber-50",
-  },
-  {
-    icon: Building,
-    title: "Pengelolaan Aset",
-    description:
-      "Inventarisasi, penilaian, dan pengelolaan aset milik daerah secara optimal dan akuntabel.",
-    color: "text-teal-600",
-    bgColor: "bg-teal-50",
-  },
-  {
-    icon: Calculator,
-    title: "PBB P2",
-    description:
-      "Pengelolaan Pajak Bumi dan Bangunan Perkotaan dan Perdesaan untuk pendapatan daerah.",
-    color: "text-violet-600",
-    bgColor: "bg-violet-50",
-  },
-  {
-    icon: FileSpreadsheet,
-    title: "Laporan Keuangan",
-    description:
-      "Penyusunan laporan keuangan daerah yang transparan dan akuntabel sesuai standar SAP.",
-    color: "text-rose-600",
-    bgColor: "bg-rose-50",
-  },
-  {
-    icon: ClipboardList,
-    title: "Perencanaan Anggaran",
-    description:
-      "Penyusunan rencana anggaran daerah yang terukur dan berorientasi pada hasil pembangunan.",
-    color: "text-orange-600",
-    bgColor: "bg-orange-50",
-  },
-];
+interface ServicesApiResponse {
+  success: boolean;
+  data: ServiceItemApi[];
+}
+
+const iconMap: Record<string, LucideIcon> = {
+  Landmark,
+  Receipt,
+  Building,
+  Calculator,
+  FileSpreadsheet,
+  ClipboardList,
+};
 
 export default function ServicesSection() {
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchServices() {
+      try {
+        const res = await fetch("/api/services");
+        const json: ServicesApiResponse = await res.json();
+        if (json.success && json.data) {
+          const activeItems = json.data
+            .filter((item) => item.active)
+            .sort((a, b) => a.order - b.order)
+            .map((item) => ({
+              icon: iconMap[item.icon] || Landmark,
+              title: item.title,
+              description: item.description,
+              color: item.color,
+              bgColor: item.bgColor,
+            }));
+          if (activeItems.length > 0) {
+            setServices(activeItems);
+          }
+        }
+      } catch {
+        // Keep empty state on error
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchServices();
+  }, []);
+
   return (
     <section
       id="layanan"
@@ -114,30 +122,46 @@ export default function ServicesSection() {
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
-            >
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
-                className={`w-14 h-14 rounded-xl ${service.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                key={i}
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-pulse"
               >
-                <service.icon className={`w-7 h-7 ${service.color}`} />
+                <div className="w-14 h-14 rounded-xl bg-gray-200 mb-4" />
+                <div className="h-5 bg-gray-200 rounded w-2/3 mb-3" />
+                <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                <div className="h-4 bg-gray-200 rounded w-4/5" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2 text-lg">
-                {service.title}
-              </h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                {service.description}
-              </p>
-              <div className="mt-4 flex items-center text-bkad-green text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                Selengkapnya
-                <ArrowRight className="w-4 h-4 ml-1" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
+              >
+                <div
+                  className={`w-14 h-14 rounded-xl ${service.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                >
+                  <service.icon className={`w-7 h-7 ${service.color}`} />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2 text-lg">
+                  {service.title}
+                </h3>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {service.description}
+                </p>
+                <div className="mt-4 flex items-center text-bkad-green text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Selengkapnya
+                  <ArrowRight className="w-4 h-4 ml-1" />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* CTA Button */}
         <div className="text-center mt-10">

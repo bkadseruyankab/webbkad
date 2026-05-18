@@ -9,6 +9,14 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
+interface DataPointApi {
+  id: number;
+  year: string;
+  pendapatan: number;
+  belanja: number;
+  realisasi: number;
+}
+
 interface DataPoint {
   year: string;
   pendapatan: number;
@@ -16,7 +24,12 @@ interface DataPoint {
   realisasi: number;
 }
 
-const financialData: DataPoint[] = [
+interface FinancialDataApiResponse {
+  success: boolean;
+  data: DataPointApi[];
+}
+
+const defaultFinancialData: DataPoint[] = [
   { year: "2020", pendapatan: 850, belanja: 820, realisasi: 94.2 },
   { year: "2021", pendapatan: 920, belanja: 890, realisasi: 95.8 },
   { year: "2022", pendapatan: 1050, belanja: 1010, realisasi: 96.5 },
@@ -29,7 +42,8 @@ const infographicCards = [
     icon: BarChart3,
     title: "Realisasi APBD",
     value: "98,5%",
-    description: "Tingkat realisasi APBD tahun 2024 menunjukkan peningkatan signifikan",
+    description:
+      "Tingkat realisasi APBD tahun 2024 menunjukkan peningkatan signifikan",
     color: "text-emerald-600",
     bgColor: "bg-emerald-50",
   },
@@ -59,7 +73,7 @@ const infographicCards = [
   },
 ];
 
-function SimpleBarChart() {
+function SimpleBarChart({ data }: { data: DataPoint[] }) {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -74,13 +88,13 @@ function SimpleBarChart() {
     return () => observer.disconnect();
   }, []);
 
-  const maxPendapatan = Math.max(...financialData.map((d) => d.pendapatan));
+  const maxPendapatan = Math.max(...data.map((d) => d.pendapatan));
 
   return (
     <div ref={ref} className="space-y-4">
       {/* Chart */}
       <div className="flex items-end justify-between gap-3 h-48 px-2">
-        {financialData.map((item, index) => (
+        {data.map((item, index) => (
           <div
             key={item.year}
             className="flex-1 flex flex-col items-center gap-1"
@@ -144,7 +158,7 @@ function SimpleBarChart() {
             </tr>
           </thead>
           <tbody>
-            {financialData.map((item) => (
+            {data.map((item) => (
               <tr key={item.year} className="border-b border-gray-100">
                 <td className="py-2 px-2 font-medium">{item.year}</td>
                 <td className="text-right py-2 px-2">
@@ -174,6 +188,32 @@ function SimpleBarChart() {
 }
 
 export default function InfografisSection() {
+  const [financialData, setFinancialData] = useState<DataPoint[]>(defaultFinancialData);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchFinancialData() {
+      try {
+        const res = await fetch("/api/financial-data");
+        const json: FinancialDataApiResponse = await res.json();
+        if (json.success && json.data && json.data.length > 0) {
+          const mapped: DataPoint[] = json.data.map((item) => ({
+            year: item.year,
+            pendapatan: item.pendapatan,
+            belanja: item.belanja,
+            realisasi: item.realisasi,
+          }));
+          setFinancialData(mapped);
+        }
+      } catch {
+        // Keep default data on error
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchFinancialData();
+  }, []);
+
   return (
     <section
       id="infografis"
@@ -207,7 +247,20 @@ export default function InfografisSection() {
             <h3 className="font-bold text-lg text-gray-900 mb-4">
               Tren Pendapatan & Belanja Daerah
             </h3>
-            <SimpleBarChart />
+            {loading ? (
+              <div className="space-y-4 animate-pulse">
+                <div className="flex items-end justify-between gap-3 h-48 px-2">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex-1 flex gap-1 items-end h-40">
+                      <div className="flex-1 bg-gray-200 rounded-t" style={{ height: `${Math.random() * 80 + 20}%` }} />
+                      <div className="flex-1 bg-gray-200 rounded-t" style={{ height: `${Math.random() * 80 + 20}%` }} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <SimpleBarChart data={financialData} />
+            )}
           </div>
 
           {/* Infographic Cards */}
