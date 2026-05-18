@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePageRouter } from "@/stores/usePageRouter";
-import { ChevronRight, ArrowLeft, Landmark, Receipt, Building, Calculator, FileSpreadsheet, ClipboardList, type LucideIcon } from "lucide-react";
+import { ChevronRight, ArrowLeft, Landmark, Receipt, Building, Calculator, FileSpreadsheet, ClipboardList, TrendingUp, FileCheck, Coins, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -14,6 +14,8 @@ interface ServiceData {
   content: string;
   color: string;
   bgColor: string;
+  order: number;
+  active: boolean;
 }
 
 const iconMap: Record<string, LucideIcon> = {
