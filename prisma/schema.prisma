@@ -89,3 +89,62 @@ model FinancialData {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model PageContent {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String
+  image     String   @default("")
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Official {
+  id        String   @id @default(cuid())
+  name      String
+  position  String
+  photo     String
+  nip       String   @default("")
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Publication {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String
+  fileUrl     String   @default("")
+  coverImage  String   @default("")
+  date        String
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Video {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  thumbnail String   @default("")
+  date      String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Infographic {
+  id        String   @id @default(cuid())
+  title     String
+  image     String
+  date      String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

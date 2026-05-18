@@ -192,6 +192,302 @@ async function seed() {
     console.log("✓ Financial data seeded");
   }
 
+  // Seed PageContent
+  const existingPageContent = await db.pageContent.count();
+  if (existingPageContent === 0) {
+    await db.pageContent.createMany({
+      data: [
+        {
+          slug: "sejarah",
+          title: "Sejarah BKAD Kabupaten Seruyan",
+          content: `Badan Keuangan dan Aset Daerah (BKAD) Kabupaten Seruyan merupakan hasil peleburan dari Badan Pengelolaan Keuangan dan Aset Daerah (BPKAD) yang telah ada sebelumnya. Pembentukan BKAD didasarkan pada Peraturan Daerah Kabupaten Seruyan Nomor 5 Tahun 2016 tentang Pembentukan dan Susunan Perangkat Daerah Kabupaten Seruyan.
+
+Sejarah panjang pengelolaan keuangan daerah di Kabupaten Seruyan dimulai sejak awal pembentukan kabupaten ini. Pada awalnya, fungsi pengelolaan keuangan dan aset daerah dilaksanakan oleh Bagian Keuangan pada Sekretariat Daerah. Seiring dengan meningkatnya kompleksitas pengelolaan keuangan daerah dan tuntutan good governance, pada tahun 2010 dibentuklah Badan Pengelolaan Keuangan dan Aset Daerah (BPKAD).
+
+Pada tahun 2016, seiring dengan reformasi birokrasi dan penyederhanaan organisasi perangkat daerah, BPKAD dilebur menjadi Badan Keuangan dan Aset Daerah (BKAD) sebagaimana yang kita kenal sekarang. Peleburan ini bertujuan untuk meningkatkan efisiensi, efektivitas, dan koordinasi dalam pengelolaan keuangan dan aset daerah.
+
+Sejak pembentukannya, BKAD Kabupaten Seruyan terus berkembang dan beradaptasi dengan perubahan regulasi serta tuntutan pengelolaan keuangan daerah yang semakin kompleks. Berbagai pencapaian telah diraih, termasuk perolehan opini Wajar Tanpa Pengecualian (WTP) secara berturut-turut atas Laporan Keuangan Pemerintah Daerah, yang menunjukkan komitmen dan kemampuan BKAD dalam mengelola keuangan daerah secara transparan dan akuntabel.
+
+Hingga saat ini, BKAD Kabupaten Seruyan terus berinovasi dengan mengadopsi sistem informasi terpadu seperti e-budgeting dan e-reporting untuk mendukung tata kelola keuangan daerah yang lebih modern dan transparan.`,
+        },
+        {
+          slug: "visi-misi",
+          title: "Visi & Misi BKAD",
+          content: `**Visi**
+
+Terwujudnya Pengelolaan Keuangan dan Aset Daerah yang Profesional, Akuntabel, dan Transparan
+
+**Misi**
+
+1. Meningkatkan profesionalisme pengelolaan keuangan daerah melalui penerapan sistem dan prosedur yang sesuai dengan peraturan perundang-undangan serta standar akuntansi pemerintahan.
+
+2. Mengoptimalkan pemanfaatan dan pendayagunaan aset daerah untuk mendukung percepatan pembangunan dan peningkatan pelayanan publik di Kabupaten Seruyan.
+
+3. Meningkatkan kapasitas dan kompetensi sumber daya manusia di bidang pengelolaan keuangan dan aset daerah melalui pendidikan, pelatihan, dan pengembangan berkelanjutan.
+
+4. Meningkatkan kualitas pelayanan publik dalam bidang pengelolaan keuangan dan aset daerah yang cepat, tepat, dan mudah diakses oleh masyarakat.
+
+5. Mewujudkan transparansi dan akuntabilitas pengelolaan keuangan daerah melalui pelaporan yang tepat waktu, lengkap, dan dapat diakses oleh seluruh pemangku kepentingan.`,
+        },
+        {
+          slug: "tugas-fungsi",
+          title: "Tugas & Fungsi BKAD",
+          content: `**Tugas**
+
+Badan Keuangan dan Aset Daerah mempunyai tugas membantu Bupati dalam melaksanakan urusan pemerintahan daerah di bidang pengelolaan keuangan dan aset daerah.
+
+**Fungsi**
+
+1. Perumusan kebijakan teknis di bidang penyusunan Anggaran Pendapatan dan Belanja Daerah (APBD) serta pelaksanaan anggaran pendapatan dan belanja daerah.
+
+2. Pengelolaan Pendapatan Asli Daerah (PAD), Dana Perimbangan, dan Lain-Lain Pendapatan Daerah yang Sah sesuai dengan ketentuan peraturan perundang-undangan.
+
+3. Pelaksanaan inventarisasi, penilaian, dan pengadministrasian aset milik daerah serta penyelenggaraan tata usaha kebendaan daerah.
+
+4. Pengelolaan Pajak Bumi dan Bangunan Perkotaan dan Perdesaan (PBB-P2), Bea Perolehan Hak atas Tanah dan Bangunan (BPHTB), serta pajak dan retribusi daerah lainnya.
+
+5. Penyusunan laporan keuangan pemerintah daerah yang meliputi Laporan Realisasi Anggaran, Neraca, Laporan Perubahan Saldo, Laporan Arus Kas, dan Catatan atas Laporan Keuangan.
+
+6. Pelaksanaan perencanaan dan penganggaran keuangan daerah serta evaluasi terhadap pelaksanaan rencana dan anggaran tersebut.
+
+7. Pengelolaan barang milik daerah yang meliputi perencanaan kebutuhan, pengadaan, penggunaan, pemanfaatan, pengamanan, pemeliharaan, penghapusan, dan penatausahaan barang milik daerah.
+
+8. Pelaksanaan tugas lain yang diberikan oleh Bupati sesuai dengan tugas dan fungsinya.`,
+        },
+        {
+          slug: "struktur-organisasi",
+          title: "Struktur Organisasi BKAD",
+          content: `Badan Keuangan dan Aset Daerah (BKAD) Kabupaten Seruyan dipimpin oleh seorang Kepala Badan yang berada di bawah dan bertanggung jawab kepada Bupati melalui Sekretaris Daerah. Struktur organisasi BKAD terdiri dari:
+
+**Kepala Badan**
+Pimpinan tertinggi yang bertanggung jawab atas keseluruhan pelaksanaan tugas dan fungsi BKAD.
+
+**Sekretariat**
+Unit yang bertugas memberikan pelayanan administratif dan teknis kepada seluruh unit organisasi di lingkungan BKAD, meliputi tata usaha, kepegawaian, keuangan, dan perlengkapan.
+
+**Bidang-Bidang**
+
+1. **Bidang Anggaran** — Bertugas menyiapkan perumusan kebijakan teknis dan pelaksanaan di bidang penyusunan APBD, pelaksanaan anggaran, serta evaluasi kinerja keuangan daerah.
+
+2. **Bidang Pendapatan** — Bertugas menyiapkan perumusan kebijakan teknis dan pelaksanaan di bidang pengelolaan PAD, Dana Perimbangan, PBB-P2, BPHTB, serta pajak dan retribusi daerah lainnya.
+
+3. **Bidang Pengelolaan Aset** — Bertugas menyiapkan perumusan kebijakan teknis dan pelaksanaan di bidang inventarisasi, penilaian, pengadministrasian, dan pengelolaan barang milik daerah.
+
+4. **Bidang Pengelolaan Keuangan** — Bertugas menyiapkan perumusan kebijakan teknis dan pelaksanaan di bidang perencanaan dan penganggaran, penatausahaan keuangan, serta penyusunan laporan keuangan pemerintah daerah.`,
+          image: "/images/hero-1.png",
+        },
+      ],
+    });
+    console.log("✓ PageContent seeded");
+  }
+
+  // Seed Officials
+  const existingOfficials = await db.official.count();
+  if (existingOfficials === 0) {
+    await db.official.createMany({
+      data: [
+        {
+          name: "H. Sudarsono, S.Sos., M.Si",
+          position: "Kepala Badan",
+          photo: "/images/news-5.png",
+          nip: "196805121990031005",
+          order: 1,
+        },
+        {
+          name: "Hj. Siti Nurhaliza, S.E., M.M",
+          position: "Sekretaris Badan",
+          photo: "/images/layanan.png",
+          nip: "197203151995032001",
+          order: 2,
+        },
+        {
+          name: "Ahmad Fauzi, S.E",
+          position: "Kepala Bidang Anggaran",
+          photo: "/images/news-1.png",
+          nip: "198001102005011002",
+          order: 3,
+        },
+        {
+          name: "Dewi Safitri, S.E., M.Si",
+          position: "Kepala Bidang Pendapatan",
+          photo: "/images/news-2.png",
+          nip: "198205202006042003",
+          order: 4,
+        },
+        {
+          name: "Bambang Hartono, S.Sos",
+          position: "Kepala Bidang Pengelolaan Aset",
+          photo: "/images/news-3.png",
+          nip: "197508151998031004",
+          order: 5,
+        },
+        {
+          name: "Ratna Kusuma, S.E",
+          position: "Kepala Bidang Pengelolaan Keuangan",
+          photo: "/images/news-4.png",
+          nip: "198310252008012005",
+          order: 6,
+        },
+      ],
+    });
+    console.log("✓ Officials seeded");
+  }
+
+  // Seed Publications
+  const existingPublications = await db.publication.count();
+  if (existingPublications === 0) {
+    await db.publication.createMany({
+      data: [
+        {
+          title: "APBD Kabupaten Seruyan Tahun 2024",
+          description: "Anggaran Pendapatan dan Belanja Daerah Kabupaten Seruyan Tahun Anggaran 2024 yang telah ditetapkan melalui Peraturan Daerah.",
+          category: "laporan-keuangan",
+          coverImage: "/images/news-5.png",
+          date: "15 Januari 2024",
+          order: 1,
+        },
+        {
+          title: "Laporan Penyelenggaraan Pemerintahan Daerah (LPPD) 2024",
+          description: "Laporan Penyelenggaraan Pemerintahan Daerah Kabupaten Seruyan Tahun 2024 yang disampaikan kepada Gubernur Kalimantan Tengah.",
+          category: "laporan-keuangan",
+          coverImage: "/images/news-5.png",
+          date: "20 Maret 2024",
+          order: 2,
+        },
+        {
+          title: "Laporan Kinerja Instansi Pemerintah (LKIP) 2024",
+          description: "Laporan Kinerja Instansi Pemerintah Daerah Kabupaten Seruyan Tahun 2024 yang mencakup capaian sasaran dan indikator kinerja.",
+          category: "laporan-keuangan",
+          coverImage: "/images/news-5.png",
+          date: "10 April 2024",
+          order: 3,
+        },
+        {
+          title: "Capaian Sistem Pemerintahan Berbasis Elektronik (CSPD) 2024",
+          description: "Laporan Capaian Sistem Pemerintahan Berbasis Elektronik Kabupaten Seruyan Tahun 2024.",
+          category: "laporan-keuangan",
+          coverImage: "/images/news-5.png",
+          date: "5 Mei 2024",
+          order: 4,
+        },
+        {
+          title: "Buletin Keuangan Daerah Q4 2024",
+          description: "Buletin informasi keuangan daerah Kabupaten Seruyan untuk periode Oktober - Desember 2024.",
+          category: "buletin",
+          coverImage: "/images/news-5.png",
+          date: "15 Januari 2025",
+          order: 5,
+        },
+        {
+          title: "Buletin Keuangan Daerah Q3 2024",
+          description: "Buletin informasi keuangan daerah Kabupaten Seruyan untuk periode Juli - September 2024.",
+          category: "buletin",
+          coverImage: "/images/news-5.png",
+          date: "10 Oktober 2024",
+          order: 6,
+        },
+        {
+          title: "Data Pokok Pemerintahan Kabupaten Seruyan 2024",
+          description: "Data pokok pemerintahan Kabupaten Seruyan yang mencakup data kepegawaian, keuangan, dan perangkat daerah.",
+          category: "data-pokok",
+          coverImage: "/images/news-5.png",
+          date: "28 Februari 2024",
+          order: 7,
+        },
+        {
+          title: "Statistik Keuangan Daerah Kabupaten Seruyan",
+          description: "Publikasi statistik keuangan daerah yang menyajikan data dan informasi perkembangan keuangan daerah secara komprehensif.",
+          category: "data-pokok",
+          coverImage: "/images/news-5.png",
+          date: "15 Juni 2024",
+          order: 8,
+        },
+        {
+          title: "Peraturan Daerah APBD Tahun 2024",
+          description: "Peraturan Daerah Kabupaten Seruyan tentang Anggaran Pendapatan dan Belanja Daerah Tahun Anggaran 2024.",
+          category: "peraturan",
+          coverImage: "/images/news-5.png",
+          date: "20 Januari 2024",
+          order: 9,
+        },
+        {
+          title: "Peraturan Gubernur tentang Pengelolaan Aset Daerah",
+          description: "Peraturan Gubernur Kalimantan Tengah tentang Pedoman Pengelolaan Barang Milik Daerah di lingkungan Pemerintah Kabupaten/Kota.",
+          category: "peraturan",
+          coverImage: "/images/news-5.png",
+          date: "12 Agustus 2024",
+          order: 10,
+        },
+      ],
+    });
+    console.log("✓ Publications seeded");
+  }
+
+  // Seed Videos
+  const existingVideos = await db.video.count();
+  if (existingVideos === 0) {
+    await db.video.createMany({
+      data: [
+        {
+          title: "Sosialisasi E-Budgeting BKAD Kabupaten Seruyan",
+          url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          thumbnail: "/images/news-1.png",
+          date: "15 November 2024",
+          order: 1,
+        },
+        {
+          title: "Inventarisasi Aset Daerah Tahap II Tahun 2024",
+          url: "https://www.youtube.com/watch?v=9bZkp7q19f0",
+          thumbnail: "/images/news-3.png",
+          date: "8 September 2024",
+          order: 2,
+        },
+        {
+          title: "Workshop Penyusunan APBD 2025 BKAD Seruyan",
+          url: "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
+          thumbnail: "/images/news-5.png",
+          date: "20 Desember 2024",
+          order: 3,
+        },
+      ],
+    });
+    console.log("✓ Videos seeded");
+  }
+
+  // Seed Infographics
+  const existingInfographics = await db.infographic.count();
+  if (existingInfographics === 0) {
+    await db.infographic.createMany({
+      data: [
+        {
+          title: "Realisasi Pendapatan Daerah Kabupaten Seruyan 2024",
+          image: "/images/hero-1.png",
+          date: "15 Januari 2025",
+          order: 1,
+        },
+        {
+          title: "Komposisi APBD Kabupaten Seruyan 2024",
+          image: "/images/hero-2.png",
+          date: "20 Februari 2024",
+          order: 2,
+        },
+        {
+          title: "Perkembangan PAD Kabupaten Seruyan 2020-2024",
+          image: "/images/news-2.png",
+          date: "10 Maret 2024",
+          order: 3,
+        },
+        {
+          title: "Distribusi Aset Daerah Kabupaten Seruyan 2024",
+          image: "/images/news-4.png",
+          date: "5 April 2024",
+          order: 4,
+        },
+      ],
+    });
+    console.log("✓ Infographics seeded");
+  }
+
   console.log("🎉 Seeding complete!");
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import SiteHeader from "@/components/bkad/SiteHeader";
 import TopInfoBar from "@/components/bkad/TopInfoBar";
 import HeroSection from "@/components/bkad/HeroSection";
@@ -11,8 +11,119 @@ import InfografisSection from "@/components/bkad/InfografisSection";
 import AgendaGaleriSection from "@/components/bkad/AgendaGaleriSection";
 import SiteFooter from "@/components/bkad/SiteFooter";
 import AdminPanel from "@/components/bkad/AdminPanel";
+import ProfilPage from "@/components/bkad/pages/ProfilPage";
+import PejabatPage from "@/components/bkad/pages/PejabatPage";
+import PublikasiPage from "@/components/bkad/pages/PublikasiPage";
+import MediaPage from "@/components/bkad/pages/MediaPage";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
+
+function PageRouter() {
+  const { currentPage } = usePageRouter();
+
+  // Home page sections
+  if (currentPage === "home") {
+    return (
+      <>
+        <HeroSection />
+        <StatsSection />
+        <NewsSection />
+        <ServicesSection />
+        <InfografisSection />
+        <AgendaGaleriSection />
+      </>
+    );
+  }
+
+  // Profil pages
+  if (currentPage === "profil-sejarah") return <ProfilPage slug="sejarah" />;
+  if (currentPage === "profil-visi-misi") return <ProfilPage slug="visi-misi" />;
+  if (currentPage === "profil-tugas-fungsi") return <ProfilPage slug="tugas-fungsi" />;
+  if (currentPage === "profil-struktur") return <ProfilPage slug="struktur-organisasi" />;
+  if (currentPage === "profil-pejabat") return <PejabatPage />;
+
+  // Berita - scroll to section on home
+  if (currentPage === "berita") {
+    return (
+      <div className="py-12">
+        <div className="container mx-auto px-4">
+          <NewsSection />
+        </div>
+      </div>
+    );
+  }
+
+  // Informasi Publik
+  if (currentPage === "informasi-publik") {
+    return (
+      <div className="py-12">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Informasi Publik</h1>
+          <p className="text-gray-600 mb-8">Keterbukaan informasi publik sesuai UU No. 14 Tahun 2008</p>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <p className="text-gray-700 leading-relaxed">
+              Badan Keuangan dan Aset Daerah Kabupaten Seruyan berkomitmen untuk mengimplementasikan keterbukaan informasi publik sesuai dengan ketentuan Undang-Undang No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik. Masyarakat berhak memperoleh informasi mengenai pengelolaan keuangan dan aset daerah.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Publikasi pages
+  if (currentPage === "publikasi-laporan") return <PublikasiPage category="laporan-keuangan" />;
+  if (currentPage === "publikasi-buletin") return <PublikasiPage category="buletin" />;
+  if (currentPage === "publikasi-data-pokok") return <PublikasiPage category="data-pokok" />;
+  if (currentPage === "publikasi-peraturan") return <PublikasiPage category="peraturan" />;
+
+  // Media pages
+  if (currentPage === "media-foto") return <MediaPage type="foto" />;
+  if (currentPage === "media-video") return <MediaPage type="video" />;
+  if (currentPage === "media-infografis") return <MediaPage type="infografis" />;
+
+  // Layanan
+  if (currentPage === "layanan") {
+    return (
+      <div className="py-12">
+        <ServicesSection />
+      </div>
+    );
+  }
+
+  // Kontak
+  if (currentPage === "kontak") {
+    return (
+      <div className="py-12">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Hubungi Kami</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <h2 className="font-bold text-lg mb-4">Informasi Kontak</h2>
+              <div className="space-y-4 text-gray-600">
+                <p><strong>Alamat:</strong> Jl. Trans Kalimantan, Kuala Pembuang, Kab. Seruyan, Kalimantan Tengah 74211</p>
+                <p><strong>Telepon:</strong> (0532) 882123</p>
+                <p><strong>Email:</strong> bkad@seruyankab.go.id</p>
+                <p><strong>Jam Kerja:</strong> Senin - Jumat, 08:00 - 16:00 WIB</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <h2 className="font-bold text-lg mb-4">Kirim Pesan</h2>
+              <div className="space-y-3">
+                <input type="text" placeholder="Nama Lengkap" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm" />
+                <input type="email" placeholder="Email" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm" />
+                <textarea placeholder="Pesan" rows={4} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm" />
+                <Button className="bg-bkad-green hover:bg-bkad-dark text-white w-full">Kirim Pesan</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
 
 export default function Home() {
   const [showAdmin, setShowAdmin] = useState(false);
@@ -32,13 +143,8 @@ export default function Home() {
       <div style={{ display: showAdmin ? "none" : undefined }}>
         <TopInfoBar />
         <SiteHeader />
-        <main className="flex-1">
-          <HeroSection key={`hero-${refreshKey}`} />
-          <StatsSection key={`stats-${refreshKey}`} />
-          <NewsSection key={`news-${refreshKey}`} />
-          <ServicesSection key={`services-${refreshKey}`} />
-          <InfografisSection key={`infografis-${refreshKey}`} />
-          <AgendaGaleriSection key={`agenda-${refreshKey}`} />
+        <main className="flex-1" key={refreshKey}>
+          <PageRouter />
         </main>
         <SiteFooter />
 
@@ -49,7 +155,10 @@ export default function Home() {
           size="icon"
           aria-label="Buka Panel Admin"
         >
-          <Settings className="w-6 h-6 animate-spin hover:animate-none" style={{ animationDuration: "3s" }} />
+          <Settings
+            className="w-6 h-6 animate-spin hover:animate-none"
+            style={{ animationDuration: "3s" }}
+          />
         </Button>
       </div>
     </div>

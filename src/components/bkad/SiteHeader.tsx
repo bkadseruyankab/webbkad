@@ -22,74 +22,88 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
 
-const navItems = [
+interface NavChild {
+  label: string;
+  page: PageKey;
+}
+
+interface NavItem {
+  label: string;
+  page: PageKey;
+  icon: React.ElementType;
+  children: NavChild[] | null;
+}
+
+const navItems: NavItem[] = [
   {
     label: "Beranda",
-    href: "#beranda",
+    page: "home",
     icon: House,
     children: null,
   },
   {
     label: "Profil",
-    href: "#profil",
+    page: "profil-sejarah",
     icon: User,
     children: [
-      { label: "Sejarah", href: "#sejarah" },
-      { label: "Visi & Misi", href: "#visi-misi" },
-      { label: "Tugas & Fungsi", href: "#tugas-fungsi" },
-      { label: "Struktur Organisasi", href: "#struktur" },
-      { label: "Pejabat", href: "#pejabat" },
+      { label: "Sejarah", page: "profil-sejarah" },
+      { label: "Visi & Misi", page: "profil-visi-misi" },
+      { label: "Tugas & Fungsi", page: "profil-tugas-fungsi" },
+      { label: "Struktur Organisasi", page: "profil-struktur" },
+      { label: "Pejabat", page: "profil-pejabat" },
     ],
   },
   {
     label: "Berita",
-    href: "#berita",
+    page: "home",
     icon: Newspaper,
     children: null,
   },
   {
     label: "Informasi Publik",
-    href: "#informasi",
+    page: "informasi-publik",
     icon: Shield,
     children: null,
   },
   {
     label: "Publikasi",
-    href: "#publikasi",
+    page: "publikasi-laporan",
     icon: FileText,
     children: [
-      { label: "Laporan Keuangan", href: "#laporan-keuangan" },
-      { label: "Buletin", href: "#buletin" },
-      { label: "Data Pokok", href: "#data-pokok" },
-      { label: "Peraturan", href: "#peraturan" },
+      { label: "Laporan Keuangan", page: "publikasi-laporan" },
+      { label: "Buletin", page: "publikasi-buletin" },
+      { label: "Data Pokok", page: "publikasi-data-pokok" },
+      { label: "Peraturan", page: "publikasi-peraturan" },
     ],
   },
   {
     label: "Media",
-    href: "#media",
+    page: "media-foto",
     icon: Image,
     children: [
-      { label: "Foto", href: "#foto" },
-      { label: "Video", href: "#video" },
-      { label: "Infografis", href: "#infografis" },
+      { label: "Foto", page: "media-foto" },
+      { label: "Video", page: "media-video" },
+      { label: "Infografis", page: "media-infografis" },
     ],
   },
   {
     label: "Layanan",
-    href: "#layanan",
+    page: "layanan",
     icon: Users,
     children: null,
   },
   {
     label: "Kontak",
-    href: "#kontak",
+    page: "kontak",
     icon: Phone,
     children: null,
   },
 ];
 
 export default function SiteHeader() {
+  const { navigate, goHome, currentPage } = usePageRouter();
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -104,6 +118,12 @@ export default function SiteHeader() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleNavClick = (page: PageKey) => {
+    navigate(page);
+    setOpenDropdown(null);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <>
       {/* Top Header */}
@@ -115,7 +135,10 @@ export default function SiteHeader() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo & Title */}
-            <div className="flex items-center space-x-3">
+            <div
+              className="flex items-center space-x-3 cursor-pointer"
+              onClick={goHome}
+            >
               <div className="w-12 h-12 md:w-14 md:h-14 bg-bkad-green rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-lg md:text-xl">
                   BK
@@ -199,7 +222,7 @@ export default function SiteHeader() {
                                   : item.label
                               );
                             } else {
-                              setMobileMenuOpen(false);
+                              handleNavClick(item.page);
                             }
                           }}
                         >
@@ -220,14 +243,13 @@ export default function SiteHeader() {
                         {item.children && mobileDropdown === item.label && (
                           <div className="bg-gray-50">
                             {item.children.map((child) => (
-                              <a
+                              <button
                                 key={child.label}
-                                href={child.href}
-                                className="block px-8 py-2.5 text-sm text-gray-600 hover:bg-bkad-light hover:text-bkad-green transition-colors"
-                                onClick={() => setMobileMenuOpen(false)}
+                                className="block w-full text-left px-8 py-2.5 text-sm text-gray-600 hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                                onClick={() => handleNavClick(child.page)}
                               >
                                 {child.label}
-                              </a>
+                              </button>
                             ))}
                           </div>
                         )}
@@ -271,16 +293,20 @@ export default function SiteHeader() {
                 }
                 onMouseLeave={() => setOpenDropdown(null)}
               >
-                <a
-                  href={item.href}
-                  className={`flex items-center px-3 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap group`}
+                <button
+                  onClick={() => handleNavClick(item.page)}
+                  className={`flex items-center px-3 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap group ${
+                    !item.children && currentPage === item.page
+                      ? "bg-white/20"
+                      : ""
+                  }`}
                 >
                   <item.icon className="w-4 h-4 mr-2" />
                   <span>{item.label}</span>
                   {item.children && (
                     <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
                   )}
-                </a>
+                </button>
                 {item.children && (
                   <div
                     className={`absolute top-full left-0 w-56 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
@@ -291,13 +317,17 @@ export default function SiteHeader() {
                   >
                     <div className="py-2">
                       {item.children.map((child) => (
-                        <a
+                        <button
                           key={child.label}
-                          href={child.href}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-bkad-light hover:text-bkad-green transition-colors duration-150"
+                          onClick={() => handleNavClick(child.page)}
+                          className={`block w-full text-left px-4 py-2 text-sm hover:bg-bkad-light hover:text-bkad-green transition-colors duration-150 ${
+                            currentPage === child.page
+                              ? "bg-bkad-light text-bkad-green font-medium"
+                              : "text-gray-700"
+                          }`}
                         >
                           {child.label}
-                        </a>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -309,14 +339,16 @@ export default function SiteHeader() {
           {/* Tablet Navigation */}
           <div className="hidden md:flex lg:hidden overflow-x-auto py-1">
             {navItems.map((item) => (
-              <a
+              <button
                 key={item.label}
-                href={item.href}
-                className="flex items-center px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap"
+                onClick={() => handleNavClick(item.page)}
+                className={`flex items-center px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap ${
+                  currentPage === item.page ? "bg-white/20" : ""
+                }`}
               >
                 <item.icon className="w-4 h-4 mr-2" />
                 {item.label}
-              </a>
+              </button>
             ))}
           </div>
         </div>

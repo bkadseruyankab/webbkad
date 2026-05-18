@@ -20,6 +20,10 @@ import {
   Building2,
   TrendingUp,
   FileSpreadsheet,
+  FileText,
+  Users,
+  BookOpen,
+  Video,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -112,6 +116,55 @@ interface FinancialDataItem {
   realisasi: number;
 }
 
+interface PageContentItem {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  image: string;
+}
+
+interface OfficialItem {
+  id: string;
+  name: string;
+  position: string;
+  photo: string;
+  nip: string;
+  order: number;
+  active: boolean;
+}
+
+interface PublicationItem {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  fileUrl: string;
+  coverImage: string;
+  date: string;
+  order: number;
+  active: boolean;
+}
+
+interface VideoItem {
+  id: string;
+  title: string;
+  url: string;
+  thumbnail: string;
+  date: string;
+  order: number;
+  active: boolean;
+}
+
+interface InfographicItem {
+  id: string;
+  title: string;
+  image: string;
+  date: string;
+  order: number;
+  active: boolean;
+}
+
 type Section =
   | "dashboard"
   | "hero-slides"
@@ -120,7 +173,12 @@ type Section =
   | "gallery"
   | "stats"
   | "services"
-  | "financial-data";
+  | "financial-data"
+  | "page-content"
+  | "officials"
+  | "publications"
+  | "videos"
+  | "infographics";
 
 // ─── Icon Map ────────────────────────────────────────────────────────────────
 
@@ -172,6 +230,13 @@ const statusOptions = [
   { value: "completed", label: "Selesai" },
 ];
 
+const publicationCategoryOptions = [
+  { value: "laporan-keuangan", label: "Laporan Keuangan" },
+  { value: "buletin", label: "Buletin" },
+  { value: "data-pokok", label: "Data Pokok" },
+  { value: "peraturan", label: "Peraturan" },
+];
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function AdminPanel({ onClose }: { onClose: () => void }) {
@@ -188,6 +253,11 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   const [stats, setStats] = useState<StatItem[]>([]);
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [financialData, setFinancialData] = useState<FinancialDataItem[]>([]);
+  const [pageContents, setPageContents] = useState<PageContentItem[]>([]);
+  const [officials, setOfficials] = useState<OfficialItem[]>([]);
+  const [publications, setPublications] = useState<PublicationItem[]>([]);
+  const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [infographics, setInfographics] = useState<InfographicItem[]>([]);
 
   // ─── Modal States ─────────────────────────────────────────────────────────
 
@@ -201,7 +271,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
 
   const fetchData = useCallback(async () => {
     try {
-      const [heroRes, newsRes, agendaRes, galleryRes, statsRes, servicesRes, financeRes] =
+      const [heroRes, newsRes, agendaRes, galleryRes, statsRes, servicesRes, financeRes, pcRes, offRes, pubRes, vidRes, infoRes] =
         await Promise.all([
           fetch("/api/hero-slides?all=true"),
           fetch("/api/news?all=true"),
@@ -210,9 +280,14 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
           fetch("/api/stats?all=true"),
           fetch("/api/services?all=true"),
           fetch("/api/financial-data"),
+          fetch("/api/page-content"),
+          fetch("/api/officials?all=true"),
+          fetch("/api/publications?all=true"),
+          fetch("/api/videos?all=true"),
+          fetch("/api/infographics?all=true"),
         ]);
 
-      const [heroData, newsData, agendaData, galleryData, statsData, servicesData, financeData] =
+      const [heroData, newsData, agendaData, galleryData, statsData, servicesData, financeData, pcData, offData, pubData, vidData, infoData] =
         await Promise.all([
           heroRes.json(),
           newsRes.json(),
@@ -221,6 +296,11 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
           statsRes.json(),
           servicesRes.json(),
           financeRes.json(),
+          pcRes.json(),
+          offRes.json(),
+          pubRes.json(),
+          vidRes.json(),
+          infoRes.json(),
         ]);
 
       setHeroSlides(heroData.data || []);
@@ -230,6 +310,11 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       setStats(statsData.data || []);
       setServices(servicesData.data || []);
       setFinancialData(financeData.data || []);
+      setPageContents(pcData.data || []);
+      setOfficials(offData.data || []);
+      setPublications(pubData.data || []);
+      setVideos(vidData.data || []);
+      setInfographics(infoData.data || []);
     } catch (err) {
       console.error("Failed to fetch data:", err);
     }
@@ -251,6 +336,11 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       stats: "/api/stats",
       services: "/api/services",
       "financial-data": "/api/financial-data",
+      "page-content": "/api/page-content",
+      officials: "/api/officials",
+      publications: "/api/publications",
+      videos: "/api/videos",
+      infographics: "/api/infographics",
     };
     return map[section];
   };
@@ -351,6 +441,11 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     { key: "stats", label: "Statistik", icon: TrendingUp, count: stats.length },
     { key: "services", label: "Layanan", icon: Settings, count: services.length },
     { key: "financial-data", label: "Data Keuangan", icon: BarChart3, count: financialData.length },
+    { key: "page-content", label: "Konten Halaman", icon: FileText, count: pageContents.length },
+    { key: "officials", label: "Pejabat", icon: Users, count: officials.length },
+    { key: "publications", label: "Publikasi", icon: BookOpen, count: publications.length },
+    { key: "videos", label: "Video", icon: Video, count: videos.length },
+    { key: "infographics", label: "Infografis", icon: BarChart3, count: infographics.length },
   ];
 
   // ─── Render Form Fields ───────────────────────────────────────────────────
@@ -852,6 +947,316 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
           </>
         );
 
+      case "page-content":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Slug</label>
+              <Input
+                value={formData.slug || ""}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                placeholder="sejarah, visi-misi, tugas-fungsi, struktur-organisasi"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Judul</label>
+              <Input
+                value={formData.title || ""}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Judul halaman"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Konten</label>
+              <Textarea
+                value={formData.content || ""}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Konten halaman (mendukung HTML)"
+                rows={8}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">URL Gambar</label>
+              <Input
+                value={formData.image || ""}
+                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                placeholder="/images/sejarah.png"
+              />
+            </div>
+          </>
+        );
+
+      case "officials":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Nama</label>
+              <Input
+                value={formData.name || ""}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Nama pejabat"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Jabatan</label>
+              <Input
+                value={formData.position || ""}
+                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                placeholder="Kepala Badan"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">URL Foto</label>
+              <Input
+                value={formData.photo || ""}
+                onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
+                placeholder="/images/officials/photo.png"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">NIP</label>
+              <Input
+                value={formData.nip || ""}
+                onChange={(e) => setFormData({ ...formData, nip: e.target.value })}
+                placeholder="197001011990011001"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Urutan</label>
+                <Input
+                  type="number"
+                  value={formData.order || 0}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Status</label>
+                <Select
+                  value={formData.active ? "true" : "false"}
+                  onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Aktif</SelectItem>
+                    <SelectItem value="false">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        );
+
+      case "publications":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Judul</label>
+              <Input
+                value={formData.title || ""}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Judul publikasi"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Deskripsi</label>
+              <Textarea
+                value={formData.description || ""}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Deskripsi publikasi"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Kategori</label>
+              <Select
+                value={formData.category || ""}
+                onValueChange={(v) => setFormData({ ...formData, category: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {publicationCategoryOptions.map((c) => (
+                    <SelectItem key={c.value} value={c.value}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">URL File</label>
+              <Input
+                value={formData.fileUrl || ""}
+                onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
+                placeholder="/files/laporan-2024.pdf"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">URL Cover</label>
+              <Input
+                value={formData.coverImage || ""}
+                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                placeholder="/images/covers/laporan-2024.png"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Tanggal</label>
+                <Input
+                  value={formData.date || ""}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  placeholder="15 Januari 2025"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Urutan</label>
+                <Input
+                  type="number"
+                  value={formData.order || 0}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Status</label>
+                <Select
+                  value={formData.active ? "true" : "false"}
+                  onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Aktif</SelectItem>
+                    <SelectItem value="false">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        );
+
+      case "videos":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Judul</label>
+              <Input
+                value={formData.title || ""}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Judul video"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">URL Video</label>
+              <Input
+                value={formData.url || ""}
+                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                placeholder="https://www.youtube.com/watch?v=..."
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">URL Thumbnail</label>
+              <Input
+                value={formData.thumbnail || ""}
+                onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                placeholder="/images/video-thumb.png"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Tanggal</label>
+                <Input
+                  value={formData.date || ""}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  placeholder="15 Januari 2025"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Urutan</label>
+                <Input
+                  type="number"
+                  value={formData.order || 0}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Status</label>
+                <Select
+                  value={formData.active ? "true" : "false"}
+                  onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Aktif</SelectItem>
+                    <SelectItem value="false">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        );
+
+      case "infographics":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Judul</label>
+              <Input
+                value={formData.title || ""}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Judul infografis"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">URL Gambar</label>
+              <Input
+                value={formData.image || ""}
+                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                placeholder="/images/infografis-1.png"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Tanggal</label>
+                <Input
+                  value={formData.date || ""}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  placeholder="15 Januari 2025"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Urutan</label>
+                <Input
+                  type="number"
+                  value={formData.order || 0}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Status</label>
+                <Select
+                  value={formData.active ? "true" : "false"}
+                  onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Aktif</SelectItem>
+                    <SelectItem value="false">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        );
+
       default:
         return null;
     }
@@ -1265,6 +1670,314 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
           </div>
         );
 
+      case "page-content":
+        return (
+          <div className="space-y-3">
+            {pageContents.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4"
+              >
+                <div className="w-20 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                  {item.image ? (
+                    <img src={item.image} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge className="text-[10px] bg-gray-100 text-gray-600 font-mono">
+                      {item.slug}
+                    </Badge>
+                  </div>
+                  <h4 className="font-medium text-sm truncate">{item.title}</h4>
+                  <p className="text-xs text-gray-500 line-clamp-1">{item.content}</p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => openEditModal(item)}
+                  >
+                    <Pencil className="w-4 h-4 text-blue-600" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setDeleteConfirm(item.id)}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "officials":
+        return (
+          <div className="space-y-3">
+            {officials.map((item) => (
+              <div
+                key={item.id}
+                className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${
+                  !item.active ? "opacity-50" : ""
+                }`}
+              >
+                <div className="w-12 h-12 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
+                  {item.photo ? (
+                    <img src={item.photo} alt={item.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Users className="w-5 h-5 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm">{item.name}</h4>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge className="text-[10px] bg-bkad-light text-bkad-green">
+                      {item.position}
+                    </Badge>
+                    {item.nip && (
+                      <span className="text-xs text-gray-400">NIP: {item.nip}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Badge variant="outline" className="text-xs">
+                    #{item.order}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleToggleActive(item, "officials")}
+                  >
+                    {item.active ? (
+                      <ToggleRight className="w-5 h-5 text-bkad-green" />
+                    ) : (
+                      <ToggleLeft className="w-5 h-5 text-gray-400" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => openEditModal(item)}
+                  >
+                    <Pencil className="w-4 h-4 text-blue-600" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setDeleteConfirm(item.id)}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "publications":
+        return (
+          <div className="space-y-3">
+            {publications.map((item) => (
+              <div
+                key={item.id}
+                className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${
+                  !item.active ? "opacity-50" : ""
+                }`}
+              >
+                <div className="w-16 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                  {item.coverImage ? (
+                    <img src={item.coverImage} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <BookOpen className="w-6 h-6 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm line-clamp-1">{item.title}</h4>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge className="text-[10px] bg-amber-50 text-amber-700">
+                      {publicationCategoryOptions.find(c => c.value === item.category)?.label || item.category}
+                    </Badge>
+                    <span className="text-xs text-gray-400">{item.date}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleToggleActive(item, "publications")}
+                  >
+                    {item.active ? (
+                      <ToggleRight className="w-5 h-5 text-bkad-green" />
+                    ) : (
+                      <ToggleLeft className="w-5 h-5 text-gray-400" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => openEditModal(item)}
+                  >
+                    <Pencil className="w-4 h-4 text-blue-600" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setDeleteConfirm(item.id)}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "videos":
+        return (
+          <div className="space-y-3">
+            {videos.map((item) => (
+              <div
+                key={item.id}
+                className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${
+                  !item.active ? "opacity-50" : ""
+                }`}
+              >
+                <div className="w-24 h-14 bg-gray-100 rounded overflow-hidden flex-shrink-0 relative">
+                  {item.thumbnail ? (
+                    <img src={item.thumbnail} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Video className="w-6 h-6 text-gray-400" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-black/50 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm line-clamp-1">{item.title}</h4>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-gray-400 truncate max-w-[200px]">{item.url}</span>
+                    <span className="text-xs text-gray-400">{item.date}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleToggleActive(item, "videos")}
+                  >
+                    {item.active ? (
+                      <ToggleRight className="w-5 h-5 text-bkad-green" />
+                    ) : (
+                      <ToggleLeft className="w-5 h-5 text-gray-400" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => openEditModal(item)}
+                  >
+                    <Pencil className="w-4 h-4 text-blue-600" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setDeleteConfirm(item.id)}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "infographics":
+        return (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {infographics.map((item) => (
+              <div
+                key={item.id}
+                className={`bg-white rounded-lg border shadow-sm overflow-hidden ${
+                  !item.active ? "opacity-50" : ""
+                }`}
+              >
+                <div className="aspect-[3/4] bg-gray-100">
+                  {item.image ? (
+                    <img src={item.image} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <BarChart3 className="w-10 h-10 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <p className="text-sm font-medium truncate">{item.title}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-gray-400">{item.date}</span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => handleToggleActive(item, "infographics")}
+                      >
+                        {item.active ? (
+                          <ToggleRight className="w-4 h-4 text-bkad-green" />
+                        ) : (
+                          <ToggleLeft className="w-4 h-4 text-gray-400" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => openEditModal(item)}
+                      >
+                        <Pencil className="w-3.5 h-3.5 text-blue-600" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => setDeleteConfirm(item.id)}
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
       default:
         return null;
     }
@@ -1284,6 +1997,11 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
           { label: "Statistik", count: stats.length, icon: "📊", color: "bg-rose-50" },
           { label: "Layanan", count: services.length, icon: "⚙️", color: "bg-orange-50" },
           { label: "Data Keuangan", count: financialData.length, icon: "💰", color: "bg-sky-50" },
+          { label: "Konten Halaman", count: pageContents.length, icon: "📄", color: "bg-cyan-50" },
+          { label: "Pejabat", count: officials.length, icon: "👤", color: "bg-indigo-50" },
+          { label: "Publikasi", count: publications.length, icon: "📕", color: "bg-fuchsia-50" },
+          { label: "Video", count: videos.length, icon: "🎬", color: "bg-red-50" },
+          { label: "Infografis", count: infographics.length, icon: "📈", color: "bg-lime-50" },
           {
             label: "Total Item Aktif",
             count:
@@ -1291,7 +2009,11 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
               news.filter((n) => n.active).length +
               gallery.filter((g) => g.active).length +
               stats.filter((s) => s.active).length +
-              services.filter((s) => s.active).length,
+              services.filter((s) => s.active).length +
+              officials.filter((o) => o.active).length +
+              publications.filter((p) => p.active).length +
+              videos.filter((v) => v.active).length +
+              infographics.filter((i) => i.active).length,
             icon: "✅",
             color: "bg-emerald-50",
           },

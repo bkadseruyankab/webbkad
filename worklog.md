@@ -48,3 +48,33 @@ Stage Summary:
 - Toggle active/inactive status for items directly from the list
 - All homepage components now fetch data dynamically from API/Prisma
 - Lint checks pass, all API routes returning 200
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Add Profil, Publikasi, and Media pages with client-side routing
+
+Work Log:
+- Created Zustand page router store (usePageRouter) with 17 page keys
+- Added 5 new Prisma models: PageContent, Official, Publication, Video, Infographic
+- Pushed schema to database and seeded with initial data
+- Created 11 new API route files (page-content, officials, publications, videos, infographics with CRUD)
+- Built ProfilPage component (renders Sejarah, Visi Misi, Tugas Fungsi, Struktur Organisasi from DB)
+- Built PejabatPage component (renders officials list with photos and positions from DB)
+- Built PublikasiPage component (renders publications by category with search from DB)
+- Built MediaPage component (renders Foto gallery, Video grid, Infografis grid from DB)
+- Updated SiteHeader to use page router (client-side navigation instead of anchor links)
+- Updated page.tsx with PageRouter component that renders correct page based on Zustand state
+- Updated AdminPanel with 5 new content types (Konten Halaman, Pejabat, Publikasi, Video, Infografis)
+- All pages include breadcrumb navigation and sidebar menus
+- Media pages include image lightbox, video play overlay, and search functionality
+
+Stage Summary:
+- Full multi-page website with client-side routing (17 pages)
+- Profil: Sejarah, Visi & Misi, Tugas & Fungsi, Struktur Organisasi, Pejabat
+- Publikasi: Laporan Keuangan, Buletin, Data Pokok, Peraturan (with search)
+- Media: Foto (with lightbox), Video (with play overlay), Infografis
+- Additional: Informasi Publik, Layanan, Kontak pages
+- All pages fetch content from database via API
+- Admin panel can manage all 12 content types
+- Lint checks pass, all API routes returning 200
