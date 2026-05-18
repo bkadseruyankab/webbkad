@@ -33,22 +33,67 @@ interface PageRouterState {
   navigate: (page: PageKey) => void;
   navigateToDetail: (page: PageKey, id: string) => void;
   goHome: () => void;
+  _hydrateFromHash: () => void;
+}
+
+/**
+ * Parse the current URL hash to restore navigation state.
+ * Format: #page or #page/detailId
+ */
+function parseHash(): { page: PageKey; detailId: string | null } {
+  if (typeof window === "undefined") return { page: "home", detailId: null };
+
+  const hash = window.location.hash.slice(1); // Remove the leading #
+  if (!hash) return { page: "home", detailId: null };
+
+  const parts = hash.split("/");
+  const page = parts[0] as PageKey;
+  const detailId = parts[1] || null;
+
+  return { page, detailId };
+}
+
+/** Update the URL hash without triggering a hashchange event */
+function updateHash(page: PageKey, detailId: string | null) {
+  if (typeof window === "undefined") return;
+
+  const newHash = detailId ? `${page}/${detailId}` : page;
+  // Use replaceState to avoid creating extra history entries for in-page navigation
+  const newUrl = `${window.location.pathname}${window.location.search}#${newHash}`;
+  window.history.replaceState(null, "", newUrl);
 }
 
 export const usePageRouter = create<PageRouterState>((set) => ({
   currentPage: "home",
   detailId: null,
+
   navigate: (page: PageKey) => {
     set({ currentPage: page, detailId: null });
+    updateHash(page, null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   },
+
   navigateToDetail: (page: PageKey, id: string) => {
     set({ currentPage: page, detailId: id });
+    updateHash(page, id);
     window.scrollTo({ top: 0, behavior: "smooth" });
   },
+
   goHome: () => {
     set({ currentPage: "home", detailId: null });
+    updateHash("home", null);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  },
+
+  /**
+   * Hydrate the router state from the URL hash.
+   * Should be called once on mount in the root component.
+   */
+  _hydrateFromHash: () => {
+    const { page, detailId } = parseHash();
+    if (page !== "home" || detailId) {
+      set({ currentPage: page, detailId });
+    }
   },
 }));
 

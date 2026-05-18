@@ -194,18 +194,33 @@ function PageRouter() {
 }
 
 export default function Home() {
-  const [showAdmin, setShowAdmin] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("bkad_admin_open") === "true";
+    }
+    return false;
+  });
   const [refreshKey, setRefreshKey] = useState(0);
   const [adminSection, setAdminSection] = useState<string | undefined>(undefined);
   const { isAuthenticated, user, verify, logout } = useAuthStore();
   const { currentPage, navigate } = usePageRouter();
   const { completed: setupCompleted, checked: setupChecked, checkSetupStatus } = useSetupStore();
 
-  // Initialize auth state and check setup status on mount
+  // Initialize auth state, check setup status, and restore navigation from URL hash on mount
   useEffect(() => {
     verify();
     checkSetupStatus();
+    usePageRouter.getState()._hydrateFromHash();
   }, [verify, checkSetupStatus]);
+
+  // Persist admin panel open state to sessionStorage
+  useEffect(() => {
+    if (showAdmin) {
+      sessionStorage.setItem("bkad_admin_open", "true");
+    } else {
+      sessionStorage.removeItem("bkad_admin_open");
+    }
+  }, [showAdmin]);
 
   const handleAdminClose = useCallback(() => {
     setShowAdmin(false);

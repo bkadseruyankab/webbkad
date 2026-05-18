@@ -114,17 +114,7 @@ export default function HeroSection() {
               <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 leading-relaxed">
                 {slides[current].subtitle}
               </p>
-              <div className="flex space-x-3">
-                <Button className="bg-bkad-gold hover:bg-bkad-gold/90 text-white font-medium px-6 py-2.5">
-                  Selengkapnya
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/10 font-medium px-6 py-2.5"
-                >
-                  Hubungi Kami
-                </Button>
-              </div>
+
             </div>
           </div>
         </div>

@@ -90,3 +90,34 @@ Stage Summary:
 - For existing databases (already has users), the wizard is skipped
 - Admin can reset setup state from the dashboard to re-run the wizard
 - Setup creates: admin user (superadmin role), AppIdentity record, NavbarMenu + PageContent for selected menus, default categories
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Fix ImageUpload 404, remove hero banner buttons, fix admin refresh issue, fix hydration mismatches
+
+Work Log:
+- Created /api/upload/route.ts — file upload API that saves to public/uploads/ directory with unique filename generation, file type/size validation, and blob-files DB registration
+- Verified upload API works: curl test returns success with correct path
+- Removed "Selengkapnya" and "Hubungi Kami" buttons from HeroSection.tsx (lines 117-127)
+- Updated usePageRouter.ts to persist navigation state to URL hash:
+  - Added parseHash() and updateHash() helper functions
+  - navigate(), navigateToDetail(), goHome() now update URL hash via history.replaceState
+  - Added _hydrateFromHash() method to restore page state from URL hash on mount
+- Updated page.tsx to call _hydrateFromHash() on mount, so page state is restored after refresh
+- Added sessionStorage persistence for admin panel open state (bkad_admin_open key)
+  - showAdmin state initializes from sessionStorage
+  - useEffect syncs admin open state to sessionStorage
+  - Admin panel stays open after browser refresh
+- Fixed InfografisSection hydration mismatch:
+  - Added suppressHydrationWarning to chart container div
+  - Improved IntersectionObserver to disconnect after first intersection (one-shot)
+  - Avoided setMounted pattern that triggered lint error
+- Confirmed layout.tsx already has suppressHydrationWarning on body tag
+
+Stage Summary:
+- ImageUpload 404 error fixed: /api/upload route created, tested and working
+- Hero banner buttons removed: no more "Selengkapnya" or "Hubungi Kami"
+- Admin panel refresh issue fixed: navigation state persists via URL hash, admin panel state via sessionStorage
+- Hydration mismatches fixed: InfografisSection uses suppressHydrationWarning, layout.tsx body already has it
+- All lint checks pass, dev server running correctly

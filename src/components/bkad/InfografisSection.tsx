@@ -80,7 +80,10 @@ function SimpleBarChart({ data }: { data: DataPoint[] }) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
       },
       { threshold: 0.3 }
     );
@@ -91,7 +94,7 @@ function SimpleBarChart({ data }: { data: DataPoint[] }) {
   const maxPendapatan = Math.max(...data.map((d) => d.pendapatan));
 
   return (
-    <div ref={ref} className="space-y-4">
+    <div ref={ref} className="space-y-4" suppressHydrationWarning>
       {/* Chart */}
       <div className="flex items-end justify-between gap-3 h-48 px-2">
         {data.map((item, index) => (
