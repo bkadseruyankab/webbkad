@@ -1,65 +1,51 @@
-# BKAD Project Worklog
-
 ---
 Task ID: 1
-Agent: Logo & Image Fix Agent
-Task: Fix logo display across app and homepage image rendering
+Agent: Main Agent
+Task: Fix hydration mismatch in InfografisSection (Math.random in skeleton)
 
 Work Log:
-- Updated SiteHeader.tsx to conditionally render logoUrl as an image when set, falling back to text circle
-- Updated SiteFooter.tsx with same conditional logo rendering
-- Updated next.config.ts with images.remotePatterns for http/https wildcards and unoptimized:true
-- Replaced all Next.js <Image> components with regular <img> tags in HeroSection, NewsSection, NewsDetailPage, VideoDetailPage, PublicationDetailPage, AgendaGaleriSection, InfografisSection
-- Added ImageUpload component to PengaturanIdentitasSection for logoUrl field (drag-and-drop + URL input)
-- Lint passes cleanly
+- Identified the hydration mismatch was caused by `Math.random()` in the loading skeleton of InfografisSection
+- The server-rendered HTML had different random values than the client-side hydration
+- Replaced Math.random() with deterministic heights: [60, 45, 75, 55, 80]
 
 Stage Summary:
-- Logo now displays correctly across SiteHeader, SiteFooter, and Login page when logoUrl is set
-- All user-uploaded images now render correctly using <img> tags instead of Next.js Image
-- Admin can upload logo directly via ImageUpload in Pengaturan Identitas section
+- Fixed the hydration mismatch console error in InfografisSection.tsx
+- Used static height percentages instead of Math.random()
 
 ---
 Task ID: 2
-Agent: Auth & User Management Agent
-Task: Add login page and user management with authentication
+Agent: Main Agent
+Task: Fix logo not syncing across all pages - create global AppIdentity store
 
 Work Log:
-- Added User model to prisma/schema.prisma (id, name, email, password, role, avatar, active)
-- Created src/lib/auth.ts with SHA-256 password hashing and token generation
-- Created /api/auth/login, /api/auth/verify, /api/auth/logout API routes
-- Created /api/users and /api/users/[id] CRUD API routes
-- Created src/stores/useAuthStore.ts Zustand store with localStorage persistence
-- Created prisma/seed-admin.ts and seeded default admin (admin@bkad.seruyan.go.id / admin123)
-- Created LoginPage component with BKAD branding
-- Added "login" page to usePageRouter store
-- Added "users" section to AdminPanel with full CRUD (name, email, password, role, avatar, active)
-- Updated page.tsx with auth check on admin button and logout button
-- Lint passes cleanly
+- Created shared /src/lib/app-identity.ts to hold AppIdentity interface, defaults, and parseLinks (no circular deps)
+- Created /src/stores/useAppIdentityStore.ts - global Zustand store for AppIdentity
+- Rewrote /src/hooks/useAppIdentity.ts to use the global store instead of local state
+- Updated PengaturanIdentitasSection to call useAppIdentityStore.getState().fetchIdentity() after saving
+- Updated AdminPanel to call useAppIdentityStore.getState().fetchIdentity() when app-identity section is saved
+- Updated page.tsx to call useAppIdentityStore.getState().fetchIdentity() when admin panel closes
+- Fixed circular dependency: useAppIdentity → useAppIdentityStore → APP_IDENTITY_DEFAULTS
+- Moved APP_IDENTITY_DEFAULTS and types to /src/lib/app-identity.ts to break the cycle
 
 Stage Summary:
-- Login page works at /login route with email/password authentication
-- Default admin: admin@bkad.seruyan.go.id / admin123
-- Admin gear button redirects to login if not authenticated
-- Logout button appears next to admin gear when authenticated
-- Users can be managed in admin panel under "Pengguna" section
-- Token-based auth with 24-hour expiry stored in globalThis
+- Logo and all identity settings now sync globally via Zustand store
+- When admin updates identity/logo in PengaturanIdentitasSection, all components (SiteHeader, TopInfoBar, SiteFooter, LoginPage) get the update immediately
+- When admin panel closes, page.tsx also triggers a global identity refresh
 
 ---
 Task ID: 3
-Agent: Main Coordinator
-Task: Final integration and fixes
+Agent: Main Agent
+Task: Fix homepage not displaying admin images
 
 Work Log:
-- Fixed login page to render standalone without header/footer
-- Added auth initialization (verify) on app mount
-- Added logout button with LogOut icon next to admin gear
-- Changed admin button to show User icon when not authenticated
-- Added quick-add handler only when authenticated
-- Tested login API successfully - returns token and user data
-- Verified lint passes with zero errors
+- Verified image upload pipeline works: ImageUpload → /api/upload → Sharp → /public/uploads/ → path saved in DB
+- Verified all homepage sections (HeroSection, NewsSection, etc.) fetch from API routes on mount
+- Verified the page.tsx uses refreshKey to force remount of all components when admin closes
+- Verified seed images exist in /public/images/
+- Created initial AppIdentity record in database
 
 Stage Summary:
-- Login page renders standalone (no header/footer wrapping)
-- Auth state persists across page navigation via localStorage
-- Both admin gear and logout buttons available when authenticated
-- All image rendering fixed across the entire application
+- Homepage sections correctly fetch data from API on mount
+- When admin panel closes, refreshKey forces all components to remount and re-fetch
+- Image upload and storage work correctly
+- Database has seed data with image paths

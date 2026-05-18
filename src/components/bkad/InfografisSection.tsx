@@ -251,10 +251,10 @@ export default function InfografisSection() {
             {loading ? (
               <div className="space-y-4 animate-pulse">
                 <div className="flex items-end justify-between gap-3 h-48 px-2">
-                  {[1, 2, 3, 4, 5].map((i) => (
+                  {[60, 45, 75, 55, 80].map((h, i) => (
                     <div key={i} className="flex-1 flex gap-1 items-end h-40">
-                      <div className="flex-1 bg-gray-200 rounded-t" style={{ height: `${Math.random() * 80 + 20}%` }} />
-                      <div className="flex-1 bg-gray-200 rounded-t" style={{ height: `${Math.random() * 80 + 20}%` }} />
+                      <div className="flex-1 bg-gray-200 rounded-t" style={{ height: `${h}%` }} />
+                      <div className="flex-1 bg-gray-200 rounded-t" style={{ height: `${h - 15}%` }} />
                     </div>
                   ))}
                 </div>

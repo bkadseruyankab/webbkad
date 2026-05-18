@@ -27,6 +27,7 @@ import { Settings, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
 
 // Map quick-add section strings from SiteHeader to AdminPanel Section type
 const quickAddSectionMap: Record<string, string> = {
@@ -205,6 +206,8 @@ export default function Home() {
     setShowAdmin(false);
     setAdminSection(undefined);
     setRefreshKey((prev) => prev + 1);
+    // Refresh global identity store in case admin changed logo/colors/etc.
+    useAppIdentityStore.getState().fetchIdentity();
   }, []);
 
   const handleQuickAdd = useCallback((section: string) => {

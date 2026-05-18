@@ -24,7 +24,8 @@ import { ImageUpload } from "@/components/bkad/ImageUpload";
 import {
   APP_IDENTITY_DEFAULTS,
   type AppIdentity,
-} from "@/hooks/useAppIdentity";
+} from "@/lib/app-identity";
+import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
 
 /* -------------------------------------------------------------------------- */
 /*  Section key type & defaults                                               */
@@ -261,6 +262,9 @@ export default function PengaturanIdentitasSection() {
         });
         if (json.data) {
           setForm({ ...APP_IDENTITY_DEFAULTS, ...json.data });
+          // Update global store so all components (header, footer, etc.) get the new identity immediately
+          useAppIdentityStore.getState().resolved = { ...APP_IDENTITY_DEFAULTS, ...json.data };
+          useAppIdentityStore.getState().fetchIdentity();
         }
       } else {
         throw new Error(json.error || "Unknown error");

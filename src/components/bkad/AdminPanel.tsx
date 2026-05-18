@@ -48,6 +48,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/bkad/ImageUpload";
 import PengaturanIdentitasSection from "@/components/bkad/PengaturanIdentitasSection";
 import { blobStore } from "@/lib/blob-store";
+import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -478,6 +479,10 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       setEditItem(null);
       setFormData({});
       fetchData();
+      // Refresh global identity store when app-identity is saved
+      if (activeSection === "app-identity") {
+        useAppIdentityStore.getState().fetchIdentity();
+      }
     } catch {
       toast({
         title: "Gagal",
