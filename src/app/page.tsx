@@ -44,6 +44,7 @@ const quickAddSectionMap: Record<string, string> = {
   video: "videos",
   infografis: "infographics",
   kategori: "categories",
+  "navbar-menus": "navbar-menus",
 };
 
 function PageRouter() {

@@ -130,8 +130,15 @@ interface PageContentItem {
   id: string;
   slug: string;
   title: string;
+  description: string;
   content: string;
+  heroImage: string;
   image: string;
+  metaTitle: string;
+  metaDescription: string;
+  metaKeywords: string;
+  published: boolean;
+  order: number;
 }
 
 interface OfficialItem {
@@ -212,9 +219,26 @@ interface UserItem {
   updatedAt: string;
 }
 
+interface NavbarMenuItem {
+  id: string;
+  label: string;
+  slug: string;
+  parentId: string | null;
+  icon: string;
+  order: number;
+  active: boolean;
+  isDynamic: boolean;
+  externalUrl: string;
+  openInNewTab: boolean;
+  children: NavbarMenuItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 type Section =
   | "dashboard"
   | "categories"
+  | "navbar-menus"
   | "hero-slides"
   | "news"
   | "agenda"
@@ -310,6 +334,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
   const [laporan, setLaporan] = useState<LaporanItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [users, setUsers] = useState<UserItem[]>([]);
+  const [navbarMenus, setNavbarMenus] = useState<NavbarMenuItem[]>([]);
 
   // ─── Blob Store Status ────────────────────────────────────────────────────
 
@@ -359,17 +384,18 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
         fetch("/api/laporan?all=true"),
         fetch("/api/categories"),
         fetch("/api/users"),
+        fetch("/api/navbar-menus?all=true"),
       ]);
 
       const [
         heroData, newsData, agendaData, galleryData, statsData,
         servicesData, financeData, pcData, offData, pubData,
-        vidData, infoData, lapData, catData, usersData,
+        vidData, infoData, lapData, catData, usersData, navMenuData,
       ] = await Promise.all([
         heroRes.json(), newsRes.json(), agendaRes.json(), galleryRes.json(),
         statsRes.json(), servicesRes.json(), financeRes.json(), pcRes.json(),
         offRes.json(), pubRes.json(), vidRes.json(), infoRes.json(),
-        lapRes.json(), catRes.json(), usersRes.json(),
+        lapRes.json(), catRes.json(), usersRes.json(), navMenuRes.json(),
       ]);
 
       setHeroSlides(heroData.data || []);
@@ -387,6 +413,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       setLaporan(lapData.data || []);
       setCategories(catData.data || []);
       setUsers(usersData.data || []);
+      setNavbarMenus(navMenuData.data || []);
     } catch (err) {
       console.error("Failed to fetch data:", err);
     }
@@ -424,6 +451,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     const map: Record<Section, string> = {
       dashboard: "",
       categories: "/api/categories",
+      "navbar-menus": "/api/navbar-menus",
       "hero-slides": "/api/hero-slides",
       news: "/api/news",
       agenda: "/api/agenda",
@@ -483,6 +511,10 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       if (activeSection === "app-identity") {
         useAppIdentityStore.getState().fetchIdentity();
       }
+      // Dispatch event to refresh navbar menus in SiteHeader
+      if (activeSection === "navbar-menus") {
+        window.dispatchEvent(new CustomEvent("refresh-nav-menus"));
+      }
     } catch {
       toast({
         title: "Gagal",
@@ -504,6 +536,10 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       toast({ title: "Berhasil", description: "Data berhasil dihapus" });
       setDeleteConfirm(null);
       fetchData();
+      // Dispatch event to refresh navbar menus in SiteHeader
+      if (activeSection === "navbar-menus") {
+        window.dispatchEvent(new CustomEvent("refresh-nav-menus"));
+      }
     } catch {
       toast({
         title: "Gagal",
@@ -543,6 +579,13 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     if (section === "categories") {
       base.module = "general";
       base.color = "#0D6B3F";
+    }
+    if (section === "navbar-menus") {
+      base.active = true;
+      base.isDynamic = true;
+      base.icon = "FileText";
+      base.openInNewTab = false;
+      base.externalUrl = "";
     }
     return base;
   };
@@ -632,6 +675,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
   const menuItems: { key: Section; label: string; icon: React.ElementType; count: number }[] = [
     { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, count: 0 },
     { key: "categories", label: "Kategori", icon: Tag, count: categories.length },
+    { key: "navbar-menus", label: "Menu Navbar", icon: Building2, count: navbarMenus.length },
     { key: "hero-slides", label: "Hero Banner", icon: ImageIcon, count: heroSlides.length },
     { key: "news", label: "Berita", icon: Newspaper, count: news.length },
     { key: "agenda", label: "Agenda", icon: Calendar, count: agenda.length },
@@ -651,8 +695,173 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
 
   // ─── Render Form Fields ───────────────────────────────────────────────────
 
+  const navbarMenuIconOptions = [
+    { value: "FileText", label: "Dokumen" },
+    { value: "House", label: "Beranda" },
+    { value: "User", label: "Pengguna" },
+    { value: "Newspaper", label: "Berita" },
+    { value: "Shield", label: "Perlindungan" },
+    { value: "Image", label: "Gambar" },
+    { value: "Users", label: "Pengguna (Jamak)" },
+    { value: "Phone", label: "Telepon" },
+    { value: "MessageSquare", label: "Pesan" },
+    { value: "BookOpen", label: "Buku" },
+    { value: "Video", label: "Video" },
+    { value: "BarChart3", label: "Grafik" },
+    { value: "Globe", label: "Globe" },
+    { value: "MapPin", label: "Lokasi" },
+    { value: "Mail", label: "Surat" },
+    { value: "Info", label: "Info" },
+    { value: "Landmark", label: "Landmark" },
+    { value: "Building2", label: "Gedung" },
+    { value: "Briefcase", label: "Kerja" },
+    { value: "ClipboardList", label: "Daftar" },
+    { value: "FileCheck", label: "File Cek" },
+    { value: "FolderOpen", label: "Folder" },
+    { value: "HelpCircle", label: "Bantuan" },
+  ];
+
   const renderFormFields = () => {
     switch (activeSection) {
+      case "navbar-menus":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Label Menu</label>
+              <Input
+                value={String(formData.label || "")}
+                onChange={(e) => {
+                  const label = e.target.value;
+                  const autoSlug = label.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
+                  setFormData({ ...formData, label, slug: !editItem ? autoSlug : formData.slug });
+                }}
+                placeholder="Contoh: Galeri"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Slug (URL)</label>
+              <Input
+                value={String(formData.slug || "")}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                placeholder="Contoh: galeri (otomatis dari label)"
+              />
+              <p className="text-xs text-gray-400 mt-1">URL halaman: /{String(formData.slug || "slug")}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Ikon</label>
+              <Select
+                value={String(formData.icon || "FileText")}
+                onValueChange={(v) => setFormData({ ...formData, icon: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih ikon" />
+                </SelectTrigger>
+                <SelectContent>
+                  {navbarMenuIconOptions.map((i) => (
+                    <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Menu Induk (Sub-menu dari)</label>
+              <Select
+                value={String(formData.parentId || "none")}
+                onValueChange={(v) => setFormData({ ...formData, parentId: v === "none" ? null : v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Tidak ada (menu utama)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Tidak ada (menu utama)</SelectItem>
+                  {navbarMenus.filter((m) => !m.parentId).map((m) => (
+                    <SelectItem key={m.id} value={m.id}>{m.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Urutan</label>
+                <Input
+                  type="number"
+                  value={Number(formData.order) || 0}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Status</label>
+                <Select
+                  value={formData.active ? "true" : "false"}
+                  onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Aktif</SelectItem>
+                    <SelectItem value="false">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Tipe Halaman</label>
+                <Select
+                  value={formData.isDynamic ? "dynamic" : "external"}
+                  onValueChange={(v) => setFormData({ ...formData, isDynamic: v === "dynamic" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="dynamic">Halaman Dinamis (Auto-buat halaman)</SelectItem>
+                    <SelectItem value="external">Tautan Eksternal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Buka di Tab Baru</label>
+                <Select
+                  value={formData.openInNewTab ? "true" : "false"}
+                  onValueChange={(v) => setFormData({ ...formData, openInNewTab: v === "true" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Ya</SelectItem>
+                    <SelectItem value="false">Tidak</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {!formData.isDynamic && (
+              <div>
+                <label className="text-sm font-medium mb-1 block">URL Eksternal</label>
+                <Input
+                  value={String(formData.externalUrl || "")}
+                  onChange={(e) => setFormData({ ...formData, externalUrl: e.target.value })}
+                  placeholder="https://example.com"
+                />
+              </div>
+            )}
+            {formData.isDynamic && !formData.parentId && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-sm">
+                <p className="font-medium text-emerald-800 mb-1">✨ Halaman Otomatis</p>
+                <p className="text-emerald-700">Saat menyimpan, sistem akan otomatis membuat:</p>
+                <ul className="list-disc list-inside mt-1 text-emerald-600">
+                  <li>Route halaman: <code className="bg-emerald-100 px-1 rounded">/{String(formData.slug || "slug")}</code></li>
+                  <li>Halaman dengan Hero, Breadcrumb, Konten, Footer</li>
+                  <li>SEO metadata otomatis</li>
+                  <li>Link navbar otomatis muncul</li>
+                </ul>
+              </div>
+            )}
+          </>
+        );
+
       case "categories":
         return (
           <>
@@ -1811,6 +2020,74 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     switch (activeSection) {
       case "app-identity":
         return <PengaturanIdentitasSection />;
+      case "navbar-menus":
+        return (
+          <div className="space-y-3">
+            {navbarMenus.length === 0 && (
+              <div className="text-center py-10 text-gray-400">
+                <Building2 className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p>Belum ada menu navbar</p>
+                <p className="text-xs mt-1">Tambahkan menu baru untuk membuat halaman otomatis</p>
+              </div>
+            )}
+            {navbarMenus.map((menu) => (
+              <div key={menu.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900 text-sm">{menu.label}</h3>
+                      <p className="text-xs text-gray-400">/{menu.slug}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={menu.active ? "default" : "secondary"} className={menu.active ? "bg-emerald-100 text-emerald-700" : ""}>
+                      {menu.active ? "Aktif" : "Nonaktif"}
+                    </Badge>
+                    {menu.isDynamic && (
+                      <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50">
+                        Dinamis
+                      </Badge>
+                    )}
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(menu as unknown as Record<string, unknown>)}>
+                      <Eye className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditModal(menu as unknown as Record<string, unknown>)}>
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => setDeleteConfirm(menu.id)}>
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+                {/* Children (sub-menus) */}
+                {menu.children && menu.children.length > 0 && (
+                  <div className="ml-11 mt-2 space-y-2">
+                    {menu.children.map((child) => (
+                      <div key={child.id} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                          <span className="text-sm text-gray-700">{child.label}</span>
+                          <span className="text-xs text-gray-400">/{child.slug}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEditModal(child as unknown as Record<string, unknown>)}>
+                            <Pencil className="w-3 h-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => setDeleteConfirm(child.id)}>
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        );
       case "categories":
         return (
           <div className="space-y-3">

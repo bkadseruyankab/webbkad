@@ -136,13 +136,38 @@ model FinancialData {
 }
 
 model PageContent {
-  id        String   @id @default(cuid())
-  slug      String   @unique
-  title     String
-  content   String
-  image     String   @default("")
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  description     String   @default("")
+  content         String
+  heroImage       String   @default("")
+  image           String   @default("")
+  metaTitle       String   @default("")
+  metaDescription String   @default("")
+  metaKeywords    String   @default("")
+  published       Boolean  @default(true)
+  order           Int      @default(0)
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+}
+
+model NavbarMenu {
+  id            String   @id @default(cuid())
+  label         String
+  slug          String   @unique
+  parentId      String?
+  icon          String   @default("FileText")
+  order         Int      @default(0)
+  active        Boolean  @default(true)
+  isDynamic     Boolean  @default(true)
+  externalUrl   String   @default("")
+  openInNewTab  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  parent        NavbarMenu?  @relation("NavbarMenuHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children      NavbarMenu[] @relation("NavbarMenuHierarchy")
 }
 
 model Official {

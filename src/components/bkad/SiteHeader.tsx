@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Menu,
   X,
@@ -16,7 +17,6 @@ import {
   Users,
   Phone,
   MessageSquare,
-  NewspaperClipping,
   CalendarDays,
   Camera,
   LayoutDashboard,
@@ -28,6 +28,18 @@ import {
   Video,
   PieChart,
   Tag,
+  Globe,
+  MapPin,
+  Mail,
+  HelpCircle,
+  Info,
+  Landmark,
+  Building2,
+  Briefcase,
+  ClipboardList,
+  FileCheck,
+  FolderOpen,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +58,51 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
 import { useAppIdentity } from "@/hooks/useAppIdentity";
+
+/* -------------------------------------------------------------------------- */
+/*  Icon resolver                                                             */
+/* -------------------------------------------------------------------------- */
+
+const iconComponentMap: Record<string, React.ElementType> = {
+  FileText, House, User, Newspaper, Shield, Image, Users, Phone,
+  MessageSquare, CalendarDays, Camera, LayoutDashboard, BarChart3,
+  CreditCard, FileCode, UserCheck, BookOpen, Video, PieChart, Tag,
+  Globe, MapPin, Mail, HelpCircle, Info, Landmark, Building2,
+  Briefcase, ClipboardList, FileCheck, FolderOpen, Settings,
+};
+
+function resolveIcon(iconName: string): React.ElementType {
+  return iconComponentMap[iconName] || FileText;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Types for dynamic menus                                                   */
+/* -------------------------------------------------------------------------- */
+
+interface DynamicNavChild {
+  id: string;
+  label: string;
+  slug: string;
+  icon: string;
+  order: number;
+  active: boolean;
+  isDynamic: boolean;
+  externalUrl: string;
+  openInNewTab: boolean;
+}
+
+interface DynamicNavItem {
+  id: string;
+  label: string;
+  slug: string;
+  icon: string;
+  order: number;
+  active: boolean;
+  isDynamic: boolean;
+  externalUrl: string;
+  openInNewTab: boolean;
+  children: DynamicNavChild[];
+}
 
 /* -------------------------------------------------------------------------- */
 /*  Quick-Add module list                                                     */
@@ -71,10 +128,11 @@ const quickAddModules: QuickAddModule[] = [
   { label: "Video", section: "video", icon: Video },
   { label: "Infografis", section: "infografis", icon: PieChart },
   { label: "Kategori", section: "kategori", icon: Tag },
+  { label: "Menu Navbar", section: "navbar-menus", icon: Menu },
 ];
 
 /* -------------------------------------------------------------------------- */
-/*  Navigation items                                                          */
+/*  Static navigation items (built-in SPA pages)                              */
 /* -------------------------------------------------------------------------- */
 
 interface NavChild {
@@ -87,14 +145,16 @@ interface NavItem {
   page: PageKey;
   icon: React.ElementType;
   children: NavChild[] | null;
+  isStatic?: boolean;
 }
 
-const navItems: NavItem[] = [
+const staticNavItems: NavItem[] = [
   {
     label: "Beranda",
     page: "home",
     icon: House,
     children: null,
+    isStatic: true,
   },
   {
     label: "Profil",
@@ -107,18 +167,21 @@ const navItems: NavItem[] = [
       { label: "Struktur Organisasi", page: "profil-struktur" },
       { label: "Pejabat", page: "profil-pejabat" },
     ],
+    isStatic: true,
   },
   {
     label: "Berita",
-    page: "home",
+    page: "berita",
     icon: Newspaper,
     children: null,
+    isStatic: true,
   },
   {
     label: "Informasi Publik",
     page: "informasi-publik",
     icon: Shield,
     children: null,
+    isStatic: true,
   },
   {
     label: "Publikasi",
@@ -130,6 +193,7 @@ const navItems: NavItem[] = [
       { label: "Data Pokok", page: "publikasi-data-pokok" },
       { label: "Peraturan", page: "publikasi-peraturan" },
     ],
+    isStatic: true,
   },
   {
     label: "Media",
@@ -140,12 +204,14 @@ const navItems: NavItem[] = [
       { label: "Video", page: "media-video" },
       { label: "Infografis", page: "media-infografis" },
     ],
+    isStatic: true,
   },
   {
     label: "Layanan",
     page: "layanan",
     icon: Users,
     children: null,
+    isStatic: true,
   },
   {
     label: "Laporan",
@@ -155,12 +221,14 @@ const navItems: NavItem[] = [
       { label: "Buat Laporan", page: "laporan" },
       { label: "Dashboard Laporan", page: "laporan-dashboard" },
     ],
+    isStatic: true,
   },
   {
     label: "Kontak",
     page: "kontak",
     icon: Phone,
     children: null,
+    isStatic: true,
   },
 ];
 
@@ -169,7 +237,6 @@ const navItems: NavItem[] = [
 /* -------------------------------------------------------------------------- */
 
 interface SiteHeaderProps {
-  /** Called when an admin clicks a module in the Quick-Add dropdown */
   onQuickAdd?: (section: string) => void;
 }
 
@@ -182,6 +249,25 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [dynamicMenus, setDynamicMenus] = useState<DynamicNavItem[]>([]);
+
+  // Fetch dynamic menus from API
+  useEffect(() => {
+    let cancelled = false;
+    const doFetch = async () => {
+      try {
+        const res = await fetch("/api/navbar-menus");
+        const data = await res.json();
+        if (data.data && !cancelled) {
+          setDynamicMenus(data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch dynamic menus:", err);
+      }
+    };
+    doFetch();
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -196,6 +282,54 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
     setOpenDropdown(null);
     setMobileMenuOpen(false);
   };
+
+  // Refresh menus function (exposed via event)
+  useEffect(() => {
+    const handleRefresh = async () => {
+      try {
+        const res = await fetch("/api/navbar-menus");
+        const data = await res.json();
+        if (data.data) {
+          setDynamicMenus(data.data);
+        }
+      } catch (err) {
+        console.error("Failed to refresh dynamic menus:", err);
+      }
+    };
+    window.addEventListener("refresh-nav-menus", handleRefresh);
+    return () => window.removeEventListener("refresh-nav-menus", handleRefresh);
+  }, []);
+
+  // Combined nav items: static + dynamic
+  const allNavItems = [...staticNavItems];
+
+  // Add dynamic menus after static ones
+  for (const dm of dynamicMenus) {
+    const IconComp = resolveIcon(dm.icon);
+    if (dm.children && dm.children.length > 0) {
+      // Dynamic menu with children
+      const firstChild = dm.children[0];
+      allNavItems.push({
+        label: dm.label,
+        page: firstChild?.isDynamic ? "home" as PageKey : (firstChild?.slug as PageKey || "home"),
+        icon: IconComp,
+        children: dm.children.map((child) => ({
+          label: child.label,
+          page: (child.isDynamic ? "home" : child.slug) as PageKey,
+        })),
+        isStatic: false,
+      });
+    } else {
+      // Dynamic menu without children
+      allNavItems.push({
+        label: dm.label,
+        page: "home" as PageKey,
+        icon: IconComp,
+        children: null,
+        isStatic: false,
+      });
+    }
+  }
 
   return (
     <>
@@ -353,37 +487,51 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                     </div>
                   </div>
                   <nav className="overflow-y-auto max-h-[calc(100vh-100px)]">
-                    {navItems.map((item) => (
-                      <div key={item.label}>
-                        <button
-                          className="flex items-center justify-between w-full px-4 py-3 text-gray-700 hover:bg-bkad-light hover:text-bkad-green transition-colors"
-                          onClick={() => {
-                            if (item.children) {
-                              setMobileDropdown(
-                                mobileDropdown === item.label
-                                  ? null
-                                  : item.label
-                              );
-                            } else {
-                              handleNavClick(item.page);
-                            }
-                          }}
-                        >
-                          <span className="flex items-center">
+                    {allNavItems.map((item, idx) => (
+                      <div key={`${item.label}-${idx}`}>
+                        {item.isStatic ? (
+                          // Static SPA menu item
+                          <button
+                            className="flex items-center justify-between w-full px-4 py-3 text-gray-700 hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                            onClick={() => {
+                              if (item.children) {
+                                setMobileDropdown(
+                                  mobileDropdown === item.label
+                                    ? null
+                                    : item.label
+                                );
+                              } else {
+                                handleNavClick(item.page);
+                              }
+                            }}
+                          >
+                            <span className="flex items-center">
+                              <item.icon className="w-4 h-4 mr-3" />
+                              {item.label}
+                            </span>
+                            {item.children && (
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform ${
+                                  mobileDropdown === item.label
+                                    ? "rotate-180"
+                                    : ""
+                                }`}
+                              />
+                            )}
+                          </button>
+                        ) : (
+                          // Dynamic menu item - links to /[slug]
+                          <Link
+                            href={`/${dynamicMenus.find(dm => dm.label === item.label)?.slug || item.label.toLowerCase()}`}
+                            className="flex items-center px-4 py-3 text-gray-700 hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
                             <item.icon className="w-4 h-4 mr-3" />
                             {item.label}
-                          </span>
-                          {item.children && (
-                            <ChevronDown
-                              className={`w-4 h-4 transition-transform ${
-                                mobileDropdown === item.label
-                                  ? "rotate-180"
-                                  : ""
-                              }`}
-                            />
-                          )}
-                        </button>
-                        {item.children && mobileDropdown === item.label && (
+                          </Link>
+                        )}
+                        {/* Children for static items */}
+                        {item.isStatic && item.children && mobileDropdown === item.label && (
                           <div className="bg-gray-50">
                             {item.children.map((child) => (
                               <button
@@ -430,72 +578,150 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
       >
         <div className="container mx-auto px-4">
           <div className="hidden lg:flex items-center justify-center w-full">
-            {navItems.map((item) => (
-              <div
-                key={item.label}
-                className="relative group"
-                onMouseEnter={() =>
-                  item.children && setOpenDropdown(item.label)
+            {allNavItems.map((item, idx) => {
+              const dynamicSlug = dynamicMenus.find(dm => dm.label === item.label)?.slug;
+
+              if (!item.isStatic && dynamicSlug) {
+                // Dynamic menu item - renders as Link to /[slug]
+                const dm = dynamicMenus.find(m => m.slug === dynamicSlug);
+                if (dm && dm.children && dm.children.length > 0) {
+                  return (
+                    <div
+                      key={`dyn-${idx}`}
+                      className="relative group"
+                      onMouseEnter={() => setOpenDropdown(`dyn-${idx}`)}
+                      onMouseLeave={() => setOpenDropdown(null)}
+                    >
+                      <Link
+                        href={`/${dynamicSlug}`}
+                        className="flex items-center px-3 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap group"
+                      >
+                        <item.icon className="w-4 h-4 mr-2" />
+                        <span>{item.label}</span>
+                        <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
+                      </Link>
+                      <div
+                        className={`absolute top-full left-0 w-56 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
+                          openDropdown === `dyn-${idx}`
+                            ? "opacity-100 visible translate-y-0"
+                            : "opacity-0 invisible -translate-y-2"
+                        }`}
+                      >
+                        <div className="py-2">
+                          {dm.children.map((child) => (
+                            <Link
+                              key={child.id}
+                              href={child.isDynamic ? `/${child.slug}` : (child.externalUrl || "#")}
+                              target={child.openInNewTab ? "_blank" : undefined}
+                              rel={child.openInNewTab ? "noopener noreferrer" : undefined}
+                              className="block w-full text-left px-4 py-2 text-sm hover:bg-bkad-light hover:text-bkad-green transition-colors duration-150 text-gray-700"
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
                 }
-                onMouseLeave={() => setOpenDropdown(null)}
-              >
-                <button
-                  onClick={() => handleNavClick(item.page)}
-                  className={`flex items-center px-3 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap group ${
-                    !item.children && currentPage === item.page
-                      ? "bg-white/20"
-                      : ""
-                  }`}
+
+                return (
+                  <Link
+                    key={`dyn-${idx}`}
+                    href={`/${dynamicSlug}`}
+                    className="flex items-center px-3 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap"
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              }
+
+              // Static SPA menu item
+              return (
+                <div
+                  key={`static-${idx}`}
+                  className="relative group"
+                  onMouseEnter={() =>
+                    item.children && setOpenDropdown(`static-${idx}`)
+                  }
+                  onMouseLeave={() => setOpenDropdown(null)}
                 >
-                  <item.icon className="w-4 h-4 mr-2" />
-                  <span>{item.label}</span>
-                  {item.children && (
-                    <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
-                  )}
-                </button>
-                {item.children && (
-                  <div
-                    className={`absolute top-full left-0 w-56 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
-                      openDropdown === item.label
-                        ? "opacity-100 visible translate-y-0"
-                        : "opacity-0 invisible -translate-y-2"
+                  <button
+                    onClick={() => handleNavClick(item.page)}
+                    className={`flex items-center px-3 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap group ${
+                      !item.children && currentPage === item.page
+                        ? "bg-white/20"
+                        : ""
                     }`}
                   >
-                    <div className="py-2">
-                      {item.children.map((child) => (
-                        <button
-                          key={child.label}
-                          onClick={() => handleNavClick(child.page)}
-                          className={`block w-full text-left px-4 py-2 text-sm hover:bg-bkad-light hover:text-bkad-green transition-colors duration-150 ${
-                            currentPage === child.page
-                              ? "bg-bkad-light text-bkad-green font-medium"
-                              : "text-gray-700"
-                          }`}
-                        >
-                          {child.label}
-                        </button>
-                      ))}
+                    <item.icon className="w-4 h-4 mr-2" />
+                    <span>{item.label}</span>
+                    {item.children && (
+                      <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
+                    )}
+                  </button>
+                  {item.children && (
+                    <div
+                      className={`absolute top-full left-0 w-56 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
+                        openDropdown === `static-${idx}`
+                          ? "opacity-100 visible translate-y-0"
+                          : "opacity-0 invisible -translate-y-2"
+                      }`}
+                    >
+                      <div className="py-2">
+                        {item.children.map((child) => (
+                          <button
+                            key={child.label}
+                            onClick={() => handleNavClick(child.page)}
+                            className={`block w-full text-left px-4 py-2 text-sm hover:bg-bkad-light hover:text-bkad-green transition-colors duration-150 ${
+                              currentPage === child.page
+                                ? "bg-bkad-light text-bkad-green font-medium"
+                                : "text-gray-700"
+                            }`}
+                          >
+                            {child.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* Tablet Navigation */}
           <div className="hidden md:flex lg:hidden overflow-x-auto py-1">
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => handleNavClick(item.page)}
-                className={`flex items-center px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap ${
-                  currentPage === item.page ? "bg-white/20" : ""
-                }`}
-              >
-                <item.icon className="w-4 h-4 mr-2" />
-                {item.label}
-              </button>
-            ))}
+            {allNavItems.map((item, idx) => {
+              const dynamicSlug = dynamicMenus.find(dm => dm.label === item.label)?.slug;
+
+              if (!item.isStatic && dynamicSlug) {
+                return (
+                  <Link
+                    key={`tab-dyn-${idx}`}
+                    href={`/${dynamicSlug}`}
+                    className="flex items-center px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap"
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    {item.label}
+                  </Link>
+                );
+              }
+
+              return (
+                <button
+                  key={`tab-static-${idx}`}
+                  onClick={() => handleNavClick(item.page)}
+                  className={`flex items-center px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap ${
+                    currentPage === item.page ? "bg-white/20" : ""
+                  }`}
+                >
+                  <item.icon className="w-4 h-4 mr-2" />
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </nav>

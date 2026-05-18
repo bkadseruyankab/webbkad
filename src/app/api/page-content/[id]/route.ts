@@ -43,12 +43,17 @@ export async function PUT(
       );
     }
 
-    const { slug, title, content, image } = body;
+    const allowedFields = [
+      'slug', 'title', 'description', 'content', 'heroImage',
+      'image', 'metaTitle', 'metaDescription', 'metaKeywords',
+      'published', 'order',
+    ];
     const updateData: Record<string, unknown> = {};
-    if (slug !== undefined) updateData.slug = slug;
-    if (title !== undefined) updateData.title = title;
-    if (content !== undefined) updateData.content = content;
-    if (image !== undefined) updateData.image = image;
+    for (const field of allowedFields) {
+      if (body[field] !== undefined) {
+        updateData[field] = body[field];
+      }
+    }
 
     const data = await db.pageContent.update({
       where: { id },

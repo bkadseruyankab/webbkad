@@ -20,11 +20,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { slug, title, content, image } = body;
+    const { slug, title, description, content, heroImage, image, metaTitle, metaDescription, metaKeywords, published, order } = body;
 
-    if (!slug || !title || !content) {
+    if (!slug || !title) {
       return NextResponse.json(
-        { success: false, error: 'slug, title, and content are required' },
+        { success: false, error: 'slug dan title wajib diisi' },
         { status: 400 }
       );
     }
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     const existing = await db.pageContent.findUnique({ where: { slug } });
     if (existing) {
       return NextResponse.json(
-        { success: false, error: 'Slug already exists' },
+        { success: false, error: 'Slug sudah digunakan' },
         { status: 409 }
       );
     }
@@ -41,8 +41,15 @@ export async function POST(request: NextRequest) {
       data: {
         slug,
         title,
-        content,
-        image: image ?? '',
+        description: description || '',
+        content: content || '',
+        heroImage: heroImage || '',
+        image: image || '',
+        metaTitle: metaTitle || '',
+        metaDescription: metaDescription || '',
+        metaKeywords: metaKeywords || '',
+        published: published !== false,
+        order: order ?? 0,
       },
     });
 
