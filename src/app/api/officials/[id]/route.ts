@@ -43,9 +43,18 @@ export async function PUT(
       );
     }
 
+    const { name, position, photo, nip, order, active } = body;
+    const updateData: Record<string, unknown> = {};
+    if (name !== undefined) updateData.name = name;
+    if (position !== undefined) updateData.position = position;
+    if (photo !== undefined) updateData.photo = photo;
+    if (nip !== undefined) updateData.nip = nip;
+    if (order !== undefined) updateData.order = order;
+    if (active !== undefined) updateData.active = active;
+
     const data = await db.official.update({
       where: { id },
-      data: body,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data });

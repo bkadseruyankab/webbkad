@@ -43,9 +43,20 @@ export async function PUT(
       );
     }
 
+    const { icon, value, prefix, suffix, label, color, order, active } = body;
+    const updateData: Record<string, unknown> = {};
+    if (icon !== undefined) updateData.icon = icon;
+    if (value !== undefined) updateData.value = value;
+    if (prefix !== undefined) updateData.prefix = prefix;
+    if (suffix !== undefined) updateData.suffix = suffix;
+    if (label !== undefined) updateData.label = label;
+    if (color !== undefined) updateData.color = color;
+    if (order !== undefined) updateData.order = order;
+    if (active !== undefined) updateData.active = active;
+
     const data = await db.stat.update({
       where: { id },
-      data: body,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data });

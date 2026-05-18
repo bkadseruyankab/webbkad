@@ -43,9 +43,16 @@ export async function PUT(
       );
     }
 
+    const { image, caption, order, active } = body;
+    const updateData: Record<string, unknown> = {};
+    if (image !== undefined) updateData.image = image;
+    if (caption !== undefined) updateData.caption = caption;
+    if (order !== undefined) updateData.order = order;
+    if (active !== undefined) updateData.active = active;
+
     const data = await db.gallery.update({
       where: { id },
-      data: body,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data });

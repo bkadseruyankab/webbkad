@@ -43,9 +43,17 @@ export async function PUT(
       );
     }
 
+    const { title, image, date, order, active } = body;
+    const updateData: Record<string, unknown> = {};
+    if (title !== undefined) updateData.title = title;
+    if (image !== undefined) updateData.image = image;
+    if (date !== undefined) updateData.date = date;
+    if (order !== undefined) updateData.order = order;
+    if (active !== undefined) updateData.active = active;
+
     const data = await db.infographic.update({
       where: { id },
-      data: body,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data });

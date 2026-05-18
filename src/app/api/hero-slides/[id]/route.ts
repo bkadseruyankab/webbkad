@@ -43,9 +43,17 @@ export async function PUT(
       );
     }
 
+    const { title, subtitle, image, order, active } = body;
+    const updateData: Record<string, unknown> = {};
+    if (title !== undefined) updateData.title = title;
+    if (subtitle !== undefined) updateData.subtitle = subtitle;
+    if (image !== undefined) updateData.image = image;
+    if (order !== undefined) updateData.order = order;
+    if (active !== undefined) updateData.active = active;
+
     const data = await db.heroSlide.update({
       where: { id },
-      data: body,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data });

@@ -43,9 +43,16 @@ export async function PUT(
       );
     }
 
+    const { slug, title, content, image } = body;
+    const updateData: Record<string, unknown> = {};
+    if (slug !== undefined) updateData.slug = slug;
+    if (title !== undefined) updateData.title = title;
+    if (content !== undefined) updateData.content = content;
+    if (image !== undefined) updateData.image = image;
+
     const data = await db.pageContent.update({
       where: { id },
-      data: body,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data });

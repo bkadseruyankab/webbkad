@@ -43,9 +43,18 @@ export async function PUT(
       );
     }
 
+    const { title, description, date, time, location, status } = body;
+    const updateData: Record<string, unknown> = {};
+    if (title !== undefined) updateData.title = title;
+    if (description !== undefined) updateData.description = description;
+    if (date !== undefined) updateData.date = date;
+    if (time !== undefined) updateData.time = time;
+    if (location !== undefined) updateData.location = location;
+    if (status !== undefined) updateData.status = status;
+
     const data = await db.agenda.update({
       where: { id },
-      data: body,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data });

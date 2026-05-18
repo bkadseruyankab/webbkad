@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const showAll = searchParams.get('all') === 'true';
+    const where = showAll ? {} : { active: true };
+
     const data = await db.official.findMany({
-      where: { active: true },
+      where,
       orderBy: { order: 'asc' },
     });
 

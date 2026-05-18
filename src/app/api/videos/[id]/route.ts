@@ -43,9 +43,18 @@ export async function PUT(
       );
     }
 
+    const { title, url, thumbnail, date, order, active } = body;
+    const updateData: Record<string, unknown> = {};
+    if (title !== undefined) updateData.title = title;
+    if (url !== undefined) updateData.url = url;
+    if (thumbnail !== undefined) updateData.thumbnail = thumbnail;
+    if (date !== undefined) updateData.date = date;
+    if (order !== undefined) updateData.order = order;
+    if (active !== undefined) updateData.active = active;
+
     const data = await db.video.update({
       where: { id },
-      data: body,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data });

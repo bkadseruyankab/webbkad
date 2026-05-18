@@ -43,9 +43,20 @@ export async function PUT(
       );
     }
 
+    const { icon, title, description, content, color, bgColor, order, active } = body;
+    const updateData: Record<string, unknown> = {};
+    if (icon !== undefined) updateData.icon = icon;
+    if (title !== undefined) updateData.title = title;
+    if (description !== undefined) updateData.description = description;
+    if (content !== undefined) updateData.content = content;
+    if (color !== undefined) updateData.color = color;
+    if (bgColor !== undefined) updateData.bgColor = bgColor;
+    if (order !== undefined) updateData.order = order;
+    if (active !== undefined) updateData.active = active;
+
     const data = await db.service.update({
       where: { id },
-      data: body,
+      data: updateData,
     });
 
     return NextResponse.json({ success: true, data });

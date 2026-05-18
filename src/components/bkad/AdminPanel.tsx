@@ -25,6 +25,8 @@ import {
   BookOpen,
   Video,
   MessageSquare,
+  Eye,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -301,6 +303,8 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [detailItem, setDetailItem] = useState<any>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   // ─── Fetch Data ───────────────────────────────────────────────────────────
 
@@ -457,9 +461,19 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     }
   };
 
+  const getDefaultFormData = (section: Section): Record<string, any> => {
+    const base: Record<string, any> = { order: 0 };
+    // Sections that have an active toggle should default to true
+    const activeSections = ["hero-slides", "news", "gallery", "stats", "services", "officials", "publications", "videos", "infographics"];
+    if (activeSections.includes(section)) {
+      base.active = true;
+    }
+    return base;
+  };
+
   const openCreateModal = () => {
     setEditItem(null);
-    setFormData({});
+    setFormData(getDefaultFormData(activeSection));
     setModalOpen(true);
   };
 
@@ -467,6 +481,68 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     setEditItem(item);
     setFormData({ ...item });
     setModalOpen(true);
+  };
+
+  const openDetailModal = (item: any) => {
+    setDetailItem(item);
+    setDetailOpen(true);
+  };
+
+  const renderDetailContent = () => {
+    if (!detailItem) return null;
+    const fields = Object.entries(detailItem).filter(
+      ([key]) => !["id", "createdAt", "updatedAt"].includes(key)
+    );
+    return (
+      <div className="space-y-3">
+        {fields.map(([key, value]) => {
+          const label = key
+            .replace(/([A-Z])/g, " $1")
+            .replace(/^./, (s) => s.toUpperCase());
+          let displayValue = String(value ?? "-");
+          if (typeof value === "boolean") {
+            displayValue = value ? "✅ Ya" : "❌ Tidak";
+          } else if (key === "content" || key === "message") {
+            return (
+              <div key={key}>
+                <label className="text-sm font-medium text-gray-500 block mb-1">
+                  {label}
+                </label>
+                <div className="bg-gray-50 rounded-lg p-3 text-sm whitespace-pre-wrap max-h-60 overflow-y-auto">
+                  {displayValue}
+                </div>
+              </div>
+            );
+          } else if (key === "active") {
+            displayValue = value ? "✅ Aktif" : "❌ Nonaktif";
+          }
+          return (
+            <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1">
+              <label className="text-sm font-medium text-gray-500 sm:w-36 flex-shrink-0">
+                {label}
+              </label>
+              <span className="text-sm text-gray-900 break-all">{displayValue}</span>
+            </div>
+          );
+        })}
+        <div className="flex flex-col sm:flex-row sm:items-start gap-1 pt-2 border-t">
+          <label className="text-sm font-medium text-gray-500 sm:w-36 flex-shrink-0">
+            Dibuat
+          </label>
+          <span className="text-sm text-gray-600">
+            {detailItem.createdAt ? new Date(detailItem.createdAt).toLocaleString("id-ID") : "-"}
+          </span>
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-start gap-1">
+          <label className="text-sm font-medium text-gray-500 sm:w-36 flex-shrink-0">
+            Diperbarui
+          </label>
+          <span className="text-sm text-gray-600">
+            {detailItem.updatedAt ? new Date(detailItem.updatedAt).toLocaleString("id-ID") : "-"}
+          </span>
+        </div>
+      </div>
+    );
   };
 
   // ─── Sidebar Menu ─────────────────────────────────────────────────────────
@@ -820,7 +896,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                 placeholder="Anggaran Daerah 2024"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1 block">Warna</label>
                 <Select
@@ -849,6 +925,21 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                   value={formData.order || 0}
                   onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
                 />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Status</label>
+                <Select
+                  value={formData.active ? "true" : "false"}
+                  onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Aktif</SelectItem>
+                    <SelectItem value="false">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </>
@@ -1453,6 +1544,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                       <ToggleLeft className="w-5 h-5 text-gray-400" />
                     )}
                   </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(item)}>
+                    <Eye className="w-4 h-4 text-emerald-600" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -1509,6 +1603,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                     ) : (
                       <ToggleLeft className="w-5 h-5 text-gray-400" />
                     )}
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(item)}>
+                    <Eye className="w-4 h-4 text-emerald-600" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -1572,6 +1669,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(item)}>
+                    <Eye className="w-4 h-4 text-emerald-600" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -1625,6 +1725,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                         ) : (
                           <ToggleLeft className="w-4 h-4 text-gray-400" />
                         )}
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openDetailModal(item)}>
+                        <Eye className="w-3.5 h-3.5 text-emerald-600" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -1684,6 +1787,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                       <ToggleLeft className="w-5 h-5 text-gray-400" />
                     )}
                   </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(item)}>
+                    <Eye className="w-4 h-4 text-emerald-600" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -1741,6 +1847,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                     ) : (
                       <ToggleLeft className="w-5 h-5 text-gray-400" />
                     )}
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(item)}>
+                    <Eye className="w-4 h-4 text-emerald-600" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -1802,6 +1911,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(item)}>
+                    <Eye className="w-4 h-4 text-emerald-600" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -1919,6 +2031,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                       <ToggleLeft className="w-5 h-5 text-gray-400" />
                     )}
                   </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(item)}>
+                    <Eye className="w-4 h-4 text-emerald-600" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -1981,6 +2096,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                     ) : (
                       <ToggleLeft className="w-5 h-5 text-gray-400" />
                     )}
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(item)}>
+                    <Eye className="w-4 h-4 text-emerald-600" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -2050,6 +2168,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                       <ToggleLeft className="w-5 h-5 text-gray-400" />
                     )}
                   </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(item)}>
+                    <Eye className="w-4 h-4 text-emerald-600" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -2108,6 +2229,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                           <ToggleLeft className="w-4 h-4 text-gray-400" />
                         )}
                       </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openDetailModal(item)}>
+                        <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -2164,6 +2288,9 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                     <td className="p-3 text-gray-500">{new Date(item.createdAt).toLocaleDateString("id-ID")}</td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => openDetailModal(item)} className="h-8 w-8">
+                          <Eye className="w-4 h-4 text-emerald-600" />
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => openEditModal(item)} className="h-8 w-8">
                           <Pencil className="w-4 h-4" />
                         </Button>
@@ -2321,15 +2448,26 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                 : `Kelola data ${menuItems.find((m) => m.key === activeSection)?.label?.toLowerCase() || "website"}`}
             </p>
           </div>
-          {activeSection !== "dashboard" && activeSection !== "laporan" && (
+          <div className="flex items-center gap-2">
             <Button
-              onClick={openCreateModal}
-              className="bg-bkad-green hover:bg-bkad-dark text-white"
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              onClick={fetchData}
+              title="Muat Ulang Data"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Tambah Data
+              <RefreshCw className="w-4 h-4" />
             </Button>
-          )}
+            {activeSection !== "dashboard" && (
+              <Button
+                onClick={openCreateModal}
+                className="bg-bkad-green hover:bg-bkad-dark text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Tambah Data
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Content */}
@@ -2371,6 +2509,37 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                   Simpan
                 </>
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Detail View Dialog */}
+      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="w-5 h-5 text-bkad-green" />
+              Detail Data
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">{renderDetailContent()}</div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDetailOpen(false)}
+            >
+              Tutup
+            </Button>
+            <Button
+              className="bg-bkad-green hover:bg-bkad-dark text-white"
+              onClick={() => {
+                setDetailOpen(false);
+                if (detailItem) openEditModal(detailItem);
+              }}
+            >
+              <Pencil className="w-4 h-4 mr-2" />
+              Edit
             </Button>
           </DialogFooter>
         </DialogContent>

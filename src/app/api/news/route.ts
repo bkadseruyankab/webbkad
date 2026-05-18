@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, excerpt, date, category, image, readTime, order, active } = body;
+    const { title, excerpt, content, date, category, image, readTime, order, active } = body;
 
     if (!title || !excerpt || !date || !category || !image) {
       return NextResponse.json(
@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         excerpt,
+        content: content ?? '',
         date,
         category,
         image,
