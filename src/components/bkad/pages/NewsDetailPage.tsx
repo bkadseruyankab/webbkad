@@ -5,7 +5,6 @@ import { usePageRouter } from "@/stores/usePageRouter";
 import { ChevronRight, Calendar, Clock, ArrowLeft, Share2, Facebook, Twitter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 interface NewsData {
   id: string;
@@ -104,11 +103,10 @@ export default function NewsDetailPage({ id }: { id: string }) {
             <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               {/* Hero Image */}
               <div className="relative h-64 md:h-96">
-                <Image
+                <img
                   src={news.image}
                   alt={news.title}
-                  fill
-                  className="object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
 
@@ -199,11 +197,9 @@ export default function NewsDetailPage({ id }: { id: string }) {
                     onClick={() => usePageRouter.getState().navigateToDetail("news-detail", item.id)}
                   >
                     <div className="w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                      <Image
+                      <img
                         src={item.image}
                         alt={item.title}
-                        width={80}
-                        height={64}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                       />
                     </div>

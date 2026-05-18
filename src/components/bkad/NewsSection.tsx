@@ -5,7 +5,6 @@ import { Calendar, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePageRouter } from "@/stores/usePageRouter";
-import Image from "next/image";
 
 interface NewsItem {
   id: string;
@@ -112,11 +111,10 @@ export default function NewsSection() {
                 onClick={() => navigateToDetail("news-detail", item.id)}
               >
                 <div className="relative h-48 overflow-hidden">
-                  <Image
+                  <img
                     src={item.image}
                     alt={item.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <Badge
                     className={`absolute top-3 left-3 text-xs font-medium ${

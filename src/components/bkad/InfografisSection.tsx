@@ -7,7 +7,6 @@ import {
   PieChart,
   Activity,
 } from "lucide-react";
-import Image from "next/image";
 import { usePageRouter } from "@/stores/usePageRouter";
 
 interface DataPointApi {
@@ -291,11 +290,10 @@ export default function InfografisSection() {
               onClick={() => navigate("media-infografis")}
             >
               <div className="relative h-48">
-                <Image
+                <img
                   src="/images/infografis-1.png"
                   alt="Infografis Keuangan Daerah"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-bkad-dark/70 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">

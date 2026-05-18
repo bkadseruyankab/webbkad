@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 export type PageKey =
   | "home"
+  | "login"
   | "profil-sejarah"
   | "profil-visi-misi"
   | "profil-tugas-fungsi"
@@ -53,6 +54,7 @@ export const usePageRouter = create<PageRouterState>((set) => ({
 
 export const pageTitles: Record<PageKey, string> = {
   home: "Beranda",
+  login: "Login",
   "profil-sejarah": "Sejarah",
   "profil-visi-misi": "Visi & Misi",
   "profil-tugas-fungsi": "Tugas & Fungsi",

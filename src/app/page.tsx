@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import SiteHeader from "@/components/bkad/SiteHeader";
 import TopInfoBar from "@/components/bkad/TopInfoBar";
 import HeroSection from "@/components/bkad/HeroSection";
@@ -22,9 +22,11 @@ import AgendaDetailPage from "@/components/bkad/pages/AgendaDetailPage";
 import PublicationDetailPage from "@/components/bkad/pages/PublicationDetailPage";
 import VideoDetailPage from "@/components/bkad/pages/VideoDetailPage";
 import LaporanDashboardPage from "@/components/bkad/pages/LaporanDashboardPage";
-import { Settings } from "lucide-react";
+import LoginPage from "@/components/bkad/pages/LoginPage";
+import { Settings, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 // Map quick-add section strings from SiteHeader to AdminPanel Section type
 const quickAddSectionMap: Record<string, string> = {
@@ -59,6 +61,9 @@ function PageRouter() {
       </>
     );
   }
+
+  // Login page
+  if (currentPage === "login") return <LoginPage />;
 
   // Profil pages
   if (currentPage === "profil-sejarah") return <ProfilPage slug="sejarah" />;
@@ -188,6 +193,13 @@ export default function Home() {
   const [showAdmin, setShowAdmin] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [adminSection, setAdminSection] = useState<string | undefined>(undefined);
+  const { isAuthenticated, user, verify, logout } = useAuthStore();
+  const { currentPage, navigate } = usePageRouter();
+
+  // Initialize auth state on mount
+  useEffect(() => {
+    verify();
+  }, [verify]);
 
   const handleAdminClose = useCallback(() => {
     setShowAdmin(false);
@@ -201,33 +213,74 @@ export default function Home() {
     setShowAdmin(true);
   }, []);
 
+  const handleLogout = useCallback(async () => {
+    await logout();
+    setShowAdmin(false);
+  }, [logout]);
+
+  // Login page renders standalone (no header/footer)
+  const isLoginPage = currentPage === "login";
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Admin Panel Overlay */}
-      {showAdmin && <AdminPanel onClose={handleAdminClose} initialSection={adminSection as any} />}
+      {showAdmin && isAuthenticated && (
+        <AdminPanel onClose={handleAdminClose} initialSection={adminSection as any} />
+      )}
 
-      {/* Main Website */}
-      <div style={{ display: showAdmin ? "none" : undefined }}>
-        <TopInfoBar />
-        <SiteHeader onQuickAdd={handleQuickAdd} />
-        <main className="flex-1" key={refreshKey}>
-          <PageRouter />
+      {/* Login page - standalone without header/footer */}
+      {isLoginPage ? (
+        <main className="flex-1">
+          <LoginPage />
         </main>
-        <SiteFooter />
+      ) : (
+        /* Main Website */
+        <div style={{ display: showAdmin ? "none" : undefined }}>
+          <TopInfoBar />
+          <SiteHeader onQuickAdd={isAuthenticated ? handleQuickAdd : undefined} />
+          <main className="flex-1" key={refreshKey}>
+            <PageRouter />
+          </main>
+          <SiteFooter />
 
-        {/* Admin Toggle Button */}
-        <Button
-          onClick={() => setShowAdmin(true)}
-          className="fixed bottom-6 right-6 z-50 bg-bkad-dark hover:bg-bkad-green text-white rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all"
-          size="icon"
-          aria-label="Buka Panel Admin"
-        >
-          <Settings
-            className="w-6 h-6 animate-spin hover:animate-none"
-            style={{ animationDuration: "3s" }}
-          />
-        </Button>
-      </div>
+          {/* Admin Toggle Button */}
+          <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
+            {isAuthenticated && (
+              <>
+                <Button
+                  onClick={() => setShowAdmin(true)}
+                  className="bg-bkad-dark hover:bg-bkad-green text-white rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all"
+                  size="icon"
+                  aria-label="Buka Panel Admin"
+                >
+                  <Settings
+                    className="w-6 h-6"
+                  />
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="bg-white/90 backdrop-blur-sm border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-300 rounded-full w-14 h-14 shadow-lg transition-all"
+                  size="icon"
+                  aria-label="Logout"
+                >
+                  <LogOut className="w-5 h-5" />
+                </Button>
+              </>
+            )}
+            {!isAuthenticated && (
+              <Button
+                onClick={() => navigate("login")}
+                className="bg-bkad-dark hover:bg-bkad-green text-white rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all"
+                size="icon"
+                aria-label="Login Admin"
+              >
+                <User className="w-6 h-6" />
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

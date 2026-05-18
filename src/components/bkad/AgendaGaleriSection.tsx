@@ -5,7 +5,6 @@ import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePageRouter } from "@/stores/usePageRouter";
-import Image from "next/image";
 
 interface AgendaItem {
   id: number;
@@ -203,7 +202,7 @@ export default function AgendaGaleriSection() {
           {/* Galeri */}
           <div>
             <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center">
-              <Image
+              <img
                 src="/images/infografis-1.png"
                 alt=""
                 width={20}
@@ -241,11 +240,10 @@ export default function AgendaGaleriSection() {
                     className="relative rounded-xl overflow-hidden group cursor-pointer"
                     style={{ aspectRatio: "4/3" }}
                   >
-                    <Image
+                    <img
                       src={item.image}
                       alt={item.caption}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">

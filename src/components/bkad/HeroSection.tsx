@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 interface HeroSlide {
   id: number;
@@ -87,12 +86,10 @@ export default function HeroSection() {
             isAnimating ? "opacity-100" : "opacity-0"
           }`}
         >
-          <Image
+          <img
             src={slides[current].image}
             alt={slides[current].title}
-            fill
-            className="object-cover"
-            priority
+            className="absolute inset-0 w-full h-full object-cover"
           />
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-bkad-dark/80 via-bkad-dark/50 to-transparent" />

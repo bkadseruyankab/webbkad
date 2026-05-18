@@ -20,6 +20,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Label } from "@/components/ui/label";
+import { ImageUpload } from "@/components/bkad/ImageUpload";
 import {
   APP_IDENTITY_DEFAULTS,
   type AppIdentity,
@@ -467,13 +468,25 @@ export default function PengaturanIdentitasSection() {
           onChange={handleChange}
           placeholder="BK"
         />
-        <FormField
-          label="URL Logo"
-          fieldKey="logoUrl"
-          value={form.logoUrl}
-          onChange={handleChange}
-          placeholder="https://example.com/logo.png"
-        />
+        <div className="space-y-1.5">
+          <Label className="text-sm font-medium text-gray-700">Logo Gambar</Label>
+          <ImageUpload
+            value={form.logoUrl}
+            onChange={(url) => handleChange("logoUrl", url)}
+            label=""
+            compress={true}
+            maxWidth={400}
+            maxHeight={400}
+            quality={0.9}
+          />
+          <FormField
+            label="Atau masukkan URL Logo"
+            fieldKey="logoUrl"
+            value={form.logoUrl}
+            onChange={handleChange}
+            placeholder="https://example.com/logo.png"
+          />
+        </div>
         <FormField
           label="Warna Primer"
           fieldKey="primaryColor"

@@ -200,6 +200,17 @@ interface CategoryItem {
   active: boolean;
 }
 
+interface UserItem {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatar: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 type Section =
   | "dashboard"
   | "categories"
@@ -216,6 +227,7 @@ type Section =
   | "videos"
   | "infographics"
   | "laporan"
+  | "users"
   | "app-identity";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -296,6 +308,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
   const [infographics, setInfographics] = useState<InfographicItem[]>([]);
   const [laporan, setLaporan] = useState<LaporanItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
+  const [users, setUsers] = useState<UserItem[]>([]);
 
   // ─── Blob Store Status ────────────────────────────────────────────────────
 
@@ -328,7 +341,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       const [
         heroRes, newsRes, agendaRes, galleryRes, statsRes,
         servicesRes, financeRes, pcRes, offRes, pubRes,
-        vidRes, infoRes, lapRes, catRes,
+        vidRes, infoRes, lapRes, catRes, usersRes,
       ] = await Promise.all([
         fetch("/api/hero-slides?all=true"),
         fetch("/api/news?all=true"),
@@ -344,17 +357,18 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
         fetch("/api/infographics?all=true"),
         fetch("/api/laporan?all=true"),
         fetch("/api/categories"),
+        fetch("/api/users"),
       ]);
 
       const [
         heroData, newsData, agendaData, galleryData, statsData,
         servicesData, financeData, pcData, offData, pubData,
-        vidData, infoData, lapData, catData,
+        vidData, infoData, lapData, catData, usersData,
       ] = await Promise.all([
         heroRes.json(), newsRes.json(), agendaRes.json(), galleryRes.json(),
         statsRes.json(), servicesRes.json(), financeRes.json(), pcRes.json(),
         offRes.json(), pubRes.json(), vidRes.json(), infoRes.json(),
-        lapRes.json(), catRes.json(),
+        lapRes.json(), catRes.json(), usersRes.json(),
       ]);
 
       setHeroSlides(heroData.data || []);
@@ -371,6 +385,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       setInfographics(infoData.data || []);
       setLaporan(lapData.data || []);
       setCategories(catData.data || []);
+      setUsers(usersData.data || []);
     } catch (err) {
       console.error("Failed to fetch data:", err);
     }
@@ -421,6 +436,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       videos: "/api/videos",
       infographics: "/api/infographics",
       laporan: "/api/laporan",
+      users: "/api/users",
       "app-identity": "/api/app-identity",
     };
     return map[section];
@@ -624,6 +640,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     { key: "videos", label: "Video", icon: Video, count: videos.length },
     { key: "infographics", label: "Infografis", icon: BarChart3, count: infographics.length },
     { key: "laporan", label: "Laporan", icon: MessageSquare, count: laporan.length },
+    { key: "users", label: "Pengguna", icon: Users, count: users.length },
     { key: "app-identity", label: "Identitas Aplikasi", icon: Globe, count: 0 },
   ];
 
@@ -1642,6 +1659,76 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
         );
       }
 
+      case "users":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Nama</label>
+              <Input
+                value={String(formData.name || "")}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Nama lengkap"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Email</label>
+              <Input
+                type="email"
+                value={String(formData.email || "")}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="email@example.com"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">
+                Password {editItem ? "(kosongkan jika tidak diubah)" : ""}
+              </label>
+              <Input
+                type="password"
+                value={String(formData.password || "")}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder={editItem ? "Kosongkan jika tidak diubah" : "Password"}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Peran</label>
+              <Select
+                value={String(formData.role || "admin")}
+                onValueChange={(v) => setFormData({ ...formData, role: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="superadmin">Super Admin</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="editor">Editor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <ImageUpload
+              value={String(formData.avatar || "")}
+              onChange={(url) => setFormData({ ...formData, avatar: url })}
+              label="Foto Profil"
+            />
+            <div>
+              <label className="text-sm font-medium mb-1 block">Status</label>
+              <Select
+                value={formData.active ? "true" : "false"}
+                onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Aktif</SelectItem>
+                  <SelectItem value="false">Nonaktif</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        );
+
       default:
         return null;
     }
@@ -2101,6 +2188,53 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
           </div>
         );
 
+      case "users":
+        return (
+          <div className="space-y-3">
+            {users.length === 0 && (
+              <div className="text-center py-10 text-gray-400">
+                <Users className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p>Belum ada pengguna</p>
+              </div>
+            )}
+            {users.map((item) => (
+              <div
+                key={item.id}
+                className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
+              >
+                <div className="w-10 h-10 bg-gray-100 rounded-full overflow-hidden flex-shrink-0">
+                  {item.avatar ? (
+                    <img src={item.avatar} alt={item.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-bkad-light text-bkad-green font-bold text-sm">
+                      {item.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm truncate">{item.name}</h4>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-gray-500">{item.email}</span>
+                    <Badge
+                      variant="outline"
+                      className={
+                        item.role === "superadmin"
+                          ? "text-bkad-gold border-bkad-gold/30 text-[10px]"
+                          : item.role === "admin"
+                          ? "text-bkad-green border-bkad-green/30 text-[10px]"
+                          : "text-sky-600 border-sky-300 text-[10px]"
+                      }
+                    >
+                      {item.role === "superadmin" ? "Super Admin" : item.role === "admin" ? "Admin" : "Editor"}
+                    </Badge>
+                  </div>
+                </div>
+                {renderActionButtons(item, "users")}
+              </div>
+            ))}
+          </div>
+        );
+
       default:
         return null;
     }
@@ -2268,6 +2402,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       videos: "Video",
       infographics: "Infografis",
       laporan: "Laporan",
+      users: "Pengguna",
     };
     return titles[section];
   };

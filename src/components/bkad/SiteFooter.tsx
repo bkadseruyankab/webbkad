@@ -36,9 +36,18 @@ export default function SiteFooter() {
           {/* About */}
           <div>
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: resolved.primaryColor }}>
-                <span className="text-white font-bold text-sm">{resolved.logoText}</span>
-              </div>
+              {resolved.logoUrl ? (
+                <img
+                  src={resolved.logoUrl}
+                  alt={resolved.appShortName || 'Logo'}
+                  className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2"
+                  style={{ borderColor: resolved.primaryColor }}
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: resolved.primaryColor }}>
+                  <span className="text-white font-bold text-sm">{resolved.logoText}</span>
+                </div>
+              )}
               <div>
                 <h3 className="font-bold text-sm">{resolved.appShortName}</h3>
                 <p className="text-xs text-white/60">{resolved.appSubtitle}</p>

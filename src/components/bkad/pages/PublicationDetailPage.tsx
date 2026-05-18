@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 interface PublicationData {
   id: string;
@@ -173,12 +172,10 @@ export default function PublicationDetailPage({ id }: { id: string }) {
             <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               {/* Cover Image */}
               <div className="relative h-64 md:h-[420px] bg-gray-100">
-                <Image
+                <img
                   src={publication.coverImage || "/images/infografis-1.png"}
                   alt={publication.title}
-                  fill
-                  className="object-cover"
-                  priority
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
                 {/* Overlay gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
@@ -345,13 +342,11 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                       }
                     >
                       <div className="w-20 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                        <Image
+                        <img
                           src={
                             item.coverImage || "/images/infografis-1.png"
                           }
                           alt={item.title}
-                          width={80}
-                          height={96}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                         />
                       </div>

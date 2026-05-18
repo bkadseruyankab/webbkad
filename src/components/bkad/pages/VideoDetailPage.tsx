@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 interface VideoData {
   id: string;
@@ -311,11 +310,9 @@ export default function VideoDetailPage({ id }: { id: string }) {
                       }
                     >
                       <div className="w-28 h-[4.2rem] rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 relative">
-                        <Image
+                        <img
                           src={item.thumbnail || "/images/hero-1.png"}
                           alt={item.title}
-                          width={112}
-                          height={67}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         />
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center group-hover:bg-black/30 transition-colors">

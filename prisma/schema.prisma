@@ -213,6 +213,18 @@ model Laporan {
   categoryRef Category? @relation(fields: [categoryId], references: [id])
 }
 
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  avatar    String   @default("")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model AppIdentity {
   id                String   @id @default(cuid())
   // Header
