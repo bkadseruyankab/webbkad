@@ -89,6 +89,7 @@ interface AgendaItem {
   time: string;
   location: string;
   status: string;
+  images: string;
 }
 
 interface GalleryItem {
@@ -109,6 +110,7 @@ interface StatItem {
   suffix: string;
   label: string;
   color: string;
+  images: string;
   order: number;
   active: boolean;
 }
@@ -121,6 +123,7 @@ interface ServiceItem {
   content: string;
   color: string;
   bgColor: string;
+  images: string;
   order: number;
   active: boolean;
 }
@@ -131,6 +134,7 @@ interface FinancialDataItem {
   pendapatan: number;
   belanja: number;
   realisasi: number;
+  images: string;
 }
 
 interface PageContentItem {
@@ -155,6 +159,7 @@ interface OfficialItem {
   name: string;
   position: string;
   photo: string;
+  images: string;
   nip: string;
   order: number;
   active: boolean;
@@ -180,6 +185,7 @@ interface VideoItem {
   title: string;
   url: string;
   thumbnail: string;
+  images: string;
   date: string;
   order: number;
   active: boolean;
@@ -205,6 +211,7 @@ interface LaporanItem {
   category: string;
   categoryId?: string;
   status: string;
+  images: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -216,6 +223,7 @@ interface CategoryItem {
   description: string;
   module: string;
   color: string;
+  images: string;
   order: number;
   active: boolean;
 }
@@ -954,6 +962,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 </Select>
               </div>
             </div>
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Kategori"
+            />
           </>
         );
 
@@ -981,6 +994,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               value={String(formData.image || "")}
               onChange={(url) => setFormData({ ...formData, image: url })}
               label="Gambar Banner"
+            />
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Banner"
             />
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -1077,6 +1095,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               value={String(formData.image || "")}
               onChange={(url) => setFormData({ ...formData, image: url })}
               label="Gambar Berita"
+            />
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Berita"
             />
             <div className="grid grid-cols-3 gap-4">
               <div>
@@ -1177,6 +1200,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 </SelectContent>
               </Select>
             </div>
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Agenda"
+            />
           </>
         );
 
@@ -1188,6 +1216,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               value={String(formData.image || "")}
               onChange={(url) => setFormData({ ...formData, image: url })}
               label="Gambar Galeri"
+            />
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Tambahan"
             />
             <div>
               <label className="text-sm font-medium mb-1 block">Keterangan</label>
@@ -1340,6 +1373,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 </Select>
               </div>
             </div>
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Statistik"
+            />
           </>
         );
 
@@ -1447,6 +1485,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 </Select>
               </div>
             </div>
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Layanan"
+            />
           </>
         );
 
@@ -1488,6 +1531,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 />
               </div>
             </div>
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Data Keuangan"
+            />
           </>
         );
 
@@ -1524,6 +1572,16 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               onChange={(url) => setFormData({ ...formData, image: url })}
               label="Gambar Halaman"
             />
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Halaman"
+            />
+            <FileDownloadUpload
+              value={parseDownloadableFiles(String(formData.downloadableFiles || "[]"))}
+              onChange={(files) => setFormData({ ...formData, downloadableFiles: serializeDownloadableFiles(files) })}
+              label="File Unduhan (Button Download)"
+            />
           </>
         );
 
@@ -1550,6 +1608,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               value={String(formData.photo || "")}
               onChange={(url) => setFormData({ ...formData, photo: url })}
               label="Foto Pejabat"
+            />
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Pejabat"
             />
             <div>
               <label className="text-sm font-medium mb-1 block">NIP</label>
@@ -1644,6 +1707,16 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               onChange={(url) => setFormData({ ...formData, coverImage: url })}
               label="Cover Gambar"
             />
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Publikasi"
+            />
+            <FileDownloadUpload
+              value={parseDownloadableFiles(String(formData.downloadableFiles || "[]"))}
+              onChange={(files) => setFormData({ ...formData, downloadableFiles: serializeDownloadableFiles(files) })}
+              label="File Unduhan Publikasi"
+            />
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1 block">Tanggal</label>
@@ -1705,6 +1778,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               onChange={(url) => setFormData({ ...formData, thumbnail: url })}
               label="Thumbnail Video"
             />
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Video"
+            />
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1 block">Tanggal</label>
@@ -1756,6 +1834,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               value={String(formData.image || "")}
               onChange={(url) => setFormData({ ...formData, image: url })}
               label="Gambar Infografis"
+            />
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Galeri Gambar Infografis"
             />
             <div className="grid grid-cols-3 gap-4">
               <div>
@@ -1881,6 +1964,11 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 </Select>
               </div>
             </div>
+            <MultiImageUpload
+              value={parseImages(String(formData.images || "[]"))}
+              onChange={(images) => setFormData({ ...formData, images: serializeImages(images) })}
+              label="Lampiran Gambar"
+            />
           </>
         );
       }

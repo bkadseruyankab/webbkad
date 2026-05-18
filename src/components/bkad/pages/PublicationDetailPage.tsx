@@ -21,6 +21,8 @@ interface PublicationData {
   category: string;
   fileUrl: string;
   coverImage: string;
+  images: string;
+  downloadableFiles: string;
   date: string;
 }
 
@@ -52,6 +54,34 @@ const categoryNavItems = [
     cat: "peraturan",
   },
 ];
+
+function parseImages(jsonStr: string | null | undefined): { url: string; alt?: string; caption?: string }[] {
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function parseDownloadableFiles(jsonStr: string | null | undefined): { url: string; name: string; originalName: string; mimeType: string; size: number }[] {
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes}B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
+}
 
 export default function PublicationDetailPage({ id }: { id: string }) {
   const { goHome } = usePageRouter();
@@ -256,6 +286,62 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                     </div>
                   </div>
                 )}
+
+                {/* Image Gallery */}
+                {(() => {
+                  const images = parseImages(publication.images);
+                  if (images.length === 0) return null;
+                  return (
+                    <div className="mt-8 pt-6 border-t border-gray-100">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Gambar</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {images.map((img, i) => (
+                          <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                            <div className="aspect-video bg-gray-100">
+                              <img
+                                src={img.url}
+                                alt={img.alt || img.caption || `Gambar ${i + 1}`}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            </div>
+                            {img.caption && (
+                              <div className="p-2 bg-white">
+                                <p className="text-xs text-gray-600 truncate">{img.caption}</p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Downloadable Files */}
+                {(() => {
+                  const files = parseDownloadableFiles(publication.downloadableFiles);
+                  if (files.length === 0) return null;
+                  return (
+                    <div className="mt-8 pt-6 border-t border-gray-100">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">File Unduhan</h3>
+                      <div className="flex flex-wrap gap-3">
+                        {files.map((file, i) => (
+                          <a
+                            key={i}
+                            href={file.url}
+                            download
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all duration-200 shadow-sm border hover:shadow-md bg-bkad-green/10 text-bkad-green border-bkad-green/30 hover:bg-bkad-green/20"
+                          >
+                            <Download className="w-4 h-4" />
+                            {file.name || file.originalName}
+                            <span className="text-xs opacity-60 ml-1">({formatFileSize(file.size)})</span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* View count / additional info */}
                 <div className="mt-6 pt-6 border-t border-gray-100 flex items-center gap-4 text-sm text-gray-400">

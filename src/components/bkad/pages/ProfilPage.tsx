@@ -2,8 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { usePageRouter, pageTitles } from "@/stores/usePageRouter";
-import { ChevronRight, Clock, BookOpen } from "lucide-react";
+import { ChevronRight, BookOpen, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+
+interface ImageItem {
+  url: string;
+  alt?: string;
+  caption?: string;
+}
+
+interface DownloadableFile {
+  url: string;
+  name: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+}
 
 interface PageContentData {
   id: string;
@@ -11,12 +25,43 @@ interface PageContentData {
   title: string;
   content: string;
   image: string;
+  images: string;
+  downloadableFiles: string;
+}
+
+function parseImages(jsonStr: string | null | undefined): ImageItem[] {
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function parseDownloadableFiles(jsonStr: string | null | undefined): DownloadableFile[] {
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes}B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
 }
 
 export default function ProfilPage({ slug }: { slug: string }) {
   const { currentPage } = usePageRouter();
   const [data, setData] = useState<PageContentData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lightboxImg, setLightboxImg] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchContent() {
@@ -57,6 +102,8 @@ export default function ProfilPage({ slug }: { slug: string }) {
   }
 
   const isStruktur = slug === "struktur-organisasi";
+  const images = parseImages(data.images);
+  const downloadableFiles = parseDownloadableFiles(data.downloadableFiles);
 
   return (
     <div className="py-12">
@@ -104,6 +151,58 @@ export default function ProfilPage({ slug }: { slug: string }) {
                   </p>
                 ))}
               </div>
+
+              {/* Image Gallery */}
+              {images.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-gray-100">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Gambar</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {images.map((img, i) => (
+                      <div
+                        key={i}
+                        className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => setLightboxImg(img.url)}
+                      >
+                        <div className="aspect-video bg-gray-100">
+                          <img
+                            src={img.url}
+                            alt={img.alt || img.caption || `Gambar ${i + 1}`}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                        {img.caption && (
+                          <div className="p-2 bg-white">
+                            <p className="text-xs text-gray-600 truncate">{img.caption}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Downloadable Files */}
+              {downloadableFiles.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-gray-100">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">File Unduhan</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {downloadableFiles.map((file, i) => (
+                      <a
+                        key={i}
+                        href={file.url}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all duration-200 shadow-sm border hover:shadow-md bg-bkad-green/10 text-bkad-green border-bkad-green/30 hover:bg-bkad-green/20"
+                      >
+                        <Download className="w-4 h-4" />
+                        {file.name || file.originalName}
+                        <span className="text-xs opacity-60 ml-1">({formatFileSize(file.size)})</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -144,6 +243,28 @@ export default function ProfilPage({ slug }: { slug: string }) {
           </aside>
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxImg && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setLightboxImg(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh]">
+            <img
+              src={lightboxImg}
+              alt="Preview"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            />
+            <button
+              onClick={() => setLightboxImg(null)}
+              className="absolute -top-3 -right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg text-gray-600 hover:text-gray-900"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -18,6 +18,7 @@ interface VideoData {
   title: string;
   url: string;
   thumbnail: string;
+  images: string;
   date: string;
 }
 
@@ -27,6 +28,17 @@ function getYouTubeEmbedUrl(url: string): string | null {
   );
   if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
   return null;
+}
+
+function parseImages(jsonStr: string | null | undefined): { url: string; alt?: string; caption?: string }[] {
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
 }
 
 export default function VideoDetailPage({ id }: { id: string }) {
@@ -255,6 +267,35 @@ export default function VideoDetailPage({ id }: { id: string }) {
                     </p>
                   </div>
                 </div>
+
+                {/* Image Gallery */}
+                {(() => {
+                  const images = parseImages(video.images);
+                  if (images.length === 0) return null;
+                  return (
+                    <div className="mt-6">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Screenshot</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {images.map((img, i) => (
+                          <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                            <div className="aspect-video bg-gray-100">
+                              <img
+                                src={img.url}
+                                alt={img.alt || img.caption || `Screenshot ${i + 1}`}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            </div>
+                            {img.caption && (
+                              <div className="p-2 bg-white">
+                                <p className="text-xs text-gray-600 truncate">{img.caption}</p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Share section */}
                 <div className="mt-6 pt-6 border-t border-gray-100">

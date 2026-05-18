@@ -14,6 +14,7 @@ model Category {
   description String   @default("")
   module      String   @default("general")
   color       String   @default("#0D6B3F")
+  images      String   @default("[]")  // JSON array of {url, alt, caption}
   order       Int      @default(0)
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -82,6 +83,7 @@ model Agenda {
   time        String
   location    String
   status      String   @default("upcoming")
+  images      String   @default("[]")  // JSON array of {url, alt, caption}
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -108,6 +110,7 @@ model Stat {
   suffix    String   @default("")
   label     String
   color     String
+  images    String   @default("[]")  // JSON array of {url, alt, caption}
   order     Int      @default(0)
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -122,6 +125,7 @@ model Service {
   content     String   @default("")
   color       String
   bgColor     String
+  images      String   @default("[]")  // JSON array of {url, alt, caption}
   order       Int      @default(0)
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -134,6 +138,7 @@ model FinancialData {
   pendapatan Int
   belanja    Int
   realisasi  Float
+  images     String   @default("[]")  // JSON array of {url, alt, caption}
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -180,6 +185,7 @@ model Official {
   name      String
   position  String
   photo     String
+  images    String   @default("[]")  // JSON array of {url, alt, caption}
   nip       String   @default("")
   order     Int      @default(0)
   active    Boolean  @default(true)
@@ -211,6 +217,7 @@ model Video {
   title     String
   url       String
   thumbnail String   @default("")
+  images    String   @default("[]")  // JSON array of {url, alt, caption}
   date      String
   order     Int      @default(0)
   active    Boolean  @default(true)
@@ -240,6 +247,7 @@ model Laporan {
   category   String   @default("umum")
   categoryId String?
   status     String   @default("baru")
+  images     String   @default("[]")  // JSON array of {url, alt, caption}
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

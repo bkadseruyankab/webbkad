@@ -14,6 +14,7 @@ interface ServiceData {
   content: string;
   color: string;
   bgColor: string;
+  images: string;
   order: number;
   active: boolean;
 }
@@ -29,6 +30,17 @@ const iconMap: Record<string, LucideIcon> = {
   FileCheck,
   Coins,
 };
+
+function parseImages(jsonStr: string | null | undefined): { url: string; alt?: string; caption?: string }[] {
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
+}
 
 export default function ServiceDetailPage({ id }: { id: string }) {
   const { goHome } = usePageRouter();
@@ -137,6 +149,35 @@ export default function ServiceDetailPage({ id }: { id: string }) {
                   <p className="text-gray-500 italic mt-4">Informasi detail layanan akan segera tersedia.</p>
                 </div>
               )}
+
+              {/* Image Gallery */}
+              {(() => {
+                const images = parseImages(service.images);
+                if (images.length === 0) return null;
+                return (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Gambar</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {images.map((img, i) => (
+                        <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                          <div className="aspect-video bg-gray-100">
+                            <img
+                              src={img.url}
+                              alt={img.alt || img.caption || `Gambar ${i + 1}`}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          {img.caption && (
+                            <div className="p-2 bg-white">
+                              <p className="text-xs text-gray-600 truncate">{img.caption}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* CTA */}
               <div className="mt-8 pt-6 border-t border-gray-100">

@@ -25,6 +25,8 @@ interface PageContentData {
   content: string;
   heroImage: string;
   image: string;
+  images: string;
+  downloadableFiles: string;
   metaTitle: string;
   metaDescription: string;
   metaKeywords: string;
@@ -155,6 +157,38 @@ function parseLinks(raw: string): { label: string; url: string }[] {
     const [label, url] = item.split("|");
     return { label: label?.trim() || "", url: url?.trim() || "#" };
   });
+}
+
+// ─── Helper: parse images JSON ────────────────────────────────────────────
+
+function parseImages(jsonStr: string | null | undefined): { url: string; alt?: string; caption?: string }[] {
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+// ─── Helper: parse downloadable files JSON ────────────────────────────────
+
+function parseDownloadableFiles(jsonStr: string | null | undefined): { url: string; name: string; originalName: string; mimeType: string; size: number }[] {
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes}B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
 }
 
 // ─── Page Component ──────────────────────────────────────────────────────────
@@ -364,6 +398,69 @@ export default async function DynamicPage({
               className="prose prose-lg max-w-none bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10"
               dangerouslySetInnerHTML={{ __html: pageData.content }}
             />
+
+            {/* Image Gallery */}
+            {(() => {
+              const images = parseImages(pageData.images);
+              if (images.length === 0) return null;
+              return (
+                <div className="mt-8">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Gambar</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {images.map((img, i) => (
+                      <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <div className="aspect-video bg-gray-100">
+                          <img
+                            src={img.url}
+                            alt={img.alt || img.caption || `Gambar ${i + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        {img.caption && (
+                          <div className="p-2 bg-white">
+                            <p className="text-xs text-gray-600 truncate">{img.caption}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Downloadable Files */}
+            {(() => {
+              const files = parseDownloadableFiles(pageData.downloadableFiles);
+              if (files.length === 0) return null;
+              return (
+                <div className="mt-8">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">File Unduhan</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {files.map((file, i) => (
+                      <a
+                        key={i}
+                        href={file.url}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all duration-200 shadow-sm border hover:shadow-md"
+                        style={{
+                          backgroundColor: resolved.primaryColor + "10",
+                          color: resolved.primaryColor,
+                          borderColor: resolved.primaryColor + "30",
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        {file.name || file.originalName}
+                        <span className="text-xs opacity-60 ml-1">({formatFileSize(file.size)})</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Last updated */}
             <div className="mt-6 text-right text-xs text-gray-400">

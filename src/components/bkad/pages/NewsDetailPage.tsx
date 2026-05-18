@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePageRouter } from "@/stores/usePageRouter";
-import { ChevronRight, Calendar, Clock, ArrowLeft, Share2, Facebook, Twitter } from "lucide-react";
+import { ChevronRight, Calendar, Clock, ArrowLeft, Share2, Facebook, Twitter, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -14,6 +14,7 @@ interface NewsData {
   date: string;
   category: string;
   image: string;
+  images: string;
   readTime: string;
 }
 
@@ -25,6 +26,17 @@ const categoryColors: Record<string, string> = {
   Anggaran: "bg-rose-100 text-rose-700",
   PAD: "bg-orange-100 text-orange-700",
 };
+
+function parseImages(jsonStr: string | null | undefined): { url: string; alt?: string; caption?: string }[] {
+  if (!jsonStr) return [];
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) return parsed;
+    return [];
+  } catch {
+    return [];
+  }
+}
 
 export default function NewsDetailPage({ id }: { id: string }) {
   const { goHome } = usePageRouter();
@@ -143,6 +155,35 @@ export default function NewsDetailPage({ id }: { id: string }) {
                     <p className="text-gray-700 leading-relaxed mb-4">{news.excerpt}</p>
                   )}
                 </div>
+
+                {/* Image Gallery */}
+                {(() => {
+                  const images = parseImages(news.images);
+                  if (images.length === 0) return null;
+                  return (
+                    <div className="mt-8 pt-6 border-t border-gray-100">
+                      <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Gambar</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {images.map((img, i) => (
+                          <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                            <div className="aspect-video bg-gray-100">
+                              <img
+                                src={img.url}
+                                alt={img.alt || img.caption || `Gambar ${i + 1}`}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            </div>
+                            {img.caption && (
+                              <div className="p-2 bg-white">
+                                <p className="text-xs text-gray-600 truncate">{img.caption}</p>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Share */}
                 <div className="mt-8 pt-6 border-t border-gray-100">
