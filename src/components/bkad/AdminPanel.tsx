@@ -47,6 +47,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/bkad/ImageUpload";
+import { MultiImageUpload, parseImages, serializeImages, type ImageItem } from "@/components/bkad/MultiImageUpload";
+import { FileDownloadUpload, parseDownloadableFiles, serializeDownloadableFiles, type DownloadableFile } from "@/components/bkad/FileDownloadUpload";
 import PengaturanIdentitasSection from "@/components/bkad/PengaturanIdentitasSection";
 import { blobStore } from "@/lib/blob-store";
 import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
@@ -59,6 +61,7 @@ interface HeroSlide {
   title: string;
   subtitle: string;
   image: string;
+  images: string;
   order: number;
   active: boolean;
 }
@@ -72,6 +75,7 @@ interface NewsItem {
   category: string;
   categoryId?: string;
   image: string;
+  images: string;
   readTime: string;
   order: number;
   active: boolean;
@@ -90,6 +94,7 @@ interface AgendaItem {
 interface GalleryItem {
   id: string;
   image: string;
+  images: string;
   caption: string;
   order: number;
   active: boolean;
@@ -136,6 +141,8 @@ interface PageContentItem {
   content: string;
   heroImage: string;
   image: string;
+  images: string;
+  downloadableFiles: string;
   metaTitle: string;
   metaDescription: string;
   metaKeywords: string;
@@ -161,6 +168,8 @@ interface PublicationItem {
   categoryId?: string;
   fileUrl: string;
   coverImage: string;
+  images: string;
+  downloadableFiles: string;
   date: string;
   order: number;
   active: boolean;
@@ -180,6 +189,7 @@ interface InfographicItem {
   id: string;
   title: string;
   image: string;
+  images: string;
   date: string;
   order: number;
   active: boolean;

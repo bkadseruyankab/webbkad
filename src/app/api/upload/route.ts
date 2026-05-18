@@ -35,18 +35,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
+    // Validate file type — allow images and common document formats
     const allowedTypes = [
       'image/jpeg',
       'image/png',
       'image/webp',
       'image/gif',
       'image/svg+xml',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/zip',
+      'application/x-rar-compressed',
+      'application/x-7z-compressed',
+      'text/plain',
+      'text/csv',
     ];
 
-    if (!allowedTypes.includes(file.type)) {
+    // Also allow by extension for files with empty MIME type
+    const ext = path.extname(file.name).toLowerCase();
+    const allowedExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.zip', '.rar', '.7z', '.txt', '.csv'];
+
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(ext)) {
       return NextResponse.json(
-        { success: false, error: `File type ${file.type} is not allowed` },
+        { success: false, error: `File type ${file.type || ext} is not allowed` },
         { status: 400 },
       );
     }
