@@ -212,3 +212,38 @@ model Laporan {
 
   categoryRef Category? @relation(fields: [categoryId], references: [id])
 }
+
+model AppIdentity {
+  id                String   @id @default(cuid())
+  // Header
+  appName           String   @default("Badan Keuangan dan Aset Daerah")
+  appShortName      String   @default("BKAD")
+  appSubtitle       String   @default("Kabupaten Seruyan")
+  logoUrl           String   @default("")
+  logoText          String   @default("BK")
+  primaryColor      String   @default("#0D6B3F")
+  secondaryColor    String   @default("#C5960C")
+  darkColor         String   @default("#064E2B")
+  // Top Info Bar
+  phone             String   @default("(0532) 882123")
+  email             String   @default("bkad@seruyankab.go.id")
+  workHours         String   @default("Senin - Jumat, 08:00 - 16:00 WIB")
+  topLinks          String   @default("PPID|SIPD|Lapor!")
+  // Footer
+  address           String   @default("Jl. Trans Kalimantan, Kuala Pembuang, Kab. Seruyan, Kalimantan Tengah 74211")
+  footerDescription String   @default("Badan Keuangan dan Aset Daerah Kabupaten Seruyan, Kalimantan Tengah. Mewujudkan pengelolaan keuangan daerah yang transparan, akuntabel, dan berorientasi pada pelayanan publik.")
+  facebookUrl       String   @default("")
+  instagramUrl      String   @default("")
+  youtubeUrl        String   @default("")
+  twitterUrl        String   @default("")
+  quickLinks        String   @default("Kementerian Dalam Negeri|https://kemendagri.go.id,Pemerintah Kabupaten Seruyan|#")
+  layananLinks      String   @default("Pengelolaan APBD|#")
+  copyrightText     String   @default("Badan Keuangan dan Aset Daerah Kabupaten Seruyan")
+  // Metadata
+  faviconUrl        String   @default("")
+  metaDescription   String   @default("Website resmi Badan Keuangan dan Aset Daerah Kabupaten Seruyan")
+  metaKeywords      String   @default("BKAD, Seruyan, Keuangan Daerah, Aset Daerah")
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

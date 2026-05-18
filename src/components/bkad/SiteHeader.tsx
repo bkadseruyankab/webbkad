@@ -6,6 +6,7 @@ import {
   X,
   Search,
   ChevronDown,
+  Plus,
   House,
   User,
   Newspaper,
@@ -15,6 +16,18 @@ import {
   Users,
   Phone,
   MessageSquare,
+  NewspaperClipping,
+  CalendarDays,
+  Camera,
+  LayoutDashboard,
+  BarChart3,
+  CreditCard,
+  FileCode,
+  UserCheck,
+  BookOpen,
+  Video,
+  PieChart,
+  Tag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +36,46 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
+import { useAppIdentity } from "@/hooks/useAppIdentity";
+
+/* -------------------------------------------------------------------------- */
+/*  Quick-Add module list                                                     */
+/* -------------------------------------------------------------------------- */
+
+interface QuickAddModule {
+  label: string;
+  section: string;
+  icon: React.ElementType;
+}
+
+const quickAddModules: QuickAddModule[] = [
+  { label: "Berita", section: "berita", icon: Newspaper },
+  { label: "Agenda", section: "agenda", icon: CalendarDays },
+  { label: "Galeri", section: "galeri", icon: Camera },
+  { label: "Hero Banner", section: "hero-banner", icon: LayoutDashboard },
+  { label: "Statistik", section: "statistik", icon: BarChart3 },
+  { label: "Layanan", section: "layanan", icon: Users },
+  { label: "Data Keuangan", section: "data-keuangan", icon: CreditCard },
+  { label: "Konten Halaman", section: "konten-halaman", icon: FileCode },
+  { label: "Pejabat", section: "pejabat", icon: UserCheck },
+  { label: "Publikasi", section: "publikasi", icon: BookOpen },
+  { label: "Video", section: "video", icon: Video },
+  { label: "Infografis", section: "infografis", icon: PieChart },
+  { label: "Kategori", section: "kategori", icon: Tag },
+];
+
+/* -------------------------------------------------------------------------- */
+/*  Navigation items                                                          */
+/* -------------------------------------------------------------------------- */
 
 interface NavChild {
   label: string;
@@ -112,8 +164,19 @@ const navItems: NavItem[] = [
   },
 ];
 
-export default function SiteHeader() {
+/* -------------------------------------------------------------------------- */
+/*  Component                                                                 */
+/* -------------------------------------------------------------------------- */
+
+interface SiteHeaderProps {
+  /** Called when an admin clicks a module in the Quick-Add dropdown */
+  onQuickAdd?: (section: string) => void;
+}
+
+export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
   const { navigate, goHome, currentPage } = usePageRouter();
+  const { resolved } = useAppIdentity();
+
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -144,28 +207,75 @@ export default function SiteHeader() {
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo & Title */}
+            {/* Logo & Title — dynamic identity */}
             <div
               className="flex items-center space-x-3 cursor-pointer"
               onClick={goHome}
             >
-              <div className="w-12 h-12 md:w-14 md:h-14 bg-bkad-green rounded-full flex items-center justify-center flex-shrink-0">
+              <div
+                className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: resolved.primaryColor }}
+              >
                 <span className="text-white font-bold text-lg md:text-xl">
-                  BK
+                  {resolved.logoText}
                 </span>
               </div>
               <div className="flex flex-col">
                 <h1 className="text-bkad-dark font-bold text-sm sm:text-base md:text-lg leading-tight">
-                  Badan Keuangan dan Aset Daerah
+                  {resolved.appName}
                 </h1>
-                <p className="text-bkad-green text-xs sm:text-sm font-semibold">
-                  Kabupaten Seruyan
+                <p
+                  className="text-xs sm:text-sm font-semibold"
+                  style={{ color: resolved.primaryColor }}
+                >
+                  {resolved.appSubtitle}
                 </p>
               </div>
             </div>
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center space-x-2">
+              {/* Quick-Add Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-bkad-dark hover:bg-bkad-green/10 hover:text-bkad-green"
+                    aria-label="Quick Add"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-56 max-h-96 overflow-y-auto"
+                >
+                  <DropdownMenuLabel className="flex items-center gap-2">
+                    <Plus
+                      className="w-4 h-4"
+                      style={{ color: resolved.primaryColor }}
+                    />
+                    <span>Tambah Cepat</span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {quickAddModules.map((mod) => (
+                    <DropdownMenuItem
+                      key={mod.section}
+                      onClick={() => onQuickAdd?.(mod.section)}
+                      className="cursor-pointer flex items-center gap-2 px-3 py-2 text-sm hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                    >
+                      <mod.icon
+                        className="w-4 h-4"
+                        style={{ color: resolved.primaryColor }}
+                      />
+                      <span>{mod.label}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Search Button */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -201,12 +311,17 @@ export default function SiteHeader() {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-80 p-0">
                   <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
-                  <div className="bg-bkad-green text-white p-4">
+                  <div
+                    className="text-white p-4"
+                    style={{ backgroundColor: resolved.primaryColor }}
+                  >
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="font-bold text-lg">BKAD</h2>
+                        <h2 className="font-bold text-lg">
+                          {resolved.appShortName || resolved.logoText}
+                        </h2>
                         <p className="text-sm text-white/80">
-                          Kabupaten Seruyan
+                          {resolved.appSubtitle}
                         </p>
                       </div>
                       <Button
@@ -291,7 +406,10 @@ export default function SiteHeader() {
       </header>
 
       {/* Desktop Navigation Bar */}
-      <nav className="bg-bkad-green text-white shadow-lg sticky top-16 md:top-20 z-40 overflow-visible">
+      <nav
+        className="text-white shadow-lg sticky top-16 md:top-20 z-40 overflow-visible"
+        style={{ backgroundColor: resolved.primaryColor }}
+      >
         <div className="container mx-auto px-4">
           <div className="hidden lg:flex items-center justify-center w-full">
             {navItems.map((item) => (

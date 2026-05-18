@@ -26,6 +26,23 @@ import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
 
+// Map quick-add section strings from SiteHeader to AdminPanel Section type
+const quickAddSectionMap: Record<string, string> = {
+  berita: "news",
+  agenda: "agenda",
+  galeri: "gallery",
+  "hero-banner": "hero-slides",
+  statistik: "stats",
+  layanan: "services",
+  "data-keuangan": "financial-data",
+  "konten-halaman": "page-content",
+  pejabat: "officials",
+  publikasi: "publications",
+  video: "videos",
+  infografis: "infographics",
+  kategori: "categories",
+};
+
 function PageRouter() {
   const { currentPage, detailId } = usePageRouter();
 
@@ -170,21 +187,29 @@ function PageRouter() {
 export default function Home() {
   const [showAdmin, setShowAdmin] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [adminSection, setAdminSection] = useState<string | undefined>(undefined);
 
   const handleAdminClose = useCallback(() => {
     setShowAdmin(false);
+    setAdminSection(undefined);
     setRefreshKey((prev) => prev + 1);
+  }, []);
+
+  const handleQuickAdd = useCallback((section: string) => {
+    const mappedSection = quickAddSectionMap[section] || section;
+    setAdminSection(mappedSection);
+    setShowAdmin(true);
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Admin Panel Overlay */}
-      {showAdmin && <AdminPanel onClose={handleAdminClose} />}
+      {showAdmin && <AdminPanel onClose={handleAdminClose} initialSection={adminSection as any} />}
 
       {/* Main Website */}
       <div style={{ display: showAdmin ? "none" : undefined }}>
         <TopInfoBar />
-        <SiteHeader />
+        <SiteHeader onQuickAdd={handleQuickAdd} />
         <main className="flex-1" key={refreshKey}>
           <PageRouter />
         </main>

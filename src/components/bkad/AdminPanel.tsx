@@ -31,6 +31,7 @@ import {
   Wifi,
   WifiOff,
   HardDrive,
+  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/bkad/ImageUpload";
+import PengaturanIdentitasSection from "@/components/bkad/PengaturanIdentitasSection";
 import { blobStore } from "@/lib/blob-store";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -213,7 +215,8 @@ type Section =
   | "publications"
   | "videos"
   | "infographics"
-  | "laporan";
+  | "laporan"
+  | "app-identity";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -272,8 +275,8 @@ const laporanStatusOptions = [
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
-export default function AdminPanel({ onClose }: { onClose: () => void }) {
-  const [activeSection, setActiveSection] = useState<Section>("dashboard");
+export default function AdminPanel({ onClose, initialSection }: { onClose: () => void; initialSection?: Section }) {
+  const [activeSection, setActiveSection] = useState<Section>(initialSection || "dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { toast } = useToast();
 
@@ -392,6 +395,13 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     return () => clearInterval(interval);
   }, [fetchData, updateBlobStatus]);
 
+  // Update section when initialSection prop changes
+  useEffect(() => {
+    if (initialSection) {
+      setActiveSection(initialSection);
+    }
+  }, [initialSection]);
+
   // ─── CRUD Handlers ────────────────────────────────────────────────────────
 
   const getApiBase = (section: Section): string => {
@@ -411,6 +421,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       videos: "/api/videos",
       infographics: "/api/infographics",
       laporan: "/api/laporan",
+      "app-identity": "/api/app-identity",
     };
     return map[section];
   };
@@ -613,6 +624,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     { key: "videos", label: "Video", icon: Video, count: videos.length },
     { key: "infographics", label: "Infografis", icon: BarChart3, count: infographics.length },
     { key: "laporan", label: "Laporan", icon: MessageSquare, count: laporan.length },
+    { key: "app-identity", label: "Identitas Aplikasi", icon: Globe, count: 0 },
   ];
 
   // ─── Render Form Fields ───────────────────────────────────────────────────
@@ -1705,6 +1717,8 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
 
   const renderDataTable = () => {
     switch (activeSection) {
+      case "app-identity":
+        return <PengaturanIdentitasSection />;
       case "categories":
         return (
           <div className="space-y-3">
@@ -2356,7 +2370,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
               <RefreshCw className="w-4 h-4" />
               <span className="hidden sm:inline">Refresh</span>
             </Button>
-            {activeSection !== "dashboard" && (
+            {activeSection !== "dashboard" && activeSection !== "app-identity" && (
               <Button
                 size="sm"
                 onClick={openCreateModal}

@@ -1,50 +1,46 @@
 "use client";
 
 import { Phone, Mail, Clock, ChevronRight } from "lucide-react";
+import { useAppIdentity, parseLinks } from "@/hooks/useAppIdentity";
 
 export default function TopInfoBar() {
+  const { resolved } = useAppIdentity();
+  const links = parseLinks(resolved.topLinks);
+
   return (
-    <div className="bg-bkad-dark text-white/80 text-xs">
+    <div
+      className="bg-bkad-dark text-white/80 text-xs"
+      style={{ backgroundColor: resolved.darkColor }}
+    >
       <div className="container mx-auto px-4">
         <div className="flex flex-col sm:flex-row items-center justify-between py-1.5 gap-1">
           <div className="flex items-center gap-4 flex-wrap justify-center">
             <span className="flex items-center gap-1">
               <Phone className="w-3 h-3" />
-              (0532) 882123
+              {resolved.phone}
             </span>
             <span className="flex items-center gap-1">
               <Mail className="w-3 h-3" />
-              bkad@seruyankab.go.id
+              {resolved.email}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              Senin - Jumat, 08:00 - 16:00 WIB
+              {resolved.workHours}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <a
-              href="#"
-              className="hover:text-bkad-gold transition-colors flex items-center gap-0.5"
-            >
-              PPID
-              <ChevronRight className="w-3 h-3" />
-            </a>
-            <span className="text-white/30">|</span>
-            <a
-              href="#"
-              className="hover:text-bkad-gold transition-colors flex items-center gap-0.5"
-            >
-              SIPD
-              <ChevronRight className="w-3 h-3" />
-            </a>
-            <span className="text-white/30">|</span>
-            <a
-              href="#"
-              className="hover:text-bkad-gold transition-colors flex items-center gap-0.5"
-            >
-              Lapor!
-              <ChevronRight className="w-3 h-3" />
-            </a>
+            {links.map((link, idx) => (
+              <span key={idx} className="flex items-center gap-2">
+                {idx > 0 && <span className="text-white/30">|</span>}
+                <a
+                  href={link.url || "#"}
+                  className="hover:text-bkad-gold transition-colors flex items-center gap-0.5"
+                >
+                  {link.label}
+                  <ChevronRight className="w-3 h-3" />
+                </a>
+              </span>
+            ))}
           </div>
         </div>
       </div>

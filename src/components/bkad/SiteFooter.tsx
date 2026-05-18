@@ -10,26 +10,14 @@ import {
   Instagram,
   Youtube,
 } from "lucide-react";
-
-const quickLinks = [
-  { label: "Kementerian Dalam Negeri", url: "https://kemendagri.go.id" },
-  { label: "Pemerintah Kabupaten Seruyan", url: "#" },
-  { label: "DPRD Kabupaten Seruyan", url: "#" },
-  { label: "BPK Perwakilan Kalteng", url: "#" },
-  { label: "DJPK Kemenkeu", url: "#" },
-  { label: "SIPD Kabupaten Seruyan", url: "#" },
-];
-
-const layananLinks = [
-  { label: "Pengelolaan APBD", url: "#" },
-  { label: "Pengelolaan PAD", url: "#" },
-  { label: "Pengelolaan Aset", url: "#" },
-  { label: "PBB P2", url: "#" },
-  { label: "Laporan Keuangan", url: "#" },
-  { label: "Perencanaan Anggaran", url: "#" },
-];
+import { useAppIdentity, parseLinks } from "@/hooks/useAppIdentity";
 
 export default function SiteFooter() {
+  const { resolved } = useAppIdentity();
+
+  const quickLinks = parseLinks(resolved.quickLinks);
+  const layananLinks = parseLinks(resolved.layananLinks);
+
   return (
     <footer
       id="kontak"
@@ -48,41 +36,51 @@ export default function SiteFooter() {
           {/* About */}
           <div>
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-bkad-green rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">BK</span>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: resolved.primaryColor }}>
+                <span className="text-white font-bold text-sm">{resolved.logoText}</span>
               </div>
               <div>
-                <h3 className="font-bold text-sm">BKAD</h3>
-                <p className="text-xs text-white/60">Kabupaten Seruyan</p>
+                <h3 className="font-bold text-sm">{resolved.appShortName}</h3>
+                <p className="text-xs text-white/60">{resolved.appSubtitle}</p>
               </div>
             </div>
             <p className="text-white/70 text-sm leading-relaxed mb-4">
-              Badan Keuangan dan Aset Daerah Kabupaten Seruyan, Kalimantan
-              Tengah. Mewujudkan pengelolaan keuangan daerah yang transparan,
-              akuntabel, dan berorientasi pada pelayanan publik.
+              {resolved.footerDescription}
             </p>
             <div className="flex space-x-3">
-              <a
-                href="#"
-                className="w-9 h-9 rounded-lg bg-white/10 hover:bg-bkad-green flex items-center justify-center transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                className="w-9 h-9 rounded-lg bg-white/10 hover:bg-bkad-green flex items-center justify-center transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                className="w-9 h-9 rounded-lg bg-white/10 hover:bg-bkad-green flex items-center justify-center transition-colors"
-                aria-label="YouTube"
-              >
-                <Youtube className="w-4 h-4" />
-              </a>
+              {resolved.facebookUrl && (
+                <a
+                  href={resolved.facebookUrl}
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-bkad-green flex items-center justify-center transition-colors"
+                  aria-label="Facebook"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Facebook className="w-4 h-4" />
+                </a>
+              )}
+              {resolved.instagramUrl && (
+                <a
+                  href={resolved.instagramUrl}
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-bkad-green flex items-center justify-center transition-colors"
+                  aria-label="Instagram"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
+              )}
+              {resolved.youtubeUrl && (
+                <a
+                  href={resolved.youtubeUrl}
+                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-bkad-green flex items-center justify-center transition-colors"
+                  aria-label="YouTube"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Youtube className="w-4 h-4" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -131,26 +129,25 @@ export default function SiteFooter() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-bkad-gold flex-shrink-0 mt-0.5" />
                 <span className="text-white/70 text-sm">
-                  Jl. Trans Kalimantan, Kuala Pembuang, Kab. Seruyan, Kalimantan
-                  Tengah 74211
+                  {resolved.address}
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-bkad-gold flex-shrink-0" />
                 <span className="text-white/70 text-sm">
-                  (0532) 882123
+                  {resolved.phone}
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-bkad-gold flex-shrink-0" />
                 <span className="text-white/70 text-sm">
-                  bkad@seruyankab.go.id
+                  {resolved.email}
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-bkad-gold flex-shrink-0" />
                 <span className="text-white/70 text-sm">
-                  Senin - Jumat, 08:00 - 16:00 WIB
+                  {resolved.workHours}
                 </span>
               </li>
             </ul>
@@ -161,8 +158,7 @@ export default function SiteFooter() {
         <div className="border-t border-white/10 pt-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-white/50 text-xs text-center md:text-left">
-              © {new Date().getFullYear()} Badan Keuangan dan Aset Daerah
-              Kabupaten Seruyan. Hak Cipta Dilindungi Undang-Undang.
+              © {new Date().getFullYear()} {resolved.copyrightText}. Hak Cipta Dilindungi Undang-Undang.
             </p>
             <div className="flex items-center gap-4 text-xs text-white/50">
               <a href="#" className="hover:text-bkad-gold transition-colors">
