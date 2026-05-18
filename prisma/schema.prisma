@@ -7,6 +7,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String   @default("")
+  module      String   @default("general")
+  color       String   @default("#0D6B3F")
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  news        News[]
+  publications Publication[]
+  laporan     Laporan[]
+  gallery     Gallery[]
+}
+
+model BlobFile {
+  id          String   @id @default(cuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int
+  compressedSize Int   @default(0)
+  width       Int      @default(0)
+  height      Int      @default(0)
+  path        String
+  thumbnailPath String @default("")
+  category    String   @default("general")
+  altText     String   @default("")
+  synced      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model HeroSlide {
   id        String   @id @default(cuid())
   title     String
@@ -19,18 +55,21 @@ model HeroSlide {
 }
 
 model News {
-  id        String   @id @default(cuid())
-  title     String
-  excerpt   String
-  content   String   @default("")
-  date      String
-  category  String
-  image     String
-  readTime  String
-  order     Int      @default(0)
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  title      String
+  excerpt    String
+  content    String   @default("")
+  date       String
+  category   String
+  categoryId String?
+  image      String
+  readTime   String
+  order      Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  categoryRef Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Agenda {
@@ -46,13 +85,16 @@ model Agenda {
 }
 
 model Gallery {
-  id        String   @id @default(cuid())
-  image     String
-  caption   String
-  order     Int      @default(0)
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  image      String
+  caption    String
+  order      Int      @default(0)
+  active     Boolean  @default(true)
+  categoryId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  categoryRef Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Stat {
@@ -70,27 +112,27 @@ model Stat {
 }
 
 model Service {
-  id        String   @id @default(cuid())
-  icon      String
-  title     String
+  id          String   @id @default(cuid())
+  icon        String
+  title       String
   description String
-  content   String   @default("")
-  color     String
-  bgColor   String
-  order     Int      @default(0)
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  content     String   @default("")
+  color       String
+  bgColor     String
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model FinancialData {
-  id        String   @id @default(cuid())
-  year      String
+  id         String   @id @default(cuid())
+  year       String
   pendapatan Int
   belanja    Int
   realisasi  Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model PageContent {
@@ -120,6 +162,7 @@ model Publication {
   title       String
   description String
   category    String
+  categoryId  String?
   fileUrl     String   @default("")
   coverImage  String   @default("")
   date        String
@@ -127,6 +170,8 @@ model Publication {
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  categoryRef Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Video {
@@ -153,14 +198,17 @@ model Infographic {
 }
 
 model Laporan {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @default("")
-  phone     String   @default("")
-  subject   String
-  message   String
-  category  String   @default("umum")
-  status    String   @default("baru")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @default("")
+  phone      String   @default("")
+  subject    String
+  message    String
+  category   String   @default("umum")
+  categoryId String?
+  status     String   @default("baru")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  categoryRef Category? @relation(fields: [categoryId], references: [id])
 }
