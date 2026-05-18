@@ -2366,7 +2366,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   // ─── Main Render ──────────────────────────────────────────────────────────
 
   return (
-    <div className="fixed inset-0 z-[100] bg-gray-50 flex">
+    <div className="fixed inset-0 z-40 bg-gray-50 flex">
       {/* Sidebar */}
       <aside
         className={`bg-bkad-dark text-white flex flex-col transition-all duration-300 ${
