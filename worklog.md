@@ -52,3 +52,36 @@ Stage Summary:
 - Fixed hydration mismatch by removing sessionStorage-based showAdmin initialization and using Tailwind classes
 - Both console errors resolved
 - IKM feature is already complete from previous session (API routes, pages, admin section all working)
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Refactor navbar to show static parent menus efficiently, and reorganize AdminPanel sidebar into grouped categories
+
+Work Log:
+- Analyzed current SiteHeader navbar: 10 static items (Beranda, Profil, Berita, Info Publik, Publikasi, Media, Layanan, Laporan, Survei IKM, Kontak) + dynamic menus - too many taking up space
+- Removed "Informasi Publik" from navbar (it was a standalone item with no children and just a static page - now consolidated)
+- Refactored navbar to show only parent menu items with compact dropdowns for children
+- Added `isParentActive()` helper function for active state highlighting on parent items when any child is active
+- Improved desktop navbar: consistent `px-4 xl:px-5` spacing, smaller chevrons (w-3.5 h-3.5), active state with `bg-white/15`
+- Improved tablet navbar: added `scrollbar-none` class for clean horizontal scroll
+- Mobile menu: added active state highlighting for current child pages
+- Analyzed current AdminPanel sidebar: 20 flat items making it cluttered and hard to navigate
+- Reorganized sidebar into 6 collapsible groups with category headers:
+  - **Umum**: Dashboard
+  - **Konten**: Hero Banner, Berita, Agenda, Galeri, Konten Halaman
+  - **Publikasi & Media**: Publikasi, Video, Infografis
+  - **Layanan & Data**: Layanan, Data Keuangan, Statistik, Pejabat
+  - **Interaksi**: Laporan, IKM, Balon Iklan
+  - **Pengaturan**: Kategori, Menu Navbar, Pengguna, Identitas
+- Added collapsible group state (`collapsedGroups`) with ChevronDown toggle
+- Group headers highlight in gold when containing active item
+- Made sidebar narrower (w-52 from w-60) and items more compact (py-2, text-xs, icons w-4 h-4)
+- When sidebar is collapsed, group headers show as subtle dividers
+
+Stage Summary:
+- Navbar now shows 9 parent items efficiently (removed redundant "Informasi Publik")
+- Active state highlights work for both parent and child pages
+- AdminPanel sidebar organized into 6 collapsible groups instead of 20 flat items
+- Sidebar is more compact and easier to navigate
+- All changes pass lint (0 errors, 2 pre-existing warnings)

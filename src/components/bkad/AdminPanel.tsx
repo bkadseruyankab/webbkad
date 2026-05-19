@@ -14,6 +14,7 @@ import {
   Save,
   X,
   ChevronLeft,
+  ChevronDown,
   ToggleLeft,
   ToggleRight,
   Building2,
@@ -392,6 +393,7 @@ const laporanStatusOptions = [
 export default function AdminPanel({ onClose, initialSection }: { onClose: () => void; initialSection?: Section }) {
   const [activeSection, setActiveSection] = useState<Section>(initialSection || "dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
 
   // ─── Data States ──────────────────────────────────────────────────────────
@@ -796,27 +798,59 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
 
   // ─── Sidebar Menu ─────────────────────────────────────────────────────────
 
-  const menuItems: { key: Section; label: string; icon: React.ElementType; count: number }[] = [
-    { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, count: 0 },
-    { key: "categories", label: "Kategori", icon: Tag, count: categories.length },
-    { key: "navbar-menus", label: "Menu Navbar", icon: Building2, count: navbarMenus.length },
-    { key: "hero-slides", label: "Hero Banner", icon: ImageIcon, count: heroSlides.length },
-    { key: "news", label: "Berita", icon: Newspaper, count: news.length },
-    { key: "agenda", label: "Agenda", icon: Calendar, count: agenda.length },
-    { key: "gallery", label: "Galeri", icon: ImageIcon, count: gallery.length },
-    { key: "stats", label: "Statistik", icon: TrendingUp, count: stats.length },
-    { key: "services", label: "Layanan", icon: Settings, count: services.length },
-    { key: "financial-data", label: "Data Keuangan", icon: BarChart3, count: financialData.length },
-    { key: "page-content", label: "Konten Halaman", icon: FileText, count: pageContents.length },
-    { key: "officials", label: "Pejabat", icon: Users, count: officials.length },
-    { key: "publications", label: "Publikasi", icon: BookOpen, count: publications.length },
-    { key: "videos", label: "Video", icon: Video, count: videos.length },
-    { key: "infographics", label: "Infografis", icon: BarChart3, count: infographics.length },
-    { key: "laporan", label: "Laporan", icon: MessageSquare, count: laporan.length },
-    { key: "users", label: "Pengguna", icon: Users, count: users.length },
-    { key: "app-identity", label: "Identitas Aplikasi", icon: Globe, count: 0 },
-    { key: "ad-bubbles", label: "Balon Iklan", icon: MessageSquare, count: adBubbles.length },
-    { key: "ikm", label: "IKM", icon: ClipboardCheck, count: 0 },
+  // ─── Sidebar Menu (Grouped) ─────────────────────────────────────────────────
+
+  const sidebarGroups: { label: string; items: { key: Section; label: string; icon: React.ElementType; count: number }[] }[] = [
+    {
+      label: "Umum",
+      items: [
+        { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, count: 0 },
+      ],
+    },
+    {
+      label: "Konten",
+      items: [
+        { key: "hero-slides", label: "Hero Banner", icon: ImageIcon, count: heroSlides.length },
+        { key: "news", label: "Berita", icon: Newspaper, count: news.length },
+        { key: "agenda", label: "Agenda", icon: Calendar, count: agenda.length },
+        { key: "gallery", label: "Galeri", icon: ImageIcon, count: gallery.length },
+        { key: "page-content", label: "Konten Halaman", icon: FileText, count: pageContents.length },
+      ],
+    },
+    {
+      label: "Publikasi & Media",
+      items: [
+        { key: "publications", label: "Publikasi", icon: BookOpen, count: publications.length },
+        { key: "videos", label: "Video", icon: Video, count: videos.length },
+        { key: "infographics", label: "Infografis", icon: BarChart3, count: infographics.length },
+      ],
+    },
+    {
+      label: "Layanan & Data",
+      items: [
+        { key: "services", label: "Layanan", icon: Settings, count: services.length },
+        { key: "financial-data", label: "Data Keuangan", icon: BarChart3, count: financialData.length },
+        { key: "stats", label: "Statistik", icon: TrendingUp, count: stats.length },
+        { key: "officials", label: "Pejabat", icon: Users, count: officials.length },
+      ],
+    },
+    {
+      label: "Interaksi",
+      items: [
+        { key: "laporan", label: "Laporan", icon: MessageSquare, count: laporan.length },
+        { key: "ikm", label: "IKM", icon: ClipboardCheck, count: 0 },
+        { key: "ad-bubbles", label: "Balon Iklan", icon: MessageSquare, count: adBubbles.length },
+      ],
+    },
+    {
+      label: "Pengaturan",
+      items: [
+        { key: "categories", label: "Kategori", icon: Tag, count: categories.length },
+        { key: "navbar-menus", label: "Menu Navbar", icon: Building2, count: navbarMenus.length },
+        { key: "users", label: "Pengguna", icon: Users, count: users.length },
+        { key: "app-identity", label: "Identitas", icon: Globe, count: 0 },
+      ],
+    },
   ];
 
   // ─── Render Form Fields ───────────────────────────────────────────────────
@@ -3527,7 +3561,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     <div className="fixed inset-0 z-40 flex bg-gray-50">
       {/* ─── Sidebar ──────────────────────────────────────────────────────── */}
       <aside
-        className={`${sidebarOpen ? "w-60" : "w-16"} bg-bkad-dark flex flex-col transition-all duration-300 flex-shrink-0`}
+        className={`${sidebarOpen ? "w-52" : "w-14"} bg-bkad-dark flex flex-col transition-all duration-300 flex-shrink-0`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-white/10">
@@ -3547,34 +3581,58 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
 
         {/* Menu */}
         <nav className="flex-1 overflow-y-auto py-2">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeSection === item.key;
+          {sidebarGroups.map((group) => {
+            const isCollapsed = collapsedGroups[group.label] ?? false;
+            // Check if any item in this group is active
+            const hasActive = group.items.some((item) => item.key === activeSection);
             return (
-              <button
-                key={item.key}
-                onClick={() => setActiveSection(item.key)}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-                  isActive
-                    ? "bg-bkad-green text-white"
-                    : "text-white/70 hover:bg-white/10 hover:text-white"
-                }`}
-                title={!sidebarOpen ? item.label : undefined}
-              >
-                <Icon className="w-5 h-5 flex-shrink-0" />
-                {sidebarOpen && (
-                  <>
-                    <span className="text-sm flex-1">{item.label}</span>
-                    {item.count > 0 && (
-                      <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                        isActive ? "bg-white/20 text-white" : "bg-white/10 text-white/50"
-                      }`}>
-                        {item.count}
-                      </span>
-                    )}
-                  </>
+              <div key={group.label}>
+                {/* Group Header */}
+                {sidebarOpen ? (
+                  <button
+                    onClick={() => setCollapsedGroups((prev) => ({ ...prev, [group.label]: !isCollapsed }))}
+                    className={`w-full flex items-center justify-between px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                      hasActive ? "text-bkad-gold" : "text-white/40 hover:text-white/60"
+                    }`}
+                  >
+                    <span>{group.label}</span>
+                    <ChevronDown className={`w-3 h-3 transition-transform ${isCollapsed ? "-rotate-90" : ""}`} />
+                  </button>
+                ) : (
+                  <div className="h-px bg-white/10 mx-2 my-1" />
                 )}
-              </button>
+                {/* Group Items */}
+                {!isCollapsed && group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeSection === item.key;
+                  return (
+                    <button
+                      key={item.key}
+                      onClick={() => setActiveSection(item.key)}
+                      className={`w-full flex items-center gap-3 px-4 py-2 text-left transition-colors ${
+                        isActive
+                          ? "bg-bkad-green text-white"
+                          : "text-white/70 hover:bg-white/10 hover:text-white"
+                      }`}
+                      title={!sidebarOpen ? item.label : undefined}
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      {sidebarOpen && (
+                        <>
+                          <span className="text-xs flex-1">{item.label}</span>
+                          {item.count > 0 && (
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                              isActive ? "bg-white/20 text-white" : "bg-white/10 text-white/50"
+                            }`}>
+                              {item.count}
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             );
           })}
         </nav>

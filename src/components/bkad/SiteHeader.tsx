@@ -134,7 +134,7 @@ const quickAddModules: QuickAddModule[] = [
 ];
 
 /* -------------------------------------------------------------------------- */
-/*  Static navigation items (built-in SPA pages)                              */
+/*  Compact navbar items – parent menus only, children in dropdowns           */
 /* -------------------------------------------------------------------------- */
 
 interface NavChild {
@@ -150,6 +150,8 @@ interface NavItem {
   isStatic?: boolean;
 }
 
+// Consolidated navbar: only show main parent menu items
+// Children are accessible via dropdown on hover/click
 const staticNavItems: NavItem[] = [
   {
     label: "Beranda",
@@ -175,13 +177,6 @@ const staticNavItems: NavItem[] = [
     label: "Berita",
     page: "berita",
     icon: Newspaper,
-    children: null,
-    isStatic: true,
-  },
-  {
-    label: "Informasi Publik",
-    page: "informasi-publik",
-    icon: Shield,
     children: null,
     isStatic: true,
   },
@@ -316,8 +311,6 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
   const allNavItems = [...staticNavItems];
 
   // Add dynamic menus after static ones
-  // For dynamic menus, we store the full DynamicNavItem reference so the
-  // rendering code can generate proper <Link> elements instead of SPA navigation.
   for (const dm of dynamicMenus) {
     const IconComp = resolveIcon(dm.icon);
     allNavItems.push({
@@ -334,6 +327,15 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
       isStatic: false,
     });
   }
+
+  // Check if any child page is currently active (for highlighting parent)
+  const isParentActive = (item: NavItem) => {
+    if (currentPage === item.page) return true;
+    if (item.children) {
+      return item.children.some((child) => currentPage === child.page);
+    }
+    return false;
+  };
 
   return (
     <>
@@ -569,7 +571,11 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                             {item.children.map((child) => (
                               <button
                                 key={child.label}
-                                className="block w-full text-left px-8 py-2.5 text-sm text-gray-600 hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                                className={`block w-full text-left px-8 py-2.5 text-sm transition-colors ${
+                                  currentPage === child.page
+                                    ? "bg-bkad-light text-bkad-green font-medium"
+                                    : "text-gray-600 hover:bg-bkad-light hover:text-bkad-green"
+                                }`}
                                 onClick={() => handleNavClick(child.page)}
                               >
                                 {child.label}
@@ -625,12 +631,13 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
         )}
       </header>
 
-      {/* Desktop Navigation Bar */}
+      {/* Desktop Navigation Bar - Compact & Efficient */}
       <nav
         className="text-white shadow-lg sticky top-16 md:top-20 z-40 overflow-visible"
         style={{ backgroundColor: resolved.primaryColor }}
       >
         <div className="container mx-auto px-4">
+          {/* Desktop: Show parent menu items only, children via dropdown */}
           <div className="hidden lg:flex items-center justify-center w-full">
             {allNavItems.map((item, idx) => {
               const dynamicSlug = dynamicMenus.find(dm => dm.label === item.label)?.slug;
@@ -648,20 +655,22 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                     >
                       <Link
                         href={`/${dynamicSlug}`}
-                        className="flex items-center px-3 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap group"
+                        className={`flex items-center px-4 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap group ${
+                          isParentActive(item) ? "bg-white/15" : ""
+                        }`}
                       >
                         <item.icon className="w-4 h-4 mr-2" />
                         <span>{item.label}</span>
-                        <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
+                        <ChevronDown className="w-3.5 h-3.5 ml-1 group-hover:rotate-180 transition-transform duration-200" />
                       </Link>
                       <div
-                        className={`absolute top-full left-0 w-56 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
+                        className={`absolute top-full left-0 w-52 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
                           openDropdown === `dyn-${idx}`
                             ? "opacity-100 visible translate-y-0"
                             : "opacity-0 invisible -translate-y-2"
                         }`}
                       >
-                        <div className="py-2">
+                        <div className="py-1.5">
                           {dm.children.map((child) => (
                             <Link
                               key={child.id}
@@ -683,7 +692,9 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                   <Link
                     key={`dyn-${idx}`}
                     href={`/${dynamicSlug}`}
-                    className="flex items-center px-3 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap"
+                    className={`flex items-center px-4 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap ${
+                      isParentActive(item) ? "bg-white/15" : ""
+                    }`}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
                     <span>{item.label}</span>
@@ -692,39 +703,47 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
               }
 
               // Static SPA menu item
+              const hasChildren = item.children && item.children.length > 0;
+              const active = isParentActive(item);
+
               return (
                 <div
                   key={`static-${idx}`}
                   className="relative group"
                   onMouseEnter={() =>
-                    item.children && setOpenDropdown(`static-${idx}`)
+                    hasChildren && setOpenDropdown(`static-${idx}`)
                   }
                   onMouseLeave={() => setOpenDropdown(null)}
                 >
                   <button
-                    onClick={() => handleNavClick(item.page)}
-                    className={`flex items-center px-3 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap group ${
-                      !item.children && currentPage === item.page
-                        ? "bg-white/20"
-                        : ""
+                    onClick={() => {
+                      if (hasChildren) {
+                        // Navigate to first child or main page
+                        handleNavClick(item.page);
+                      } else {
+                        handleNavClick(item.page);
+                      }
+                    }}
+                    className={`flex items-center px-4 xl:px-5 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200 whitespace-nowrap group ${
+                      active ? "bg-white/15" : ""
                     }`}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
                     <span>{item.label}</span>
-                    {item.children && (
-                      <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform duration-200" />
+                    {hasChildren && (
+                      <ChevronDown className="w-3.5 h-3.5 ml-1 group-hover:rotate-180 transition-transform duration-200" />
                     )}
                   </button>
-                  {item.children && (
+                  {hasChildren && (
                     <div
-                      className={`absolute top-full left-0 w-56 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
+                      className={`absolute top-full left-0 w-52 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
                         openDropdown === `static-${idx}`
                           ? "opacity-100 visible translate-y-0"
                           : "opacity-0 invisible -translate-y-2"
                       }`}
                     >
-                      <div className="py-2">
-                        {item.children.map((child) => (
+                      <div className="py-1.5">
+                        {item.children!.map((child) => (
                           <button
                             key={child.label}
                             onClick={() => handleNavClick(child.page)}
@@ -745,17 +764,20 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
             })}
           </div>
 
-          {/* Tablet Navigation */}
-          <div className="hidden md:flex lg:hidden overflow-x-auto py-1">
+          {/* Tablet Navigation - Compact horizontal scroll */}
+          <div className="hidden md:flex lg:hidden overflow-x-auto py-1 scrollbar-none">
             {allNavItems.map((item, idx) => {
               const dynamicSlug = dynamicMenus.find(dm => dm.label === item.label)?.slug;
+              const active = isParentActive(item);
 
               if (!item.isStatic && dynamicSlug) {
                 return (
                   <Link
                     key={`tab-dyn-${idx}`}
                     href={`/${dynamicSlug}`}
-                    className="flex items-center px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap"
+                    className={`flex items-center px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap ${
+                      active ? "bg-white/15" : ""
+                    }`}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
                     {item.label}
@@ -768,7 +790,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                   key={`tab-static-${idx}`}
                   onClick={() => handleNavClick(item.page)}
                   className={`flex items-center px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10 transition-colors whitespace-nowrap ${
-                    currentPage === item.page ? "bg-white/20" : ""
+                    active ? "bg-white/15" : ""
                   }`}
                 >
                   <item.icon className="w-4 h-4 mr-2" />
