@@ -330,6 +330,73 @@ model AppIdentity {
   updatedAt         DateTime @updatedAt
 }
 
+model IkmUnit {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  description String   @default("")
+  headName    String   @default("")
+  address     String   @default("")
+  phone       String   @default("")
+  email       String   @default("")
+  active      Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  responses   IkmResponse[]
+}
+
+model IkmSurveyPeriod {
+  id          String   @id @default(cuid())
+  title       String
+  period      String   @default("")
+  startDate   String   @default("")
+  endDate     String   @default("")
+  active      Boolean  @default(true)
+  description String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  responses   IkmResponse[]
+}
+
+model IkmResponse {
+  id              String   @id @default(cuid())
+  unitId          String
+  surveyPeriodId  String
+
+  // 9 Standard IKM Indicators (Permenpan-RB 14/2017) - Rating 1-4
+  ind1            Int      @default(0)  // Persyaratan pelayanan
+  ind2            Int      @default(0)  // Prosedur pelayanan
+  ind3            Int      @default(0)  // Waktu pelayanan
+  ind4            Int      @default(0)  // Biaya/tarif pelayanan
+  ind5            Int      @default(0)  // Produk pelayanan
+  ind6            Int      @default(0)  // Kompetensi petugas
+  ind7            Int      @default(0)  // Perilaku petugas
+  ind8            Int      @default(0)  // Penanganan pengaduan
+  ind9            Int      @default(0)  // Sarana dan prasarana
+
+  // Respondent demographics (optional for anonymity)
+  respondentName  String   @default("")
+  respondentAge   String   @default("")
+  respondentGender String  @default("")
+  respondentEdu   String   @default("")
+  respondentJob   String   @default("")
+
+  suggestions     String   @default("")
+
+  // Metadata
+  ipAddress       String   @default("")
+  userAgent       String   @default("")
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  unit            IkmUnit         @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  surveyPeriod    IkmSurveyPeriod @relation(fields: [surveyPeriodId], references: [id], onDelete: Cascade)
+}
+
 model AdBubble {
   id              String   @id @default(cuid())
   title           String

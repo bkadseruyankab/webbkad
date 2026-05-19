@@ -34,6 +34,7 @@ import {
   Globe,
   RotateCcw,
   ExternalLink,
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +56,7 @@ import { resolveFileUrl } from "@/lib/utils";
 import { blobStore } from "@/lib/blob-store";
 import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
 import { useSetupStore } from "@/stores/useSetupStore";
+import { usePageRouter } from "@/stores/usePageRouter";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -276,7 +278,8 @@ type Section =
   | "laporan"
   | "users"
   | "app-identity"
-  | "ad-bubbles";
+  | "ad-bubbles"
+  | "ikm";
 
 interface AdBubbleItem {
   id: string;
@@ -582,6 +585,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       users: "/api/users",
       "app-identity": "/api/app-identity",
       "ad-bubbles": "/api/ad-bubbles",
+      ikm: "",
     };
     return map[section];
   };
@@ -811,6 +815,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     { key: "users", label: "Pengguna", icon: Users, count: users.length },
     { key: "app-identity", label: "Identitas Aplikasi", icon: Globe, count: 0 },
     { key: "ad-bubbles", label: "Balon Iklan", icon: MessageSquare, count: adBubbles.length },
+    { key: "ikm", label: "IKM", icon: ClipboardCheck, count: 0 },
   ];
 
   // ─── Render Form Fields ───────────────────────────────────────────────────
@@ -3164,6 +3169,107 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     }
   };
 
+  // ─── Render IKM Section ───────────────────────────────────────────────────
+
+  const renderIkmSection = () => {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-br from-bkad-dark via-bkad-green to-bkad-green rounded-2xl p-8 text-white">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+              <ClipboardCheck className="w-8 h-8" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">Indeks Kepuasan Masyarakat (IKM)</h2>
+              <p className="text-white/80 text-sm">Sesuai Permenpan-RB No. 14 Tahun 2017</p>
+            </div>
+          </div>
+          <p className="text-white/90 mb-6 leading-relaxed">
+            Sistem survei kepuasan masyarakat terintegrasi untuk mengukur kualitas pelayanan publik. 
+            Kelola unit layanan, periode survei, dan analisis hasil survei secara real-time.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={() => {
+                onClose();
+                usePageRouter.getState().navigate("ikm-dashboard");
+              }}
+              className="bg-white text-bkad-green hover:bg-white/90 font-semibold"
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Buka Dashboard IKM
+            </Button>
+            <Button
+              onClick={() => {
+                onClose();
+                usePageRouter.getState().navigate("ikm-survey");
+              }}
+              variant="outline"
+              className="border-white/30 text-white hover:bg-white/10"
+            >
+              <ClipboardCheck className="w-4 h-4 mr-2" />
+              Isi Survei
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-bkad-green/10 rounded-lg flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-bkad-green" />
+              </div>
+              <h3 className="font-semibold text-gray-900">Unit Layanan</h3>
+            </div>
+            <p className="text-sm text-gray-500">Kelola unit/layanan yang akan disurvei</p>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-bkad-gold/10 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-bkad-gold" />
+              </div>
+              <h3 className="font-semibold text-gray-900">Periode Survei</h3>
+            </div>
+            <p className="text-sm text-gray-500">Atur periode dan jadwal survei</p>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-emerald-600" />
+              </div>
+              <h3 className="font-semibold text-gray-900">Statistik & Laporan</h3>
+            </div>
+            <p className="text-sm text-gray-500">Analisis hasil survei dan hitung IKM</p>
+          </div>
+        </div>
+
+        <div className="bg-bkad-light/50 rounded-xl p-6 border border-bkad-green/10">
+          <h3 className="font-semibold text-bkad-dark mb-3">9 Indikator Standar IKM</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {[
+              "Persyaratan Pelayanan",
+              "Prosedur Pelayanan",
+              "Waktu Pelayanan",
+              "Biaya/Tarif Pelayanan",
+              "Produk Pelayanan",
+              "Kompetensi Petugas",
+              "Perilaku Petugas",
+              "Penanganan Pengaduan",
+              "Sarana dan Prasarana",
+            ].map((ind, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-gray-700">
+                <span className="w-6 h-6 bg-bkad-green/10 text-bkad-green rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
+                  {i + 1}
+                </span>
+                {ind}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // ─── Render Dashboard ────────────────────────────────────────────────────
 
   const renderDashboard = () => {
@@ -3529,6 +3635,8 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
         <div className="p-6">
           {activeSection === "dashboard" ? (
             renderDashboard()
+          ) : activeSection === "ikm" ? (
+            renderIkmSection()
           ) : (
             renderDataTable()
           )}

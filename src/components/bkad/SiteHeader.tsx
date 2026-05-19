@@ -40,6 +40,7 @@ import {
   FileCheck,
   FolderOpen,
   Settings,
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -69,7 +70,7 @@ const iconComponentMap: Record<string, React.ElementType> = {
   MessageSquare, CalendarDays, Camera, LayoutDashboard, BarChart3,
   CreditCard, FileCode, UserCheck, BookOpen, Video, PieChart, Tag,
   Globe, MapPin, Mail, HelpCircle, Info, Landmark, Building2,
-  Briefcase, ClipboardList, FileCheck, FolderOpen, Settings,
+  Briefcase, ClipboardList, FileCheck, FolderOpen, Settings, ClipboardCheck,
 };
 
 function resolveIcon(iconName: string): React.ElementType {
@@ -221,6 +222,16 @@ const staticNavItems: NavItem[] = [
     children: [
       { label: "Buat Laporan", page: "laporan" },
       { label: "Dashboard Laporan", page: "laporan-dashboard" },
+    ],
+    isStatic: true,
+  },
+  {
+    label: "Survei IKM",
+    page: "ikm-survey",
+    icon: ClipboardCheck,
+    children: [
+      { label: "Isi Survei", page: "ikm-survey" },
+      { label: "Dashboard IKM", page: "ikm-dashboard" },
     ],
     isStatic: true,
   },

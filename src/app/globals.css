@@ -42,7 +42,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --color-bkad-green: #0D6B3F;
-  --color-bkad-dark: #0A4F2E;
+  --color-bkad-dark: #064E2B;
   --color-bkad-gold: #C5960C;
   --color-bkad-light: #E8F5EC;
 }

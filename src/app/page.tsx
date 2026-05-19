@@ -24,6 +24,8 @@ import AgendaDetailPage from "@/components/bkad/pages/AgendaDetailPage";
 import PublicationDetailPage from "@/components/bkad/pages/PublicationDetailPage";
 import VideoDetailPage from "@/components/bkad/pages/VideoDetailPage";
 import LaporanDashboardPage from "@/components/bkad/pages/LaporanDashboardPage";
+import IkmDashboardPage from "@/components/bkad/pages/IkmDashboardPage";
+import IkmSurveyPage from "@/components/bkad/pages/IkmSurveyPage";
 import LoginPage from "@/components/bkad/pages/LoginPage";
 import { Settings, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,6 +51,7 @@ const quickAddSectionMap: Record<string, string> = {
   kategori: "categories",
   "navbar-menus": "navbar-menus",
   "balon-iklan": "ad-bubbles",
+  "ikm": "ikm",
 };
 
 function PageRouter() {
@@ -159,6 +162,16 @@ function PageRouter() {
   // Laporan Dashboard
   if (currentPage === "laporan-dashboard") {
     return <LaporanDashboardPage />;
+  }
+
+  // IKM Dashboard
+  if (currentPage === "ikm-dashboard") {
+    return <IkmDashboardPage />;
+  }
+
+  // IKM Survey
+  if (currentPage === "ikm-survey") {
+    return <IkmSurveyPage />;
   }
 
   // Kontak

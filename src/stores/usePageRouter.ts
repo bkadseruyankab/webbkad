@@ -25,7 +25,9 @@ export type PageKey =
   | "service-detail"
   | "agenda-detail"
   | "publication-detail"
-  | "video-detail";
+  | "video-detail"
+  | "ikm-dashboard"
+  | "ikm-survey";
 
 interface PageRouterState {
   currentPage: PageKey;
@@ -123,4 +125,6 @@ export const pageTitles: Record<PageKey, string> = {
   "agenda-detail": "Detail Agenda",
   "publication-detail": "Detail Publikasi",
   "video-detail": "Detail Video",
+  "ikm-dashboard": "Dashboard IKM",
+  "ikm-survey": "Survei Kepuasan Masyarakat",
 };
