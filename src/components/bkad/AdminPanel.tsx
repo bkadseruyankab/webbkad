@@ -393,7 +393,7 @@ const laporanStatusOptions = [
 export default function AdminPanel({ onClose, initialSection }: { onClose: () => void; initialSection?: Section }) {
   const [activeSection, setActiveSection] = useState<Section>(initialSection || "dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({}); // all groups default collapsed; auto-expanded in sidebar render
   const { toast } = useToast();
 
   // ─── Data States ──────────────────────────────────────────────────────────
@@ -796,42 +796,30 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     );
   };
 
-  // ─── Sidebar Menu ─────────────────────────────────────────────────────────
-
   // ─── Sidebar Menu (Grouped) ─────────────────────────────────────────────────
 
   const sidebarGroups: { label: string; items: { key: Section; label: string; icon: React.ElementType; count: number }[] }[] = [
     {
-      label: "Umum",
+      label: "Menu",
       items: [
         { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, count: 0 },
-      ],
-    },
-    {
-      label: "Konten",
-      items: [
-        { key: "hero-slides", label: "Hero Banner", icon: ImageIcon, count: heroSlides.length },
         { key: "news", label: "Berita", icon: Newspaper, count: news.length },
         { key: "agenda", label: "Agenda", icon: Calendar, count: agenda.length },
+        { key: "hero-slides", label: "Hero Banner", icon: ImageIcon, count: heroSlides.length },
         { key: "gallery", label: "Galeri", icon: ImageIcon, count: gallery.length },
-        { key: "page-content", label: "Konten Halaman", icon: FileText, count: pageContents.length },
       ],
     },
     {
-      label: "Publikasi & Media",
+      label: "Publikasi & Data",
       items: [
         { key: "publications", label: "Publikasi", icon: BookOpen, count: publications.length },
         { key: "videos", label: "Video", icon: Video, count: videos.length },
         { key: "infographics", label: "Infografis", icon: BarChart3, count: infographics.length },
-      ],
-    },
-    {
-      label: "Layanan & Data",
-      items: [
         { key: "services", label: "Layanan", icon: Settings, count: services.length },
         { key: "financial-data", label: "Data Keuangan", icon: BarChart3, count: financialData.length },
         { key: "stats", label: "Statistik", icon: TrendingUp, count: stats.length },
         { key: "officials", label: "Pejabat", icon: Users, count: officials.length },
+        { key: "page-content", label: "Konten Halaman", icon: FileText, count: pageContents.length },
       ],
     },
     {
@@ -3308,6 +3296,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
   // ─── Render Dashboard ────────────────────────────────────────────────────
 
   const renderDashboard = () => {
+    const menuItems = sidebarGroups.flatMap(g => g.items);
     const totalItems =
       heroSlides.length + news.length + agenda.length + gallery.length +
       stats.length + services.length + financialData.length + pageContents.length +
@@ -3582,9 +3571,10 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
         {/* Menu */}
         <nav className="flex-1 overflow-y-auto py-2">
           {sidebarGroups.map((group) => {
-            const isCollapsed = collapsedGroups[group.label] ?? false;
-            // Check if any item in this group is active
+            // Default: collapsed unless user explicitly toggled or this group contains the active section
+            const hasBeenToggled = group.label in collapsedGroups;
             const hasActive = group.items.some((item) => item.key === activeSection);
+            const isCollapsed = hasBeenToggled ? collapsedGroups[group.label] : !hasActive;
             return (
               <div key={group.label}>
                 {/* Group Header */}
