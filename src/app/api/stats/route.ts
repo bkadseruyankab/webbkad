@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { icon, value, prefix, suffix, label, color, order, active } = body;
+    const { icon, value, prefix, suffix, label, color, images, order, active } = body;
 
     if (!icon || !value || !label || !color) {
       return NextResponse.json(
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
         color,
         order: order ?? 0,
         active: active ?? true,
+        images: images ?? '[]',
       },
     });
 

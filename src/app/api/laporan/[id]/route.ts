@@ -42,6 +42,7 @@ export async function PUT(
         ...(body.message !== undefined && { message: body.message }),
         ...(body.category !== undefined && { category: body.category }),
         ...(body.status !== undefined && { status: body.status }),
+        ...(body.images !== undefined && { images: body.images }),
       },
     });
 

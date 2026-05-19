@@ -43,7 +43,7 @@ export async function PUT(
       );
     }
 
-    const { name, slug, description, module, color, order, active } = body;
+    const { name, slug, description, module, color, order, active, images } = body;
     const updateData: Record<string, unknown> = {};
 
     if (name !== undefined) updateData.name = name;
@@ -70,6 +70,7 @@ export async function PUT(
     if (color !== undefined) updateData.color = color;
     if (order !== undefined) updateData.order = order;
     if (active !== undefined) updateData.active = active;
+    if (images !== undefined) updateData.images = images;
 
     const data = await db.category.update({
       where: { id },

@@ -46,7 +46,7 @@ export async function PUT(
     const allowedFields = [
       'slug', 'title', 'description', 'content', 'heroImage',
       'image', 'metaTitle', 'metaDescription', 'metaKeywords',
-      'published', 'order',
+      'published', 'order', 'images', 'downloadableFiles',
     ];
     const updateData: Record<string, unknown> = {};
     for (const field of allowedFields) {

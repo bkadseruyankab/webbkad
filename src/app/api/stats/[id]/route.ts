@@ -43,7 +43,7 @@ export async function PUT(
       );
     }
 
-    const { icon, value, prefix, suffix, label, color, order, active } = body;
+    const { icon, value, prefix, suffix, label, color, images, order, active } = body;
     const updateData: Record<string, unknown> = {};
     if (icon !== undefined) updateData.icon = icon;
     if (value !== undefined) updateData.value = value;
@@ -53,6 +53,7 @@ export async function PUT(
     if (color !== undefined) updateData.color = color;
     if (order !== undefined) updateData.order = order;
     if (active !== undefined) updateData.active = active;
+    if (images !== undefined) updateData.images = images;
 
     const data = await db.stat.update({
       where: { id },

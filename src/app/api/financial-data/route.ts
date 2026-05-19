@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { year, pendapatan, belanja, realisasi } = body;
+    const { year, pendapatan, belanja, realisasi, images } = body;
 
     if (!year || pendapatan === undefined || belanja === undefined || realisasi === undefined) {
       return NextResponse.json(
@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
         pendapatan: Number(pendapatan),
         belanja: Number(belanja),
         realisasi: Number(realisasi),
+        images: images ?? '[]',
       },
     });
 

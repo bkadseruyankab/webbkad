@@ -44,10 +44,12 @@ export async function PUT(
     }
 
     // Ensure numeric fields are properly typed
-    const updateData: Record<string, unknown> = { ...body };
+    const { images, ...restBody } = body;
+    const updateData: Record<string, unknown> = { ...restBody };
     if (body.pendapatan !== undefined) updateData.pendapatan = Number(body.pendapatan);
     if (body.belanja !== undefined) updateData.belanja = Number(body.belanja);
     if (body.realisasi !== undefined) updateData.realisasi = Number(body.realisasi);
+    if (images !== undefined) updateData.images = images;
 
     const data = await db.financialData.update({
       where: { id },

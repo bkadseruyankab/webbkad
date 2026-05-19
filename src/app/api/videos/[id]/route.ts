@@ -43,7 +43,7 @@ export async function PUT(
       );
     }
 
-    const { title, url, thumbnail, date, order, active } = body;
+    const { title, url, thumbnail, date, order, active, images } = body;
     const updateData: Record<string, unknown> = {};
     if (title !== undefined) updateData.title = title;
     if (url !== undefined) updateData.url = url;
@@ -51,6 +51,7 @@ export async function PUT(
     if (date !== undefined) updateData.date = date;
     if (order !== undefined) updateData.order = order;
     if (active !== undefined) updateData.active = active;
+    if (images !== undefined) updateData.images = images;
 
     const data = await db.video.update({
       where: { id },

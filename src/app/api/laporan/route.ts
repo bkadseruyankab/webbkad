@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, phone, subject, message, category } = body;
+    const { name, email, phone, subject, message, category, images } = body;
 
     if (!name || !subject || !message) {
       return NextResponse.json(
@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
         subject,
         message,
         category: category || "umum",
+        images: images ?? '[]',
         status: "baru",
       },
     });

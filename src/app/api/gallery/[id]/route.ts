@@ -43,12 +43,13 @@ export async function PUT(
       );
     }
 
-    const { image, caption, order, active } = body;
+    const { image, images, caption, order, active } = body;
     const updateData: Record<string, unknown> = {};
     if (image !== undefined) updateData.image = image;
     if (caption !== undefined) updateData.caption = caption;
     if (order !== undefined) updateData.order = order;
     if (active !== undefined) updateData.active = active;
+    if (images !== undefined) updateData.images = images;
 
     const data = await db.gallery.update({
       where: { id },

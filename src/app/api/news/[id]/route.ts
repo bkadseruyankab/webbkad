@@ -43,7 +43,7 @@ export async function PUT(
       );
     }
 
-    const { title, excerpt, content, date, category, image, readTime, order, active } = body;
+    const { title, excerpt, content, date, category, image, images, readTime, order, active } = body;
     const updateData: Record<string, unknown> = {};
     if (title !== undefined) updateData.title = title;
     if (excerpt !== undefined) updateData.excerpt = excerpt;
@@ -54,6 +54,7 @@ export async function PUT(
     if (readTime !== undefined) updateData.readTime = readTime;
     if (order !== undefined) updateData.order = order;
     if (active !== undefined) updateData.active = active;
+    if (images !== undefined) updateData.images = images;
 
     const data = await db.news.update({
       where: { id },

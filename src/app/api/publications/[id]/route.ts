@@ -43,7 +43,7 @@ export async function PUT(
       );
     }
 
-    const { title, description, category, fileUrl, coverImage, date, order, active } = body;
+    const { title, description, category, fileUrl, coverImage, date, order, active, images, downloadableFiles } = body;
     const updateData: Record<string, unknown> = {};
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
@@ -53,6 +53,8 @@ export async function PUT(
     if (date !== undefined) updateData.date = date;
     if (order !== undefined) updateData.order = order;
     if (active !== undefined) updateData.active = active;
+    if (images !== undefined) updateData.images = images;
+    if (downloadableFiles !== undefined) updateData.downloadableFiles = downloadableFiles;
 
     const data = await db.publication.update({
       where: { id },

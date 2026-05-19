@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, description, date, time, location, status } = body;
+    const { title, description, date, time, location, status, images } = body;
 
     if (!title || !date || !time || !location) {
       return NextResponse.json(
@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
         time,
         location,
         status: status ?? 'upcoming',
+        images: images ?? '[]',
       },
     });
 

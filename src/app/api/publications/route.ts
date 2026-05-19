@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, description, category, fileUrl, coverImage, date, order, active } = body;
+    const { title, description, category, fileUrl, coverImage, date, order, active, images, downloadableFiles } = body;
 
     if (!title || !description || !category || !date) {
       return NextResponse.json(
@@ -50,6 +50,8 @@ export async function POST(request: NextRequest) {
         date,
         order: order ?? 0,
         active: active ?? true,
+        images: images ?? '[]',
+        downloadableFiles: downloadableFiles ?? '[]',
       },
     });
 

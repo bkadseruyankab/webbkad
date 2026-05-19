@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { image, caption, order, active } = body;
+    const { image, images, caption, order, active } = body;
 
     if (!image || !caption) {
       return NextResponse.json(
@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
         caption,
         order: order ?? 0,
         active: active ?? true,
+        images: images ?? '[]',
       },
     });
 

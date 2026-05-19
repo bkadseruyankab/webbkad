@@ -43,7 +43,7 @@ export async function PUT(
       );
     }
 
-    const { name, position, photo, nip, order, active } = body;
+    const { name, position, photo, nip, order, active, images } = body;
     const updateData: Record<string, unknown> = {};
     if (name !== undefined) updateData.name = name;
     if (position !== undefined) updateData.position = position;
@@ -51,6 +51,7 @@ export async function PUT(
     if (nip !== undefined) updateData.nip = nip;
     if (order !== undefined) updateData.order = order;
     if (active !== undefined) updateData.active = active;
+    if (images !== undefined) updateData.images = images;
 
     const data = await db.official.update({
       where: { id },

@@ -361,6 +361,40 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
   const [blobOnline, setBlobOnline] = useState(true);
   const [blobPendingCount, setBlobPendingCount] = useState(0);
 
+  // ─── Upload Config ─────────────────────────────────────────────────────────
+
+  const [uploadConfig, setUploadConfig] = useState<{
+    config: {
+      uploadDir: string;
+      maxSizeMB: number;
+      allowedTypes: string[];
+      allowedExtensions: string[];
+      blobTracking: boolean;
+      compressQuality: number;
+      maxImageWidth: number;
+      maxImageHeight: number;
+    };
+    stats: {
+      totalFiles: number;
+      syncedFiles: number;
+      unsyncedFiles: number;
+      totalSizeBytes: number;
+      totalSizeFormatted: string;
+    };
+  } | null>(null);
+
+  const fetchUploadConfig = useCallback(async () => {
+    try {
+      const res = await fetch('/api/upload');
+      const result = await res.json();
+      if (result.success && result.data) {
+        setUploadConfig(result.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch upload config:', err);
+    }
+  }, []);
+
   // ─── Modal States ─────────────────────────────────────────────────────────
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -454,9 +488,10 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
   useEffect(() => {
     fetchData();
     updateBlobStatus();
+    fetchUploadConfig();
     const interval = setInterval(updateBlobStatus, 30000);
     return () => clearInterval(interval);
-  }, [fetchData, updateBlobStatus]);
+  }, [fetchData, updateBlobStatus, fetchUploadConfig]);
 
   // Update section when initialSection prop changes
   useEffect(() => {
@@ -2689,24 +2724,25 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
           </div>
         </div>
 
-        {/* Blob Store Status */}
+        {/* Blob Store & Upload Settings */}
         <div className="bg-white rounded-xl p-4 border shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
               <HardDrive className="w-4 h-4" />
-              Blob Store &amp; Status Koneksi
+              Blob Store &amp; Pengaturan Upload
             </h3>
             <Button
               variant="ghost"
               size="sm"
               className="h-7 text-xs"
-              onClick={updateBlobStatus}
+              onClick={() => { updateBlobStatus(); fetchUploadConfig(); }}
             >
               <RefreshCw className="w-3 h-3 mr-1" />
               Refresh
             </Button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {/* Connection Status */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
             <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50">
               {blobOnline ? (
                 <Wifi className="w-5 h-5 text-emerald-500" />
@@ -2726,17 +2762,69 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               )}
               <div>
                 <p className="text-sm font-medium">{blobPendingCount} file</p>
-                <p className="text-[10px] text-gray-400">Menunggu Sinkronisasi</p>
+                <p className="text-[10px] text-gray-400">Menunggu Sync</p>
               </div>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50">
               <HardDrive className="w-5 h-5 text-bkad-green" />
               <div>
-                <p className="text-sm font-medium">IndexedDB</p>
-                <p className="text-[10px] text-gray-400">Penyimpanan Lokal</p>
+                <p className="text-sm font-medium">{uploadConfig?.stats?.totalFiles ?? 0} file</p>
+                <p className="text-[10px] text-gray-400">Total di Server</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50">
+              <Cloud className="w-5 h-5 text-bkad-gold" />
+              <div>
+                <p className="text-sm font-medium">{uploadConfig?.stats?.totalSizeFormatted ?? "0B"}</p>
+                <p className="text-[10px] text-gray-400">Total Ukuran</p>
               </div>
             </div>
           </div>
+          {/* Upload Configuration */}
+          {uploadConfig?.config && (
+            <div className="border-t pt-3 mt-1">
+              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Pengaturan Upload (.env)</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                <div className="p-2 rounded-lg bg-gray-50">
+                  <p className="text-gray-400">Direktori Upload</p>
+                  <p className="font-medium text-gray-700 truncate">{uploadConfig.config.uploadDir}</p>
+                </div>
+                <div className="p-2 rounded-lg bg-gray-50">
+                  <p className="text-gray-400">Ukuran Maks</p>
+                  <p className="font-medium text-gray-700">{uploadConfig.config.maxSizeMB} MB</p>
+                </div>
+                <div className="p-2 rounded-lg bg-gray-50">
+                  <p className="text-gray-400">Blob Tracking</p>
+                  <p className="font-medium text-gray-700">{uploadConfig.config.blobTracking ? "Aktif" : "Nonaktif"}</p>
+                </div>
+                <div className="p-2 rounded-lg bg-gray-50">
+                  <p className="text-gray-400">Kualitas Kompresi</p>
+                  <p className="font-medium text-gray-700">{uploadConfig.config.compressQuality}%</p>
+                </div>
+                <div className="p-2 rounded-lg bg-gray-50">
+                  <p className="text-gray-400">Max Lebar Gambar</p>
+                  <p className="font-medium text-gray-700">{uploadConfig.config.maxImageWidth}px</p>
+                </div>
+                <div className="p-2 rounded-lg bg-gray-50">
+                  <p className="text-gray-400">Max Tinggi Gambar</p>
+                  <p className="font-medium text-gray-700">{uploadConfig.config.maxImageHeight}px</p>
+                </div>
+              </div>
+              <div className="mt-2 p-2 rounded-lg bg-gray-50">
+                <p className="text-gray-400 text-xs mb-1">Ekstensi File Diizinkan</p>
+                <div className="flex flex-wrap gap-1">
+                  {uploadConfig.config.allowedExtensions.map((ext: string) => (
+                    <span key={ext} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      {ext}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <p className="text-[10px] text-gray-400 mt-2 italic">
+                Ubah pengaturan di file <code className="bg-gray-100 px-1 rounded">.env</code> untuk mengkonfigurasi koneksi dan batasan upload. Restart server setelah mengubah.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Quick Access */}
