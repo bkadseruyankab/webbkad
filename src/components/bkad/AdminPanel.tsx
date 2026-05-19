@@ -280,7 +280,10 @@ type Section =
   | "users"
   | "app-identity"
   | "ad-bubbles"
-  | "ikm";
+  | "ikm"
+  | "ikm-units"
+  | "ikm-periods"
+  | "ikm-responses";
 
 interface AdBubbleItem {
   id: string;
@@ -415,6 +418,9 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
   const [users, setUsers] = useState<UserItem[]>([]);
   const [navbarMenus, setNavbarMenus] = useState<NavbarMenuItem[]>([]);
   const [adBubbles, setAdBubbles] = useState<AdBubbleItem[]>([]);
+  const [ikmUnits, setIkmUnits] = useState<any[]>([]);
+  const [ikmPeriods, setIkmPeriods] = useState<any[]>([]);
+  const [ikmResponses, setIkmResponses] = useState<any[]>([]);
 
   // ─── Blob Store Status ────────────────────────────────────────────────────
 
@@ -495,6 +501,9 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       "/api/users",
       "/api/navbar-menus?all=true",
       "/api/ad-bubbles?all=true",
+      "/api/ikm/units",
+      "/api/ikm/survey-periods",
+      "/api/ikm/responses?limit=500",
     ];
 
     const setters = [
@@ -502,6 +511,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       setServices, setFinancialData, setPageContents, setOfficials,
       setPublications, setVideos, setInfographics, setLaporan,
       setCategories, setUsers, setNavbarMenus, setAdBubbles,
+      setIkmUnits, setIkmPeriods, setIkmResponses,
     ];
 
     // Use allSettled so one failed request doesn't crash the rest
@@ -575,6 +585,9 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       "app-identity": "/api/app-identity",
       "ad-bubbles": "/api/ad-bubbles",
       ikm: "",
+      "ikm-units": "/api/ikm/units",
+      "ikm-periods": "/api/ikm/survey-periods",
+      "ikm-responses": "/api/ikm/responses",
     };
     return map[section];
   };
@@ -698,6 +711,13 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     if (section === "page-content") {
       base.published = true;
     }
+    if (section === "ikm-units") {
+      base.active = true;
+      base.order = 0;
+    }
+    if (section === "ikm-periods") {
+      base.active = true;
+    }
     return base;
   };
 
@@ -813,6 +833,9 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       items: [
         { key: "laporan", label: "Laporan", icon: MessageSquare, count: laporan.length },
         { key: "ikm", label: "IKM", icon: ClipboardCheck, count: 0 },
+        { key: "ikm-units", label: "Unit Layanan", icon: Building2, count: ikmUnits.length },
+        { key: "ikm-periods", label: "Periode Survei", icon: Calendar, count: ikmPeriods.length },
+        { key: "ikm-responses", label: "Responden IKM", icon: Users, count: ikmResponses.length },
         { key: "ad-bubbles", label: "Balon Iklan", icon: MessageSquare, count: adBubbles.length },
       ],
     },
@@ -2494,6 +2517,198 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
           </>
         );
 
+      case "ikm-units":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Nama Unit *</label>
+              <Input value={String(formData.name || "")} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nama unit layanan" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Kode *</label>
+              <Input value={String(formData.code || "")} onChange={(e) => setFormData({ ...formData, code: e.target.value })} placeholder="Kode unit (contoh: UL-01)" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Kepala Unit</label>
+              <Input value={String(formData.headName || "")} onChange={(e) => setFormData({ ...formData, headName: e.target.value })} placeholder="Nama kepala unit" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Deskripsi</label>
+              <Input value={String(formData.description || "")} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Deskripsi unit" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Telepon</label>
+              <Input value={String(formData.phone || "")} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="No. telepon" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Email</label>
+              <Input value={String(formData.email || "")} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email" type="email" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Urutan</label>
+              <Input type="number" value={String(formData.order ?? 0)} onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Status</label>
+              <Select value={formData.active !== false ? "true" : "false"} onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Aktif</SelectItem>
+                  <SelectItem value="false">Nonaktif</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        );
+
+      case "ikm-periods":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Judul Periode *</label>
+              <Input value={String(formData.title || "")} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="Judul periode survei" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Kode Periode *</label>
+              <Input value={String(formData.period || "")} onChange={(e) => setFormData({ ...formData, period: e.target.value })} placeholder="Contoh: 2024-I, 2024-II" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Deskripsi</label>
+              <Input value={String(formData.description || "")} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Deskripsi periode" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tanggal Mulai</label>
+              <Input type="date" value={String(formData.startDate ? String(formData.startDate).split("T")[0] : "")} onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tanggal Selesai</label>
+              <Input type="date" value={String(formData.endDate ? String(formData.endDate).split("T")[0] : "")} onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Status</label>
+              <Select value={formData.active !== false ? "true" : "false"} onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Aktif</SelectItem>
+                  <SelectItem value="false">Nonaktif</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        );
+
+      case "ikm-responses":
+        return (
+          <>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Nama Responden</label>
+              <Input value={String(formData.respondentName || "")} onChange={(e) => setFormData({ ...formData, respondentName: e.target.value })} placeholder="Nama responden (opsional)" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Unit Layanan *</label>
+              <Select value={String(formData.unitId || "")} onValueChange={(v) => setFormData({ ...formData, unitId: v })}>
+                <SelectTrigger><SelectValue placeholder="Pilih unit" /></SelectTrigger>
+                <SelectContent>
+                  {ikmUnits.map((u: any) => (
+                    <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Periode Survei *</label>
+              <Select value={String(formData.surveyPeriodId || "")} onValueChange={(v) => setFormData({ ...formData, surveyPeriodId: v })}>
+                <SelectTrigger><SelectValue placeholder="Pilih periode" /></SelectTrigger>
+                <SelectContent>
+                  {ikmPeriods.map((p: any) => (
+                    <SelectItem key={p.id} value={p.id}>{p.title} ({p.period})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="col-span-2">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">Penilaian 9 Indikator (1-4)</h3>
+            </div>
+            {["ind1","ind2","ind3","ind4","ind5","ind6","ind7","ind8","ind9"].map((ind, i) => {
+              const labels = ["Persyaratan","Prosedur","Waktu","Biaya","Produk","Kompetensi","Perilaku","Sarana","Penanganan Pengaduan"];
+              return (
+                <div key={ind}>
+                  <label className="text-sm font-medium mb-1 block">{i+1}. {labels[i]}</label>
+                  <Select value={String(formData[ind] || "3")} onValueChange={(v) => setFormData({ ...formData, [ind]: parseInt(v) })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 - Tidak Baik</SelectItem>
+                      <SelectItem value="2">2 - Kurang Baik</SelectItem>
+                      <SelectItem value="3">3 - Baik</SelectItem>
+                      <SelectItem value="4">4 - Sangat Baik</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            })}
+            <div className="col-span-2">
+              <label className="text-sm font-medium mb-1 block">Saran</label>
+              <textarea
+                className="w-full border rounded-md p-2 text-sm min-h-[80px]"
+                value={String(formData.suggestions || "")}
+                onChange={(e) => setFormData({ ...formData, suggestions: e.target.value })}
+                placeholder="Saran dari responden"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Umur</label>
+              <Select value={String(formData.respondentAge || "")} onValueChange={(v) => setFormData({ ...formData, respondentAge: v })}>
+                <SelectTrigger><SelectValue placeholder="Pilih umur" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="15-25">15-25</SelectItem>
+                  <SelectItem value="26-35">26-35</SelectItem>
+                  <SelectItem value="36-45">36-45</SelectItem>
+                  <SelectItem value="46-50">46-50</SelectItem>
+                  <SelectItem value=">50">&gt;50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Jenis Kelamin</label>
+              <Select value={String(formData.respondentGender || "")} onValueChange={(v) => setFormData({ ...formData, respondentGender: v })}>
+                <SelectTrigger><SelectValue placeholder="Pilih" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="L">Laki-laki</SelectItem>
+                  <SelectItem value="P">Perempuan</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Pendidikan</label>
+              <Select value={String(formData.respondentEdu || "")} onValueChange={(v) => setFormData({ ...formData, respondentEdu: v })}>
+                <SelectTrigger><SelectValue placeholder="Pilih" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SD">SD</SelectItem>
+                  <SelectItem value="SMP">SMP</SelectItem>
+                  <SelectItem value="SMA">SMA</SelectItem>
+                  <SelectItem value="D3">D3</SelectItem>
+                  <SelectItem value="S1">S1</SelectItem>
+                  <SelectItem value="S2">S2</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Pekerjaan</label>
+              <Select value={String(formData.respondentJob || "")} onValueChange={(v) => setFormData({ ...formData, respondentJob: v })}>
+                <SelectTrigger><SelectValue placeholder="Pilih" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PNS">PNS</SelectItem>
+                  <SelectItem value="TNI/Polri">TNI/Polri</SelectItem>
+                  <SelectItem value="Pegawai Swasta">Pegawai Swasta</SelectItem>
+                  <SelectItem value="Wiraswasta">Wiraswasta</SelectItem>
+                  <SelectItem value="Pelajar/Mahasiswa">Pelajar/Mahasiswa</SelectItem>
+                  <SelectItem value="Lainnya">Lainnya</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        );
+
       default:
         return null;
     }
@@ -3173,6 +3388,130 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
           </div>
         );
 
+      case "ikm-units":
+        return (
+          <div className="space-y-3">
+            {ikmUnits.length === 0 && (
+              <div className="text-center py-10 text-gray-400">
+                <Building2 className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p>Belum ada unit layanan</p>
+                <p className="text-xs mt-1">Tambahkan unit layanan untuk survei IKM</p>
+              </div>
+            )}
+            {ikmUnits.map((unit: any) => (
+              <div key={unit.id} className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow ${!unit.active ? "opacity-50" : ""}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="outline" className="text-xs font-mono">{unit.code}</Badge>
+                      <h4 className="font-semibold text-gray-900 truncate">{unit.name}</h4>
+                    </div>
+                    {unit.headName && <p className="text-sm text-gray-500">Kepala: {unit.headName}</p>}
+                    {unit.description && <p className="text-sm text-gray-400 mt-1 line-clamp-2">{unit.description}</p>}
+                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                      {unit.phone && <span>📞 {unit.phone}</span>}
+                      {unit.email && <span>✉️ {unit.email}</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <Button variant="ghost" size="sm" onClick={() => { setEditItem(unit); setFormData(unit); setModalOpen(true); }} className="text-gray-400 hover:text-bkad-green">
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(unit.id)} className="text-gray-400 hover:text-red-500">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "ikm-periods":
+        return (
+          <div className="space-y-3">
+            {ikmPeriods.length === 0 && (
+              <div className="text-center py-10 text-gray-400">
+                <Calendar className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p>Belum ada periode survei</p>
+                <p className="text-xs mt-1">Tambahkan periode survei untuk memulai IKM</p>
+              </div>
+            )}
+            {ikmPeriods.map((period: any) => (
+              <div key={period.id} className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow ${!period.active ? "opacity-50" : ""}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="outline" className="text-xs font-mono">{period.period}</Badge>
+                      <h4 className="font-semibold text-gray-900 truncate">{period.title}</h4>
+                      {period.active && <Badge className="bg-bkad-green/10 text-bkad-green text-[10px]">Aktif</Badge>}
+                    </div>
+                    {period.description && <p className="text-sm text-gray-400 mt-1 line-clamp-2">{period.description}</p>}
+                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                      {period.startDate && <span>📅 {String(period.startDate).split("T")[0]} — {String(period.endDate).split("T")[0]}</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <Button variant="ghost" size="sm" onClick={() => { setEditItem(period); setFormData(period); setModalOpen(true); }} className="text-gray-400 hover:text-bkad-green">
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(period.id)} className="text-gray-400 hover:text-red-500">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case "ikm-responses":
+        return (
+          <div className="space-y-3">
+            {ikmResponses.length === 0 && (
+              <div className="text-center py-10 text-gray-400">
+                <Users className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p>Belum ada data responden</p>
+                <p className="text-xs mt-1">Data responden akan muncul setelah survei diisi</p>
+              </div>
+            )}
+            {ikmResponses.map((resp: any) => {
+              const avgScore = [1,2,3,4,5,6,7,8,9].reduce((sum, i) => sum + (resp[`ind${i}`] || 0), 0) / 9;
+              return (
+                <div key={resp.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-semibold text-gray-900 truncate">{resp.respondentName || "Anonim"}</h4>
+                        <Badge variant="outline" className="text-xs">Rata-rata: {avgScore.toFixed(1)}</Badge>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-gray-400">
+                        <span>🏢 {resp.unit?.name || "—"}</span>
+                        <span>📋 {resp.surveyPeriod?.title || "—"}</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-gray-400 mt-1">
+                        {resp.respondentAge && <span>👤 {resp.respondentAge}</span>}
+                        {resp.respondentGender && <span>{resp.respondentGender === "L" ? "♂" : "♀"}</span>}
+                        {resp.respondentEdu && <span>🎓 {resp.respondentEdu}</span>}
+                        {resp.respondentJob && <span>💼 {resp.respondentJob}</span>}
+                      </div>
+                      {resp.suggestions && <p className="text-sm text-gray-500 mt-2 line-clamp-2 italic">"{resp.suggestions}"</p>}
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Button variant="ghost" size="sm" onClick={() => { setDetailItem(resp); setDetailOpen(true); }} className="text-gray-400 hover:text-bkad-green">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(resp.id)} className="text-gray-400 hover:text-red-500">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+
       default:
         return null;
     }
@@ -3199,57 +3538,82 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
           </p>
           <div className="flex flex-wrap gap-3">
             <Button
-              onClick={() => {
-                onClose();
-                usePageRouter.getState().navigate("ikm-dashboard");
-              }}
+              onClick={() => setActiveSection("ikm-units")}
               className="bg-white text-bkad-green hover:bg-white/90 font-semibold"
             >
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Buka Dashboard IKM
+              <Building2 className="w-4 h-4 mr-2" />
+              Kelola Unit
+            </Button>
+            <Button
+              onClick={() => setActiveSection("ikm-periods")}
+              variant="outline"
+              className="border-white/30 text-white hover:bg-white/10"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Periode Survei
+            </Button>
+            <Button
+              onClick={() => setActiveSection("ikm-responses")}
+              variant="outline"
+              className="border-white/30 text-white hover:bg-white/10"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Data Responden
             </Button>
             <Button
               onClick={() => {
                 onClose();
-                usePageRouter.getState().navigate("ikm-survey");
+                usePageRouter.getState().navigate("ikm-dashboard");
               }}
               variant="outline"
               className="border-white/30 text-white hover:bg-white/10"
             >
-              <ClipboardCheck className="w-4 h-4 mr-2" />
-              Isi Survei
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Dashboard IKM
             </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <button
+            onClick={() => setActiveSection("ikm-units")}
+            className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow text-left"
+          >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-bkad-green/10 rounded-lg flex items-center justify-center">
                 <Building2 className="w-5 h-5 text-bkad-green" />
               </div>
               <h3 className="font-semibold text-gray-900">Unit Layanan</h3>
+              <Badge variant="outline" className="ml-auto text-xs">{ikmUnits.length}</Badge>
             </div>
             <p className="text-sm text-gray-500">Kelola unit/layanan yang akan disurvei</p>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          </button>
+          <button
+            onClick={() => setActiveSection("ikm-periods")}
+            className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow text-left"
+          >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-bkad-gold/10 rounded-lg flex items-center justify-center">
                 <Calendar className="w-5 h-5 text-bkad-gold" />
               </div>
               <h3 className="font-semibold text-gray-900">Periode Survei</h3>
+              <Badge variant="outline" className="ml-auto text-xs">{ikmPeriods.length}</Badge>
             </div>
             <p className="text-sm text-gray-500">Atur periode dan jadwal survei</p>
-          </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          </button>
+          <button
+            onClick={() => setActiveSection("ikm-responses")}
+            className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow text-left"
+          >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-emerald-600" />
+                <Users className="w-5 h-5 text-emerald-600" />
               </div>
-              <h3 className="font-semibold text-gray-900">Statistik & Laporan</h3>
+              <h3 className="font-semibold text-gray-900">Responden</h3>
+              <Badge variant="outline" className="ml-auto text-xs">{ikmResponses.length}</Badge>
             </div>
-            <p className="text-sm text-gray-500">Analisis hasil survei dan hitung IKM</p>
-          </div>
+            <p className="text-sm text-gray-500">Lihat data hasil survei</p>
+          </button>
         </div>
 
         <div className="bg-bkad-light/50 rounded-xl p-6 border border-bkad-green/10">
@@ -3526,6 +3890,10 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       infographics: "Infografis",
       laporan: "Laporan",
       users: "Pengguna",
+      ikm: "IKM",
+      "ikm-units": "Unit Layanan IKM",
+      "ikm-periods": "Periode Survei IKM",
+      "ikm-responses": "Data Responden IKM",
     };
     return titles[section];
   };
@@ -3653,7 +4021,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               <RefreshCw className="w-4 h-4" />
               <span className="hidden sm:inline">Refresh</span>
             </Button>
-            {activeSection !== "dashboard" && activeSection !== "app-identity" && (
+            {activeSection !== "dashboard" && activeSection !== "app-identity" && activeSection !== "ikm" && (
               <Button
                 size="sm"
                 onClick={openCreateModal}
