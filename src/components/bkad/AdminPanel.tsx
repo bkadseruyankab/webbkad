@@ -33,6 +33,7 @@ import {
   HardDrive,
   Globe,
   RotateCcw,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -907,7 +908,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 />
               </div>
             )}
-            {formData.isDynamic && !formData.parentId && (
+            {formData.isDynamic && (
               <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-sm">
                 <p className="font-medium text-emerald-800 mb-1">✨ Halaman Otomatis</p>
                 <p className="text-emerald-700">Saat menyimpan, sistem akan otomatis membuat:</p>
@@ -916,7 +917,15 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                   <li>Halaman dengan Hero, Breadcrumb, Konten, Footer</li>
                   <li>SEO metadata otomatis</li>
                   <li>Link navbar otomatis muncul</li>
+                  {formData.parentId && (
+                    <li className="font-medium">Sub-menu juga mendapat halaman sendiri</li>
+                  )}
                 </ul>
+                {formData.parentId && (
+                  <p className="mt-2 text-emerald-700">
+                    Sub-menu ini akan memiliki halaman dinamis sendiri yang dapat diakses langsung melalui URL.
+                  </p>
+                )}
               </div>
             )}
           </>
@@ -2236,6 +2245,13 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetailModal(menu as unknown as Record<string, unknown>)}>
                       <Eye className="w-3.5 h-3.5" />
                     </Button>
+                    {menu.isDynamic && (
+                      <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                        <a href={`/${menu.slug}`} target="_blank" rel="noopener noreferrer" title="Lihat halaman">
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </Button>
+                    )}
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditModal(menu as unknown as Record<string, unknown>)}>
                       <Pencil className="w-3.5 h-3.5" />
                     </Button>
@@ -2253,8 +2269,20 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                           <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
                           <span className="text-sm text-gray-700">{child.label}</span>
                           <span className="text-xs text-gray-400">/{child.slug}</span>
+                          {child.isDynamic && (
+                            <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 bg-blue-50">
+                              Dinamis
+                            </Badge>
+                          )}
                         </div>
                         <div className="flex items-center gap-1">
+                          {child.isDynamic && (
+                            <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                              <a href={`/${child.slug}`} target="_blank" rel="noopener noreferrer">
+                                <Eye className="w-3 h-3" />
+                              </a>
+                            </Button>
+                          )}
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEditModal(child as unknown as Record<string, unknown>)}>
                             <Pencil className="w-3 h-3" />
                           </Button>

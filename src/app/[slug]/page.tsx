@@ -80,6 +80,9 @@ const RESERVED_SLUGS = new Set([
   "profil-struktur", "profil-pejabat",
 ]);
 
+// Force dynamic rendering to avoid build-time issues and Performance measure errors
+export const dynamic = "force-dynamic";
+
 // ─── Data Fetching ───────────────────────────────────────────────────────────
 
 async function getPageData(slug: string): Promise<PageContentData | null> {
@@ -114,6 +117,22 @@ async function getAppIdentity(): Promise<AppIdentityData | null> {
   try {
     const identity = await db.appIdentity.findFirst();
     return identity as unknown as AppIdentityData;
+  } catch {
+    return null;
+  }
+}
+
+// Find the parent menu for a child page by slug
+async function findParentMenu(slug: string): Promise<{ label: string; slug: string } | null> {
+  try {
+    const child = await db.navbarMenu.findUnique({ where: { slug } });
+    if (child && child.parentId) {
+      const parent = await db.navbarMenu.findUnique({ where: { id: child.parentId } });
+      if (parent) {
+        return { label: parent.label, slug: parent.slug };
+      }
+    }
+    return null;
   } catch {
     return null;
   }
@@ -194,22 +213,29 @@ function formatFileSize(bytes: number): string {
 
 // ─── Page Component ──────────────────────────────────────────────────────────
 
-export default async function DynamicPage({
+export default async function SlugPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  let slug: string;
+  try {
+    slug = (await params).slug;
+  } catch {
+    notFound();
+    return;
+  }
 
   // Skip reserved slugs
   if (RESERVED_SLUGS.has(slug)) {
     notFound();
   }
 
-  const [pageData, navMenus, identity] = await Promise.all([
+  const [pageData, navMenus, identity, parentMenu] = await Promise.all([
     getPageData(slug),
     getNavMenus(),
     getAppIdentity(),
+    findParentMenu(slug),
   ]);
 
   if (!pageData) {
@@ -373,6 +399,14 @@ export default async function DynamicPage({
               <Home className="w-3.5 h-3.5 mr-1" />
               Beranda
             </Link>
+            {parentMenu && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 mx-2 text-gray-300" />
+                <Link href={`/${parentMenu.slug}`} className="hover:text-emerald-600 transition-colors">
+                  {parentMenu.label}
+                </Link>
+              </>
+            )}
             <ChevronRight className="w-3.5 h-3.5 mx-2 text-gray-300" />
             <span className="text-gray-900 font-medium">{pageData.title}</span>
           </nav>

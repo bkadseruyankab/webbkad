@@ -61,20 +61,28 @@ export async function POST(req: NextRequest) {
       include: { children: true },
     });
 
-    // If isDynamic, auto-create a PageContent entry
-    if (menu.isDynamic && !parentId) {
+    // If isDynamic, auto-create a PageContent entry (for both top-level AND child menus)
+    if (menu.isDynamic) {
       const existingPage = await db.pageContent.findUnique({ where: { slug } });
       if (!existingPage) {
+        // Build breadcrumb path for child menus
+        let breadcrumbTitle = label;
+        if (parentId) {
+          const parent = await db.navbarMenu.findUnique({ where: { id: parentId } });
+          if (parent) {
+            breadcrumbTitle = `${parent.label} — ${label}`;
+          }
+        }
         await db.pageContent.create({
           data: {
             slug,
             title: label,
-            description: `Halaman ${label} - Website resmi BKAD Kabupaten Seruyan`,
+            description: `Halaman ${breadcrumbTitle} - Website resmi BKAD Kabupaten Seruyan`,
             content: `<h2>Selamat Datang di Halaman ${label}</h2>\n<p>Halaman ini sedang dalam pengembangan. Konten akan segera ditambahkan oleh administrator.</p>\n<p>Silakan kembali lagi nanti atau hubungi kami untuk informasi lebih lanjut.</p>`,
             heroImage: "",
             image: "",
-            metaTitle: `${label} - BKAD Kabupaten Seruyan`,
-            metaDescription: `Halaman ${label} Badan Keuangan dan Aset Daerah Kabupaten Seruyan`,
+            metaTitle: `${breadcrumbTitle} - BKAD Kabupaten Seruyan`,
+            metaDescription: `Halaman ${breadcrumbTitle} Badan Keuangan dan Aset Daerah Kabupaten Seruyan`,
             metaKeywords: `${label}, BKAD, Seruyan, Keuangan Daerah`,
             published: true,
             order: order ?? 0,

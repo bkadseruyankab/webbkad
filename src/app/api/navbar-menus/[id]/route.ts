@@ -106,8 +106,17 @@ export async function DELETE(
       return NextResponse.json({ error: "Menu tidak ditemukan" }, { status: 404 });
     }
 
-    // Delete children first
+    // Delete PageContent for children first
     if (existing.children.length > 0) {
+      for (const child of existing.children) {
+        if (child.isDynamic) {
+          const childPage = await db.pageContent.findUnique({ where: { slug: child.slug } });
+          if (childPage) {
+            await db.pageContent.delete({ where: { id: childPage.id } });
+          }
+        }
+      }
+      // Delete child menu records
       await db.navbarMenu.deleteMany({
         where: { parentId: id },
       });
@@ -116,7 +125,7 @@ export async function DELETE(
     // Delete the menu
     await db.navbarMenu.delete({ where: { id } });
 
-    // Optionally delete the linked PageContent
+    // Delete the linked PageContent for this menu
     if (existing.isDynamic) {
       const pageContent = await db.pageContent.findUnique({ where: { slug: existing.slug } });
       if (pageContent) {

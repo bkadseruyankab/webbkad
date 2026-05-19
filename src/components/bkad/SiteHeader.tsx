@@ -305,31 +305,23 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
   const allNavItems = [...staticNavItems];
 
   // Add dynamic menus after static ones
+  // For dynamic menus, we store the full DynamicNavItem reference so the
+  // rendering code can generate proper <Link> elements instead of SPA navigation.
   for (const dm of dynamicMenus) {
     const IconComp = resolveIcon(dm.icon);
-    if (dm.children && dm.children.length > 0) {
-      // Dynamic menu with children
-      const firstChild = dm.children[0];
-      allNavItems.push({
-        label: dm.label,
-        page: firstChild?.isDynamic ? "home" as PageKey : (firstChild?.slug as PageKey || "home"),
-        icon: IconComp,
-        children: dm.children.map((child) => ({
-          label: child.label,
-          page: (child.isDynamic ? "home" : child.slug) as PageKey,
-        })),
-        isStatic: false,
-      });
-    } else {
-      // Dynamic menu without children
-      allNavItems.push({
-        label: dm.label,
-        page: "home" as PageKey,
-        icon: IconComp,
-        children: null,
-        isStatic: false,
-      });
-    }
+    allNavItems.push({
+      label: dm.label,
+      page: "home" as PageKey,
+      icon: IconComp,
+      children:
+        dm.children && dm.children.length > 0
+          ? dm.children.map((child) => ({
+              label: child.label,
+              page: (child.isDynamic ? "home" : child.slug) as PageKey,
+            }))
+          : null,
+      isStatic: false,
+    });
   }
 
   return (
@@ -529,14 +521,35 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                             )}
                           </button>
                         ) : (
-                          // Dynamic menu item - links to /[slug]
+                          // Dynamic menu item - renders as Link to /[slug]
                           <Link
                             href={`/${dynamicMenus.find(dm => dm.label === item.label)?.slug || item.label.toLowerCase()}`}
-                            className="flex items-center px-4 py-3 text-gray-700 hover:bg-bkad-light hover:text-bkad-green transition-colors"
-                            onClick={() => setMobileMenuOpen(false)}
+                            className="flex items-center justify-between w-full px-4 py-3 text-gray-700 hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                            onClick={() => {
+                              if (item.children) {
+                                setMobileDropdown(
+                                  mobileDropdown === item.label
+                                    ? null
+                                    : item.label
+                                );
+                              } else {
+                                setMobileMenuOpen(false);
+                              }
+                            }}
                           >
-                            <item.icon className="w-4 h-4 mr-3" />
-                            {item.label}
+                            <span className="flex items-center">
+                              <item.icon className="w-4 h-4 mr-3" />
+                              {item.label}
+                            </span>
+                            {item.children && (
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform ${
+                                  mobileDropdown === item.label
+                                    ? "rotate-180"
+                                    : ""
+                                }`}
+                              />
+                            )}
                           </Link>
                         )}
                         {/* Children for static items */}
@@ -551,6 +564,27 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                                 {child.label}
                               </button>
                             ))}
+                          </div>
+                        )}
+                        {/* Children for dynamic items - use Link to /[slug] */}
+                        {!item.isStatic && item.children && mobileDropdown === item.label && (
+                          <div className="bg-gray-50">
+                            {(() => {
+                              const dm = dynamicMenus.find(m => m.label === item.label);
+                              if (!dm) return null;
+                              return dm.children.map((child) => (
+                                <Link
+                                  key={child.id}
+                                  href={child.isDynamic ? `/${child.slug}` : (child.externalUrl || "#")}
+                                  target={child.openInNewTab ? "_blank" : undefined}
+                                  rel={child.openInNewTab ? "noopener noreferrer" : undefined}
+                                  className="block w-full text-left px-8 py-2.5 text-sm text-gray-600 hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                                  onClick={() => setMobileMenuOpen(false)}
+                                >
+                                  {child.label}
+                                </Link>
+                              ));
+                            })()}
                           </div>
                         )}
                       </div>
