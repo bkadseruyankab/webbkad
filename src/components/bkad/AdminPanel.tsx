@@ -832,10 +832,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       label: "Interaksi",
       items: [
         { key: "laporan", label: "Laporan", icon: MessageSquare, count: laporan.length },
-        { key: "ikm", label: "IKM", icon: ClipboardCheck, count: 0 },
-        { key: "ikm-units", label: "Unit Layanan", icon: Building2, count: ikmUnits.length },
-        { key: "ikm-periods", label: "Periode Survei", icon: Calendar, count: ikmPeriods.length },
-        { key: "ikm-responses", label: "Responden IKM", icon: Users, count: ikmResponses.length },
+        { key: "ikm", label: "IKM", icon: ClipboardCheck, count: ikmUnits.length + ikmPeriods.length + ikmResponses.length },
         { key: "ad-bubbles", label: "Balon Iklan", icon: MessageSquare, count: adBubbles.length },
       ],
     },

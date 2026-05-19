@@ -30,7 +30,6 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -39,14 +38,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import {
   Table,
   TableBody,
   TableCell,
@@ -54,16 +45,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -73,11 +54,7 @@ import {
   Award,
   Star,
   Calendar,
-  Plus,
-  Pencil,
-  Trash2,
   Download,
-  Search,
   RefreshCw,
   MessageSquare,
   Building2,
@@ -333,246 +310,6 @@ function DemographicTooltip({ active, payload }: any) {
   );
 }
 
-// ─── Unit Form Dialog ─────────────────────────────────────────────────────────
-
-function UnitFormDialog({
-  open,
-  onOpenChange,
-  unit,
-  onSave,
-  loading,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  unit: Partial<IkmUnit> | null;
-  onSave: (data: Partial<IkmUnit>) => void;
-  loading: boolean;
-}) {
-  const initialForm: Partial<IkmUnit> = unit || {
-    name: '',
-    code: '',
-    headName: '',
-    phone: '',
-    email: '',
-    isActive: true,
-  };
-  const [form, setForm] = useState<Partial<IkmUnit>>(initialForm);
-
-  // Reset form when unit prop changes
-  const unitKey = unit?.id ?? 'new';
-  const handleOpenChange = (val: boolean) => {
-    if (val) {
-      setForm(initialForm);
-    }
-    onOpenChange(val);
-  };
-
-  const handleSubmit = () => {
-    if (!form.name?.trim() || !form.code?.trim()) return;
-    onSave(form);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md" key={unitKey}>
-        <DialogHeader>
-          <DialogTitle>{unit?.id ? 'Edit Unit Layanan' : 'Tambah Unit Layanan'}</DialogTitle>
-          <DialogDescription>
-            {unit?.id ? 'Ubah informasi unit layanan' : 'Tambahkan unit layanan baru'}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Nama Unit *</label>
-            <Input
-              value={form.name || ''}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Nama unit layanan"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Kode *</label>
-            <Input
-              value={form.code || ''}
-              onChange={(e) => setForm({ ...form, code: e.target.value })}
-              placeholder="Kode unit (contoh: UL-01)"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Kepala Unit</label>
-            <Input
-              value={form.headName || ''}
-              onChange={(e) => setForm({ ...form, headName: e.target.value })}
-              placeholder="Nama kepala unit"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Telepon</label>
-              <Input
-                value={form.phone || ''}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                placeholder="No. telepon"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Email</label>
-              <Input
-                value={form.email || ''}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="Email"
-                type="email"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Status</label>
-            <Select
-              value={form.isActive ? 'active' : 'inactive'}
-              onValueChange={(val) => setForm({ ...form, isActive: val === 'active' })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Aktif</SelectItem>
-                <SelectItem value="inactive">Tidak Aktif</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => handleOpenChange(false)}>
-            Batal
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={loading || !form.name?.trim() || !form.code?.trim()}
-            className="bg-bkad-green hover:bg-bkad-dark text-white"
-          >
-            {loading ? 'Menyimpan...' : 'Simpan'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ─── Period Form Dialog ───────────────────────────────────────────────────────
-
-function PeriodFormDialog({
-  open,
-  onOpenChange,
-  period,
-  onSave,
-  loading,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  period: Partial<IkmSurveyPeriod> | null;
-  onSave: (data: Partial<IkmSurveyPeriod>) => void;
-  loading: boolean;
-}) {
-  const initialForm: Partial<IkmSurveyPeriod> = period || {
-    title: '',
-    period: '',
-    startDate: '',
-    endDate: '',
-    isActive: true,
-  };
-  const [form, setForm] = useState<Partial<IkmSurveyPeriod>>(initialForm);
-
-  // Reset form when period prop changes
-  const periodKey = period?.id ?? 'new';
-  const handleOpenChange = (val: boolean) => {
-    if (val) {
-      setForm(initialForm);
-    }
-    onOpenChange(val);
-  };
-
-  const handleSubmit = () => {
-    if (!form.title?.trim() || !form.period?.trim()) return;
-    onSave(form);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md" key={periodKey}>
-        <DialogHeader>
-          <DialogTitle>{period?.id ? 'Edit Periode Survei' : 'Tambah Periode Survei'}</DialogTitle>
-          <DialogDescription>
-            {period?.id ? 'Ubah informasi periode survei' : 'Tambahkan periode survei baru'}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Judul *</label>
-            <Input
-              value={form.title || ''}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Judul periode survei"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Periode *</label>
-            <Input
-              value={form.period || ''}
-              onChange={(e) => setForm({ ...form, period: e.target.value })}
-              placeholder="Contoh: 2024-I, 2024-II"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Tanggal Mulai</label>
-              <Input
-                type="date"
-                value={form.startDate ? form.startDate.split('T')[0] : ''}
-                onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Tanggal Selesai</label>
-              <Input
-                type="date"
-                value={form.endDate ? form.endDate.split('T')[0] : ''}
-                onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Status</label>
-            <Select
-              value={form.isActive ? 'active' : 'inactive'}
-              onValueChange={(val) => setForm({ ...form, isActive: val === 'active' })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Aktif</SelectItem>
-                <SelectItem value="inactive">Tidak Aktif</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => handleOpenChange(false)}>
-            Batal
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={loading || !form.title?.trim() || !form.period?.trim()}
-            className="bg-bkad-green hover:bg-bkad-dark text-white"
-          >
-            {loading ? 'Menyimpan...' : 'Simpan'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function IkmDashboardPage() {
@@ -590,17 +327,9 @@ export default function IkmDashboardPage() {
   // ── Units State ──────────────────────────────────────────────────────────
   const [units, setUnits] = useState<IkmUnit[]>([]);
   const [unitsLoading, setUnitsLoading] = useState(true);
-  const [unitDialogOpen, setUnitDialogOpen] = useState(false);
-  const [editingUnit, setEditingUnit] = useState<Partial<IkmUnit> | null>(null);
-  const [unitSaving, setUnitSaving] = useState(false);
-  const [deleteUnitDialog, setDeleteUnitDialog] = useState<IkmUnit | null>(null);
 
   // ── Periods State ────────────────────────────────────────────────────────
   const [periodsLoading, setPeriodsLoading] = useState(true);
-  const [periodDialogOpen, setPeriodDialogOpen] = useState(false);
-  const [editingPeriod, setEditingPeriod] = useState<Partial<IkmSurveyPeriod> | null>(null);
-  const [periodSaving, setPeriodSaving] = useState(false);
-  const [deletePeriodDialog, setDeletePeriodDialog] = useState<IkmSurveyPeriod | null>(null);
 
   // ── Responses State ──────────────────────────────────────────────────────
   const [responses, setResponses] = useState<IkmResponse[]>([]);
@@ -609,7 +338,6 @@ export default function IkmDashboardPage() {
   const [responsesTotal, setResponsesTotal] = useState(0);
   const [filterUnitId, setFilterUnitId] = useState<string>('all');
   const [filterPeriodId, setFilterPeriodId] = useState<string>('all');
-  const [deleteResponseDialog, setDeleteResponseDialog] = useState<IkmResponse | null>(null);
 
   // ── Data Fetching ────────────────────────────────────────────────────────
 
@@ -708,124 +436,7 @@ export default function IkmDashboardPage() {
     }
   }, [activeTab, fetchResponses]);
 
-  // ── Unit CRUD Handlers ──────────────────────────────────────────────────
-
-  const handleSaveUnit = async (data: Partial<IkmUnit>) => {
-    setUnitSaving(true);
-    try {
-      const isEdit = !!data.id;
-      const url = isEdit ? `/api/ikm/units/${data.id}` : '/api/ikm/units';
-      const method = isEdit ? 'PUT' : 'POST';
-
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const result = await res.json();
-
-      if (result.success) {
-        toast({
-          title: isEdit ? 'Unit diperbarui' : 'Unit ditambahkan',
-          description: `Unit layanan berhasil ${isEdit ? 'diperbarui' : 'ditambahkan'}`,
-        });
-        setUnitDialogOpen(false);
-        setEditingUnit(null);
-        fetchUnits();
-      } else {
-        toast({ title: 'Gagal', description: result.error || 'Terjadi kesalahan', variant: 'destructive' });
-      }
-    } catch {
-      toast({ title: 'Gagal', description: 'Terjadi kesalahan jaringan', variant: 'destructive' });
-    } finally {
-      setUnitSaving(false);
-    }
-  };
-
-  const handleDeleteUnit = async (unit: IkmUnit) => {
-    try {
-      const res = await fetch(`/api/ikm/units/${unit.id}`, { method: 'DELETE' });
-      const result = await res.json();
-      if (result.success) {
-        toast({ title: 'Unit dihapus', description: 'Unit layanan berhasil dihapus' });
-        fetchUnits();
-      } else {
-        toast({ title: 'Gagal', description: result.error || 'Terjadi kesalahan', variant: 'destructive' });
-      }
-    } catch {
-      toast({ title: 'Gagal', description: 'Terjadi kesalahan jaringan', variant: 'destructive' });
-    }
-    setDeleteUnitDialog(null);
-  };
-
-  // ── Period CRUD Handlers ────────────────────────────────────────────────
-
-  const handleSavePeriod = async (data: Partial<IkmSurveyPeriod>) => {
-    setPeriodSaving(true);
-    try {
-      const isEdit = !!data.id;
-      const url = isEdit ? `/api/ikm/survey-periods/${data.id}` : '/api/ikm/survey-periods';
-      const method = isEdit ? 'PUT' : 'POST';
-
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const result = await res.json();
-
-      if (result.success) {
-        toast({
-          title: isEdit ? 'Periode diperbarui' : 'Periode ditambahkan',
-          description: `Periode survei berhasil ${isEdit ? 'diperbarui' : 'ditambahkan'}`,
-        });
-        setPeriodDialogOpen(false);
-        setEditingPeriod(null);
-        fetchPeriods();
-      } else {
-        toast({ title: 'Gagal', description: result.error || 'Terjadi kesalahan', variant: 'destructive' });
-      }
-    } catch {
-      toast({ title: 'Gagal', description: 'Terjadi kesalahan jaringan', variant: 'destructive' });
-    } finally {
-      setPeriodSaving(false);
-    }
-  };
-
-  const handleDeletePeriod = async (period: IkmSurveyPeriod) => {
-    try {
-      const res = await fetch(`/api/ikm/survey-periods/${period.id}`, { method: 'DELETE' });
-      const result = await res.json();
-      if (result.success) {
-        toast({ title: 'Periode dihapus', description: 'Periode survei berhasil dihapus' });
-        fetchPeriods();
-      } else {
-        toast({ title: 'Gagal', description: result.error || 'Terjadi kesalahan', variant: 'destructive' });
-      }
-    } catch {
-      toast({ title: 'Gagal', description: 'Terjadi kesalahan jaringan', variant: 'destructive' });
-    }
-    setDeletePeriodDialog(null);
-  };
-
-  // ── Response Handlers ───────────────────────────────────────────────────
-
-  const handleDeleteResponse = async (response: IkmResponse) => {
-    try {
-      const res = await fetch(`/api/ikm/responses/${response.id}`, { method: 'DELETE' });
-      const result = await res.json();
-      if (result.success) {
-        toast({ title: 'Responden dihapus', description: 'Data responden berhasil dihapus' });
-        fetchResponses();
-        fetchStatistics();
-      } else {
-        toast({ title: 'Gagal', description: result.error || 'Terjadi kesalahan', variant: 'destructive' });
-      }
-    } catch {
-      toast({ title: 'Gagal', description: 'Terjadi kesalahan jaringan', variant: 'destructive' });
-    }
-    setDeleteResponseDialog(null);
-  };
+  // ── Export Handler ────────────────────────────────────────────────────────
 
   const handleExportCSV = () => {
     if (!responses.length) {
@@ -1579,19 +1190,9 @@ export default function IkmDashboardPage() {
                           Daftar Unit Layanan
                         </CardTitle>
                         <CardDescription>
-                          Kelola unit layanan untuk survei IKM
+                          Daftar unit layanan untuk survei IKM
                         </CardDescription>
                       </div>
-                      <Button
-                        onClick={() => {
-                          setEditingUnit(null);
-                          setUnitDialogOpen(true);
-                        }}
-                        className="bg-bkad-green hover:bg-bkad-dark text-white"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Tambah Unit
-                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 md:p-6 pt-0">
@@ -1601,9 +1202,6 @@ export default function IkmDashboardPage() {
                       <div className="text-center py-12">
                         <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                         <p className="text-gray-500">Belum ada unit layanan</p>
-                        <p className="text-gray-400 text-sm mt-1">
-                          Klik &ldquo;Tambah Unit&rdquo; untuk menambahkan unit baru
-                        </p>
                       </div>
                     ) : (
                       <div className="overflow-x-auto">
@@ -1617,7 +1215,6 @@ export default function IkmDashboardPage() {
                               <TableHead className="hidden lg:table-cell">Telepon</TableHead>
                               <TableHead className="hidden lg:table-cell">Email</TableHead>
                               <TableHead>Status</TableHead>
-                              <TableHead className="text-right">Aksi</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -1665,29 +1262,6 @@ export default function IkmDashboardPage() {
                                     {unit.isActive ? 'Aktif' : 'Tidak Aktif'}
                                   </Badge>
                                 </TableCell>
-                                <TableCell className="text-right">
-                                  <div className="flex items-center justify-end gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => {
-                                        setEditingUnit(unit);
-                                        setUnitDialogOpen(true);
-                                      }}
-                                      className="text-bkad-green hover:bg-bkad-green/10"
-                                    >
-                                      <Pencil className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => setDeleteUnitDialog(unit)}
-                                      className="text-red-500 hover:bg-red-50"
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                  </div>
-                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
@@ -1698,40 +1272,6 @@ export default function IkmDashboardPage() {
                 </Card>
               </motion.div>
             </AnimatePresence>
-
-            {/* Unit Form Dialog */}
-            <UnitFormDialog
-              open={unitDialogOpen}
-              onOpenChange={setUnitDialogOpen}
-              unit={editingUnit}
-              onSave={handleSaveUnit}
-              loading={unitSaving}
-            />
-
-            {/* Delete Unit Confirmation */}
-            <AlertDialog
-              open={!!deleteUnitDialog}
-              onOpenChange={(open) => !open && setDeleteUnitDialog(null)}
-            >
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Hapus Unit Layanan</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Apakah Anda yakin ingin menghapus unit &ldquo;{deleteUnitDialog?.name}&rdquo;?
-                    Tindakan ini tidak dapat dibatalkan.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Batal</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => deleteUnitDialog && handleDeleteUnit(deleteUnitDialog)}
-                    className="bg-red-500 hover:bg-red-600 text-white"
-                  >
-                    Hapus
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
           </TabsContent>
 
           {/* ═════════════════════════════════════════════════════════════════
@@ -1755,19 +1295,9 @@ export default function IkmDashboardPage() {
                           Daftar Periode Survei
                         </CardTitle>
                         <CardDescription>
-                          Kelola periode survei kepuasan masyarakat
+                          Daftar periode survei kepuasan masyarakat
                         </CardDescription>
                       </div>
-                      <Button
-                        onClick={() => {
-                          setEditingPeriod(null);
-                          setPeriodDialogOpen(true);
-                        }}
-                        className="bg-bkad-green hover:bg-bkad-dark text-white"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Tambah Periode
-                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 md:p-6 pt-0">
@@ -1777,9 +1307,6 @@ export default function IkmDashboardPage() {
                       <div className="text-center py-12">
                         <ClipboardList className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                         <p className="text-gray-500">Belum ada periode survei</p>
-                        <p className="text-gray-400 text-sm mt-1">
-                          Klik &ldquo;Tambah Periode&rdquo; untuk menambahkan periode baru
-                        </p>
                       </div>
                     ) : (
                       <div className="overflow-x-auto">
@@ -1793,7 +1320,6 @@ export default function IkmDashboardPage() {
                               <TableHead className="hidden md:table-cell">Selesai</TableHead>
                               <TableHead>Status</TableHead>
                               <TableHead className="hidden sm:table-cell">Responden</TableHead>
-                              <TableHead className="text-right">Aksi</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -1832,29 +1358,6 @@ export default function IkmDashboardPage() {
                                     {period.respondentCount ?? 0}
                                   </span>
                                 </TableCell>
-                                <TableCell className="text-right">
-                                  <div className="flex items-center justify-end gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => {
-                                        setEditingPeriod(period);
-                                        setPeriodDialogOpen(true);
-                                      }}
-                                      className="text-bkad-green hover:bg-bkad-green/10"
-                                    >
-                                      <Pencil className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => setDeletePeriodDialog(period)}
-                                      className="text-red-500 hover:bg-red-50"
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                  </div>
-                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
@@ -1865,41 +1368,6 @@ export default function IkmDashboardPage() {
                 </Card>
               </motion.div>
             </AnimatePresence>
-
-            {/* Period Form Dialog */}
-            <PeriodFormDialog
-              open={periodDialogOpen}
-              onOpenChange={setPeriodDialogOpen}
-              period={editingPeriod}
-              onSave={handleSavePeriod}
-              loading={periodSaving}
-            />
-
-            {/* Delete Period Confirmation */}
-            <AlertDialog
-              open={!!deletePeriodDialog}
-              onOpenChange={(open) => !open && setDeletePeriodDialog(null)}
-            >
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Hapus Periode Survei</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Apakah Anda yakin ingin menghapus periode &ldquo;{deletePeriodDialog?.title}&rdquo;?
-                    Semua data responden pada periode ini juga akan terhapus. Tindakan ini tidak dapat
-                    dibatalkan.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Batal</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => deletePeriodDialog && handleDeletePeriod(deletePeriodDialog)}
-                    className="bg-red-500 hover:bg-red-600 text-white"
-                  >
-                    Hapus
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
           </TabsContent>
 
           {/* ═════════════════════════════════════════════════════════════════
@@ -2037,7 +1505,6 @@ export default function IkmDashboardPage() {
                                 </TableHead>
                                 <TableHead className="hidden md:table-cell">Saran</TableHead>
                                 <TableHead className="hidden sm:table-cell">Tanggal</TableHead>
-                                <TableHead className="text-right">Aksi</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -2087,16 +1554,6 @@ export default function IkmDashboardPage() {
                                     </TableCell>
                                     <TableCell className="hidden sm:table-cell text-gray-500 text-xs">
                                       {formatDate(response.createdAt)}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => setDeleteResponseDialog(response)}
-                                        className="text-red-500 hover:bg-red-50"
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </Button>
                                     </TableCell>
                                   </TableRow>
                                 );
@@ -2166,34 +1623,6 @@ export default function IkmDashboardPage() {
                 </Card>
               </motion.div>
             </AnimatePresence>
-
-            {/* Delete Response Confirmation */}
-            <AlertDialog
-              open={!!deleteResponseDialog}
-              onOpenChange={(open) => !open && setDeleteResponseDialog(null)}
-            >
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Hapus Data Responden</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Apakah Anda yakin ingin menghapus data responden &ldquo;
-                    {deleteResponseDialog?.respondentName || 'ini'}&rdquo;? Tindakan ini tidak
-                    dapat dibatalkan.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Batal</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() =>
-                      deleteResponseDialog && handleDeleteResponse(deleteResponseDialog)
-                    }
-                    className="bg-red-500 hover:bg-red-600 text-white"
-                  >
-                    Hapus
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
           </TabsContent>
         </Tabs>
       </div>
