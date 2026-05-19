@@ -10,6 +10,7 @@ import ServicesSection from "@/components/bkad/ServicesSection";
 import InfografisSection from "@/components/bkad/InfografisSection";
 import AgendaGaleriSection from "@/components/bkad/AgendaGaleriSection";
 import SiteFooter from "@/components/bkad/SiteFooter";
+import AdBubbleRenderer from "@/components/bkad/AdBubbleRenderer";
 import AdminPanel from "@/components/bkad/AdminPanel";
 import SetupWizard from "@/components/bkad/SetupWizard";
 import ProfilPage from "@/components/bkad/pages/ProfilPage";
@@ -47,6 +48,7 @@ const quickAddSectionMap: Record<string, string> = {
   infografis: "infographics",
   kategori: "categories",
   "navbar-menus": "navbar-menus",
+  "balon-iklan": "ad-bubbles",
 };
 
 function PageRouter() {
@@ -270,6 +272,9 @@ export default function Home() {
             <PageRouter />
           </main>
           <SiteFooter />
+
+          {/* Ad Bubble Renderer */}
+          <AdBubbleRenderer currentPage="home" />
 
           {/* Admin Toggle Button */}
           <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">

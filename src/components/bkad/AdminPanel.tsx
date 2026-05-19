@@ -275,7 +275,59 @@ type Section =
   | "infographics"
   | "laporan"
   | "users"
-  | "app-identity";
+  | "app-identity"
+  | "ad-bubbles";
+
+interface AdBubbleItem {
+  id: string;
+  title: string;
+  description: string;
+  contentType: string;
+  mediaUrl: string;
+  textContent: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  ctaTarget: string;
+  displayType: string;
+  displayMode: string;
+  position: string;
+  customOffsetX: number;
+  customOffsetY: number;
+  width: number;
+  height: number;
+  mobileWidth: number;
+  mobileHeight: number;
+  bgColor: string;
+  bgOpacity: number;
+  borderRadius: number;
+  shadowSize: string;
+  borderColor: string;
+  borderWidth: number;
+  animIn: string;
+  animOut: string;
+  animDuration: number;
+  showDelay: number;
+  autoHide: number;
+  showOnScroll: number;
+  exitIntent: boolean;
+  closeable: boolean;
+  minimizable: boolean;
+  draggable: boolean;
+  startDate: string;
+  endDate: string;
+  showHours: string;
+  targetDevice: string;
+  targetPages: string;
+  targetExclude: string;
+  zIndex: number;
+  order: number;
+  priority: number;
+  active: boolean;
+  impressions: number;
+  clicks: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -357,6 +409,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [users, setUsers] = useState<UserItem[]>([]);
   const [navbarMenus, setNavbarMenus] = useState<NavbarMenuItem[]>([]);
+  const [adBubbles, setAdBubbles] = useState<AdBubbleItem[]>([]);
 
   // ─── Blob Store Status ────────────────────────────────────────────────────
 
@@ -441,17 +494,20 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
         fetch("/api/categories"),
         fetch("/api/users"),
         fetch("/api/navbar-menus?all=true"),
+        fetch("/api/ad-bubbles?all=true"),
       ]);
 
       const [
         heroData, newsData, agendaData, galleryData, statsData,
         servicesData, financeData, pcData, offData, pubData,
         vidData, infoData, lapData, catData, usersData, navMenuData,
+        adBubbleData,
       ] = await Promise.all([
         heroRes.json(), newsRes.json(), agendaRes.json(), galleryRes.json(),
         statsRes.json(), servicesRes.json(), financeRes.json(), pcRes.json(),
         offRes.json(), pubRes.json(), vidRes.json(), infoRes.json(),
         lapRes.json(), catRes.json(), usersRes.json(), navMenuRes.json(),
+        adBubbleRes.json(),
       ]);
 
       setHeroSlides(heroData.data || []);
@@ -470,6 +526,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       setCategories(catData.data || []);
       setUsers(usersData.data || []);
       setNavbarMenus(navMenuData.data || []);
+      setAdBubbles(adBubbleData.data || []);
     } catch (err) {
       console.error("Failed to fetch data:", err);
     }
@@ -524,6 +581,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       laporan: "/api/laporan",
       users: "/api/users",
       "app-identity": "/api/app-identity",
+      "ad-bubbles": "/api/ad-bubbles",
     };
     return map[section];
   };
@@ -752,6 +810,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     { key: "laporan", label: "Laporan", icon: MessageSquare, count: laporan.length },
     { key: "users", label: "Pengguna", icon: Users, count: users.length },
     { key: "app-identity", label: "Identitas Aplikasi", icon: Globe, count: 0 },
+    { key: "ad-bubbles", label: "Balon Iklan", icon: MessageSquare, count: adBubbles.length },
   ];
 
   // ─── Render Form Fields ───────────────────────────────────────────────────
@@ -784,6 +843,293 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
 
   const renderFormFields = () => {
     switch (activeSection) {
+      case "ad-bubbles":
+        return (
+          <>
+            {/* ─── Basic Info ────────────────────────────────────── */}
+            <div className="col-span-2">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">📋 Informasi Dasar</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Judul Iklan</label>
+              <Input value={String(formData.title || "")} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="Judul iklan" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Deskripsi</label>
+              <Input value={String(formData.description || "")} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Deskripsi singkat" />
+            </div>
+
+            {/* ─── Content ──────────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">🎨 Konten Iklan</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tipe Konten</label>
+              <Select value={String(formData.contentType || "image")} onValueChange={(v) => setFormData({ ...formData, contentType: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="image">Gambar</SelectItem>
+                  <SelectItem value="gif">GIF Animasi</SelectItem>
+                  <SelectItem value="video">Video Pendek</SelectItem>
+                  <SelectItem value="text">Teks Promosi</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {(formData.contentType === "image" || formData.contentType === "gif" || formData.contentType === "video") && (
+              <div>
+                <label className="text-sm font-medium mb-1 block">File Media</label>
+                <ImageUpload value={String(formData.mediaUrl || "")} onChange={(url) => setFormData({ ...formData, mediaUrl: url })} label="Upload Media" />
+              </div>
+            )}
+            {formData.contentType === "text" && (
+              <div className="col-span-2">
+                <label className="text-sm font-medium mb-1 block">Konten Teks (HTML)</label>
+                <Textarea value={String(formData.textContent || "")} onChange={(e) => setFormData({ ...formData, textContent: e.target.value })} placeholder="<h3>Promo Spesial!</h3><p>Dapatkan diskon 50%</p>" rows={4} />
+              </div>
+            )}
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tombol CTA</label>
+              <Input value={String(formData.ctaLabel || "")} onChange={(e) => setFormData({ ...formData, ctaLabel: e.target.value })} placeholder="Contoh: Hubungi Kami" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">URL CTA</label>
+              <Input value={String(formData.ctaUrl || "")} onChange={(e) => setFormData({ ...formData, ctaUrl: e.target.value })} placeholder="https://example.com" />
+            </div>
+
+            {/* ─── Display Style ────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">🖥️ Tampilan</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tipe Tampilan</label>
+              <Select value={String(formData.displayType || "floating-bubble")} onValueChange={(v) => setFormData({ ...formData, displayType: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="floating-bubble">🫧 Floating Bubble</SelectItem>
+                  <SelectItem value="sticky-banner">📌 Sticky Banner</SelectItem>
+                  <SelectItem value="popup-mini">💬 Popup Mini</SelectItem>
+                  <SelectItem value="floating-card">🃏 Floating Card</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Mode Tampilan</label>
+              <Select value={String(formData.displayMode || "rounded-bubble")} onValueChange={(v) => setFormData({ ...formData, displayMode: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="rounded-bubble">⭕ Rounded Bubble</SelectItem>
+                  <SelectItem value="glassmorphism">🪟 Glassmorphism</SelectItem>
+                  <SelectItem value="neumorphism">💡 Neumorphism</SelectItem>
+                  <SelectItem value="minimal-clean">✨ Minimal Clean</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* ─── Position ─────────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">📍 Posisi</h3>
+            </div>
+            <div className="col-span-2">
+              <label className="text-sm font-medium mb-2 block">Posisi di Layar</label>
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { value: "top-left", label: "↖ Kiri Atas" },
+                  { value: "top-right", label: "↗ Kanan Atas" },
+                  { value: "center-left", label: "← Tengah Kiri" },
+                  { value: "center", label: "⬛ Tengah" },
+                  { value: "center-right", label: "→ Tengah Kanan" },
+                  { value: "bottom-left", label: "↙ Kiri Bawah" },
+                  { value: "bottom-right", label: "↘ Kanan Bawah" },
+                ].map((pos) => (
+                  <button
+                    key={pos.value}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, position: pos.value })}
+                    className={`px-3 py-2 text-xs rounded-lg border transition-colors ${
+                      formData.position === pos.value
+                        ? "bg-bkad-green text-white border-bkad-green"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-bkad-green/50"
+                    }`}
+                  >
+                    {pos.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ─── Size ─────────────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">📐 Ukuran</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Lebar Desktop (px)</label>
+              <Input type="number" value={Number(formData.width) || 300} onChange={(e) => setFormData({ ...formData, width: parseInt(e.target.value) || 300 })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tinggi Desktop (px)</label>
+              <Input type="number" value={Number(formData.height) || 250} onChange={(e) => setFormData({ ...formData, height: parseInt(e.target.value) || 250 })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Lebar Mobile (px)</label>
+              <Input type="number" value={Number(formData.mobileWidth) || 200} onChange={(e) => setFormData({ ...formData, mobileWidth: parseInt(e.target.value) || 200 })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tinggi Mobile (px)</label>
+              <Input type="number" value={Number(formData.mobileHeight) || 180} onChange={(e) => setFormData({ ...formData, mobileHeight: parseInt(e.target.value) || 180 })} />
+            </div>
+
+            {/* ─── Appearance ────────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">🎨 Tampilan Visual</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Warna Background</label>
+              <Input type="color" value={String(formData.bgColor || "#ffffff")} onChange={(e) => setFormData({ ...formData, bgColor: e.target.value })} className="h-9 cursor-pointer" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Transparansi ({Number(formData.bgOpacity ?? 1).toFixed(1)})</label>
+              <Input type="range" min="0" max="1" step="0.1" value={Number(formData.bgOpacity ?? 1)} onChange={(e) => setFormData({ ...formData, bgOpacity: parseFloat(e.target.value) })} className="w-full" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Border Radius (px)</label>
+              <Input type="number" value={Number(formData.borderRadius) || 16} onChange={(e) => setFormData({ ...formData, borderRadius: parseInt(e.target.value) || 16 })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Ukuran Shadow</label>
+              <Select value={String(formData.shadowSize || "md")} onValueChange={(v) => setFormData({ ...formData, shadowSize: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Tanpa Shadow</SelectItem>
+                  <SelectItem value="sm">Kecil</SelectItem>
+                  <SelectItem value="md">Sedang</SelectItem>
+                  <SelectItem value="lg">Besar</SelectItem>
+                  <SelectItem value="xl">Sangat Besar</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* ─── Animation ─────────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">✨ Animasi</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Animasi Masuk</label>
+              <Select value={String(formData.animIn || "fade")} onValueChange={(v) => setFormData({ ...formData, animIn: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fade">Fade In</SelectItem>
+                  <SelectItem value="slide">Slide Up</SelectItem>
+                  <SelectItem value="bounce">Bounce</SelectItem>
+                  <SelectItem value="zoom">Zoom In</SelectItem>
+                  <SelectItem value="none">Tanpa Animasi</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Animasi Keluar</label>
+              <Select value={String(formData.animOut || "fade")} onValueChange={(v) => setFormData({ ...formData, animOut: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fade">Fade Out</SelectItem>
+                  <SelectItem value="slide">Slide Down</SelectItem>
+                  <SelectItem value="zoom">Zoom Out</SelectItem>
+                  <SelectItem value="none">Tanpa Animasi</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* ─── Behavior ──────────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">⚙️ Perilaku</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tampilkan Setelah Delay (ms)</label>
+              <Input type="number" value={Number(formData.showDelay) || 0} onChange={(e) => setFormData({ ...formData, showDelay: parseInt(e.target.value) || 0 })} placeholder="0 = langsung tampil" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Auto Hide Setelah (ms)</label>
+              <Input type="number" value={Number(formData.autoHide) || 0} onChange={(e) => setFormData({ ...formData, autoHide: parseInt(e.target.value) || 0 })} placeholder="0 = tidak auto hide" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tampil Setelah Scroll (px)</label>
+              <Input type="number" value={Number(formData.showOnScroll) || 0} onChange={(e) => setFormData({ ...formData, showOnScroll: parseInt(e.target.value) || 0 })} placeholder="0 = selalu tampil" />
+            </div>
+            <div className="flex items-center gap-4 pt-5">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={!!formData.exitIntent} onChange={(e) => setFormData({ ...formData, exitIntent: e.target.checked })} className="rounded" />
+                Exit Intent Popup
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={formData.closeable !== false} onChange={(e) => setFormData({ ...formData, closeable: e.target.checked })} className="rounded" />
+                Tombol Close
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={!!formData.minimizable} onChange={(e) => setFormData({ ...formData, minimizable: e.target.checked })} className="rounded" />
+                Minimize
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={formData.draggable !== false} onChange={(e) => setFormData({ ...formData, draggable: e.target.checked })} className="rounded" />
+                Draggable
+              </label>
+            </div>
+
+            {/* ─── Scheduling ────────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">📅 Jadwal Tampil</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tanggal Mulai</label>
+              <Input type="date" value={String(formData.startDate || "")} onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Tanggal Berakhir</label>
+              <Input type="date" value={String(formData.endDate || "")} onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} />
+            </div>
+
+            {/* ─── Targeting ─────────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">🎯 Target & Prioritas</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Target Perangkat</label>
+              <Select value={String(formData.targetDevice || "all")} onValueChange={(v) => setFormData({ ...formData, targetDevice: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Perangkat</SelectItem>
+                  <SelectItem value="mobile">Hanya Mobile</SelectItem>
+                  <SelectItem value="desktop">Hanya Desktop</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Prioritas</label>
+              <Input type="number" value={Number(formData.priority) || 0} onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">z-Index</label>
+              <Input type="number" value={Number(formData.zIndex) || 9999} onChange={(e) => setFormData({ ...formData, zIndex: parseInt(e.target.value) || 9999 })} />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Urutan</label>
+              <Input type="number" value={Number(formData.order) || 0} onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })} />
+            </div>
+
+            {/* ─── Status ────────────────────────────────────────── */}
+            <div className="col-span-2 mt-4">
+              <h3 className="text-sm font-semibold text-gray-700 border-b pb-1 mb-3">🔄 Status</h3>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Status</label>
+              <Select value={formData.active ? "true" : "false"} onValueChange={(v) => setFormData({ ...formData, active: v === "true" })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Aktif</SelectItem>
+                  <SelectItem value="false">Nonaktif</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        );
       case "navbar-menus":
         return (
           <>
@@ -2211,6 +2557,89 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
     switch (activeSection) {
       case "app-identity":
         return <PengaturanIdentitasSection />;
+      case "ad-bubbles":
+        return (
+          <div className="space-y-3">
+            {adBubbles.length === 0 && (
+              <div className="text-center py-10 text-gray-400">
+                <MessageSquare className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p>Belum ada balon iklan</p>
+                <p className="text-xs mt-1">Tambahkan iklan floating baru untuk promosi</p>
+              </div>
+            )}
+            {adBubbles.map((item) => {
+              const ctr = item.impressions > 0 ? ((item.clicks / item.impressions) * 100).toFixed(1) : "0.0";
+              return (
+                <div key={item.id} className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow ${!item.active ? "opacity-50" : ""}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                      {/* Preview thumbnail */}
+                      <div className="w-16 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        {item.contentType === "image" || item.contentType === "gif" ? (
+                          resolveFileUrl(item.mediaUrl) ? (
+                            <img src={resolveFileUrl(item.mediaUrl)!} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <ImageIcon className="w-5 h-5 text-gray-300" />
+                          )
+                        ) : item.contentType === "video" ? (
+                          <Video className="w-5 h-5 text-gray-400" />
+                        ) : (
+                          <FileText className="w-5 h-5 text-gray-400" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="font-medium text-sm truncate">{item.title}</h4>
+                          <Badge variant={item.active ? "default" : "secondary"} className={item.active ? "bg-emerald-100 text-emerald-700" : ""}>
+                            {item.active ? "Aktif" : "Nonaktif"}
+                          </Badge>
+                          <Badge variant="outline" className="text-[10px]">
+                            {item.displayType === "floating-bubble" ? "Bubble" :
+                             item.displayType === "sticky-banner" ? "Sticky" :
+                             item.displayType === "popup-mini" ? "Popup" : "Card"}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                          <span>{item.position.replace("-", " ")}</span>
+                          <span>{item.width}x{item.height}</span>
+                          <span>{item.contentType}</span>
+                        </div>
+                        {/* Stats */}
+                        <div className="flex items-center gap-4 mt-2">
+                          <div className="flex items-center gap-1 text-xs">
+                            <Eye className="w-3 h-3 text-gray-400" />
+                            <span className="text-gray-500">{item.impressions}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-xs">
+                            <BarChart3 className="w-3 h-3 text-gray-400" />
+                            <span className="text-gray-500">{item.clicks}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-xs">
+                            <TrendingUp className="w-3 h-3 text-gray-400" />
+                            <span className="text-gray-500">CTR: {ctr}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                        <a href={`#preview-ad-${item.id}`} title="Preview" onClick={(e) => { e.preventDefault(); openDetailModal(item as unknown as Record<string, unknown>); }}>
+                          <Eye className="w-3.5 h-3.5" />
+                        </a>
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditModal(item as unknown as Record<string, unknown>)}>
+                        <Pencil className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => setDeleteConfirm(item.id)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
       case "navbar-menus":
         return (
           <div className="space-y-3">

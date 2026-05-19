@@ -329,3 +329,79 @@ model AppIdentity {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
+
+model AdBubble {
+  id              String   @id @default(cuid())
+  title           String
+  description     String   @default("")
+  
+  // Content
+  contentType     String   @default("image")   // image, gif, video, text, html
+  mediaUrl        String   @default("")         // URL for image/gif/video
+  textContent     String   @default("")         // Text promo content (supports HTML)
+  ctaLabel        String   @default("")         // CTA button label
+  ctaUrl          String   @default("")         // CTA button link
+  ctaTarget       String   @default("_blank")   // _blank or _self
+  
+  // Display style
+  displayType     String   @default("floating-bubble")  // floating-bubble, sticky-banner, popup-mini, floating-card
+  displayMode     String   @default("rounded-bubble")   // rounded-bubble, glassmorphism, neumorphism, minimal-clean
+  
+  // Position
+  position        String   @default("bottom-right")  // top-left, top-right, bottom-left, bottom-right, center-left, center-right, center
+  customOffsetX   Int      @default(0)               // Additional X offset in px
+  customOffsetY   Int      @default(0)               // Additional Y offset in px
+  
+  // Size
+  width           Int      @default(300)             // Width in px
+  height          Int      @default(250)             // Height in px
+  mobileWidth     Int      @default(200)
+  mobileHeight    Int      @default(180)
+  
+  // Appearance
+  bgColor         String   @default("#ffffff")
+  bgOpacity       Float    @default(1.0)             // 0.0 - 1.0
+  borderRadius    Int      @default(16)              // Border radius in px
+  shadowSize      String   @default("md")            // none, sm, md, lg, xl
+  borderColor     String   @default("#e5e7eb")
+  borderWidth     Int      @default(0)
+  
+  // Animation
+  animIn          String   @default("fade")          // fade, slide, bounce, zoom, none
+  animOut         String   @default("fade")          // fade, slide, zoom, none
+  animDuration    Int      @default(500)             // Animation duration in ms
+  
+  // Behavior
+  showDelay       Int      @default(0)               // Delay before showing (ms)
+  autoHide        Int      @default(0)               // Auto hide after X ms (0 = never)
+  showOnScroll    Int      @default(0)               // Show after X px scroll (0 = always)
+  exitIntent      Boolean  @default(false)           // Show on exit intent
+  closeable       Boolean  @default(true)            // Show close button
+  minimizable     Boolean  @default(false)           // Show minimize button
+  draggable       Boolean  @default(true)            // Allow drag & drop
+  
+  // Scheduling
+  startDate       String   @default("")              // ISO date string
+  endDate         String   @default("")              // ISO date string
+  showHours       String   @default("")              // JSON: {start: "08:00", end: "22:00"}
+  
+  // Targeting
+  targetDevice    String   @default("all")           // all, mobile, desktop
+  targetPages     String   @default("[]")            // JSON array of page slugs, empty = all
+  targetExclude   String   @default("[]")            // JSON array of excluded page slugs
+  
+  // Priority & Order
+  zIndex          Int      @default(9999)
+  order           Int      @default(0)
+  priority        Int      @default(0)               // Higher = more important
+  
+  // Status
+  active          Boolean  @default(true)
+  
+  // Statistics
+  impressions     Int      @default(0)
+  clicks          Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

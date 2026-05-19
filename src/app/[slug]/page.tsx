@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { resolveFileUrl, getDownloadUrl } from "@/lib/utils";
+import AdBubbleRenderer from "@/components/bkad/AdBubbleRenderer";
 import {
   ChevronRight,
   Home,
@@ -514,6 +515,9 @@ export default async function SlugPage({
           </div>
         </div>
       </main>
+
+      {/* ─── Ad Bubbles ───────────────────────────────────────────────── */}
+      <AdBubbleRenderer currentPage={slug} />
 
       {/* ─── Footer ──────────────────────────────────────────────────── */}
       <footer className="text-white relative" style={{ backgroundColor: resolved.darkColor }}>
