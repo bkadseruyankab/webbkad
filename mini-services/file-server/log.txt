@@ -1,1 +1,2 @@
-File server running on port 3001
+$ bun index.ts
+📁 BKAD File Server running on http://localhost:3001

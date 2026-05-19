@@ -4,7 +4,7 @@
  * This is a dedicated file server because Next.js 16 with Turbopack
  * has issues serving large binary files through API routes.
  * 
- * Access via gateway: /uploads/file.jpg?XTransformPort=3001
+ * Access via gateway: /api/files/uploads/file.jpg?XTransformPort=3001
  */
 
 const PORT = 3001;
@@ -12,6 +12,7 @@ const PORT = 3001;
 // Use absolute paths relative to the project root
 const PROJECT_ROOT = '/home/z/my-project';
 const PUBLIC_DIR = `${PROJECT_ROOT}/public`;
+const EXTERNAL_UPLOAD_DIR = `${PROJECT_ROOT}/upload`;
 
 const MIME_TYPES: Record<string, string> = {
   '.jpg': 'image/jpeg',
@@ -21,6 +22,7 @@ const MIME_TYPES: Record<string, string> = {
   '.webp': 'image/webp',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
+  '.bmp': 'image/bmp',
   '.pdf': 'application/pdf',
   '.doc': 'application/msword',
   '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -62,19 +64,28 @@ const server = Bun.serve({
       // Security: prevent directory traversal
       const normalizedPath = normalize(filePath).replace(/^(\.\.(\/|\\|$))+/, '');
 
-      // The full path within the public directory
-      const fullPath = join(PUBLIC_DIR, normalizedPath);
+      // Try multiple directories in order of priority
+      let resolvedPath: string | null = null;
 
-      // Security: ensure the resolved path is within the public directory
-      const resolvedPath = resolve(fullPath);
-      if (!resolvedPath.startsWith(PUBLIC_DIR)) {
-        return new Response(JSON.stringify({ error: 'Forbidden' }), {
-          status: 403,
-          headers: { 'Content-Type': 'application/json' },
-        });
+      // Search directories: public/ first, then external upload dir
+      const searchDirs = [PUBLIC_DIR, EXTERNAL_UPLOAD_DIR];
+
+      for (const baseDir of searchDirs) {
+        const fullPath = join(baseDir, normalizedPath);
+        const candidate = resolve(fullPath);
+
+        // Security: ensure the resolved path is within the base directory
+        if (!candidate.startsWith(resolve(baseDir))) {
+          continue;
+        }
+
+        if (existsSync(candidate)) {
+          resolvedPath = candidate;
+          break;
+        }
       }
 
-      if (!existsSync(resolvedPath)) {
+      if (!resolvedPath) {
         return new Response(JSON.stringify({ error: 'File not found' }), {
           status: 404,
           headers: { 'Content-Type': 'application/json' },

@@ -5,7 +5,10 @@ import { db } from '@/lib/db';
 
 // ─── Configuration from environment ──────────────────────────────────
 
+// Primary upload directory - serves as the web-accessible path
 const UPLOAD_DIR = process.env.UPLOAD_DIR || 'public/uploads';
+// External upload directory for direct file storage (e.g., pasted images)
+const EXTERNAL_UPLOAD_DIR = '/home/z/my-project/upload';
 const MAX_SIZE_MB = parseInt(process.env.UPLOAD_MAX_SIZE_MB || '10', 10);
 const MAX_SIZE = MAX_SIZE_MB * 1024 * 1024;
 const BLOB_TRACKING = process.env.UPLOAD_BLOB_TRACKING !== 'false';
