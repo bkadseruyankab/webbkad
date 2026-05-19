@@ -5,6 +5,7 @@ import { Calendar, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePageRouter } from "@/stores/usePageRouter";
+import { resolveFileUrl } from "@/lib/utils";
 
 interface NewsItem {
   id: string;
@@ -32,12 +33,6 @@ const categoryColors: Record<string, string> = {
   Anggaran: "bg-rose-100 text-rose-700",
   PAD: "bg-orange-100 text-orange-700",
 };
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
-}
 
 export default function NewsSection() {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);

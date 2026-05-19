@@ -5,6 +5,7 @@ import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePageRouter } from "@/stores/usePageRouter";
+import { resolveFileUrl } from "@/lib/utils";
 
 interface AgendaItem {
   id: number;
@@ -44,12 +45,6 @@ const statusConfig = {
   ongoing: { label: "Berlangsung", class: "bg-emerald-100 text-emerald-700" },
   completed: { label: "Selesai", class: "bg-gray-100 text-gray-600" },
 };
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
-}
 
 export default function AgendaGaleriSection() {
   const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([]);

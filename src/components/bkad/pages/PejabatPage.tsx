@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePageRouter, pageTitles } from "@/stores/usePageRouter";
 import { ChevronRight, User, Mail, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { resolveFileUrl } from "@/lib/utils";
 
 interface Official {
   id: string;
@@ -12,12 +13,6 @@ interface Official {
   photo: string;
   nip: string;
   order: number;
-}
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
 }
 
 export default function PejabatPage() {

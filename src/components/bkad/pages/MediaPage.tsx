@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePageRouter, pageTitles } from "@/stores/usePageRouter";
 import { ChevronRight, Image as ImageIcon, Play, BarChart3 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { resolveFileUrl } from "@/lib/utils";
 
 interface GalleryItem {
   id: string;
@@ -24,12 +25,6 @@ interface InfographicItem {
   title: string;
   image: string;
   date: string;
-}
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
 }
 
 type MediaType = "foto" | "video" | "infografis";

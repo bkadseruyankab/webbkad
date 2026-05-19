@@ -98,8 +98,9 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
     await writeFile(filePath, buffer);
 
-    // The public URL path (served via /api/files/ route to avoid Next.js dev server crashes)
-    const publicPath = `/api/files/uploads/${filename}`;
+    // The public URL path - served directly by Caddy/Next.js from the public/ directory
+    // /uploads/xxx.jpg is served by Caddy's @uploads handler or Next.js static file server
+    const publicPath = `/uploads/${filename}`;
 
     // Register in blob-files DB for metadata tracking
     if (BLOB_TRACKING) {

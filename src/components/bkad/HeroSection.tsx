@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { resolveFileUrl } from "@/lib/utils";
 
 interface HeroSlide {
   id: number;
@@ -27,12 +28,6 @@ const defaultSlide: HeroSlide = {
   order: 0,
   active: true,
 };
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
-}
 
 export default function HeroSection() {
   const [slides, setSlides] = useState<HeroSlide[]>([defaultSlide]);

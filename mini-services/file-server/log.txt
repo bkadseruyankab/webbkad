@@ -1,2 +1,1 @@
-$ bun index.ts
 📁 BKAD File Server running on http://localhost:3001

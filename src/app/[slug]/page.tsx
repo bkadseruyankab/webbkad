@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { resolveFileUrl, getDownloadUrl } from "@/lib/utils";
 import {
   ChevronRight,
   Home,
@@ -147,17 +148,6 @@ export async function generateMetadata({
       images: page.heroImage || page.image ? [{ url: page.heroImage || page.image }] : undefined,
     },
   };
-}
-
-// ─── Helper: resolve uploaded file URLs ────────────────────────────────────
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  // Convert /uploads/... to /api/files/uploads/...
-  if (url.startsWith('/uploads/')) {
-    return `/api/files${url}`;
-  }
-  return url;
 }
 
 // ─── Helper: parse "Label|url" format links ──────────────────────────────────
@@ -450,7 +440,7 @@ export default async function DynamicPage({
                     {files.map((file, i) => (
                       <a
                         key={i}
-                        href={resolveFileUrl(file.url)}
+                        href={getDownloadUrl(file.url)}
                         download
                         target="_blank"
                         rel="noopener noreferrer"

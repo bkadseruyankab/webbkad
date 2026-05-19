@@ -11,12 +11,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { useAppIdentity, parseLinks } from "@/hooks/useAppIdentity";
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
-}
+import { resolveFileUrl } from "@/lib/utils";
 
 export default function SiteFooter() {
   const { resolved } = useAppIdentity();

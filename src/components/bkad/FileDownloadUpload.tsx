@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import { Upload, X, FileText, Download, Pencil, Check, File } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
+import { cn, resolveFileUrl, getDownloadUrl } from '@/lib/utils'
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -41,13 +41,6 @@ function getFileIcon(mimeType: string): string {
   if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('7z')) return '🗜️'
   if (mimeType.includes('image')) return '🖼️'
   return '📎'
-}
-
-// Helper to resolve uploaded file URLs
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────
@@ -260,7 +253,7 @@ export function FileDownloadUpload({
                   variant="outline"
                   size="sm"
                   className="h-7 gap-1 text-xs border-[#0D6B3F]/30 text-[#0D6B3F] hover:bg-[#0D6B3F]/5"
-                  onClick={() => window.open(resolveFileUrl(file.url), '_blank')}
+                  onClick={() => window.open(getDownloadUrl(file.url), '_blank')}
                   title="Unduh file"
                 >
                   <Download className="h-3 w-3" />

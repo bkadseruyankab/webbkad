@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { compressImage, type CompressOptions } from '@/lib/image-compress'
 import { blobStore } from '@/lib/blob-store'
-import { cn } from '@/lib/utils'
+import { cn, resolveFileUrl } from '@/lib/utils'
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -39,13 +39,6 @@ function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes}B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
-}
-
-// Helper to resolve uploaded file URLs for display
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────

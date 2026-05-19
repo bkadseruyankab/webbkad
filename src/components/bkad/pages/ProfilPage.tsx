@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePageRouter, pageTitles } from "@/stores/usePageRouter";
 import { ChevronRight, BookOpen, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { resolveFileUrl, getDownloadUrl } from "@/lib/utils";
 
 interface ImageItem {
   url: string;
@@ -49,12 +50,6 @@ function parseDownloadableFiles(jsonStr: string | null | undefined): Downloadabl
   } catch {
     return [];
   }
-}
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
 }
 
 function formatFileSize(bytes: number): string {
@@ -195,7 +190,7 @@ export default function ProfilPage({ slug }: { slug: string }) {
                     {downloadableFiles.map((file, i) => (
                       <a
                         key={i}
-                        href={resolveFileUrl(file.url)}
+                        href={getDownloadUrl(file.url)}
                         download
                         target="_blank"
                         rel="noopener noreferrer"

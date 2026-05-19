@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { resolveFileUrl, getDownloadUrl } from "@/lib/utils";
 
 interface PublicationData {
   id: string;
@@ -75,12 +76,6 @@ function parseDownloadableFiles(jsonStr: string | null | undefined): { url: stri
   } catch {
     return [];
   }
-}
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
 }
 
 function formatFileSize(bytes: number): string {
@@ -333,7 +328,7 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                         {files.map((file, i) => (
                           <a
                             key={i}
-                            href={resolveFileUrl(file.url)}
+                            href={getDownloadUrl(file.url)}
                             download
                             target="_blank"
                             rel="noopener noreferrer"

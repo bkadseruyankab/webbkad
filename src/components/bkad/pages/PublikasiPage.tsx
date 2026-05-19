@@ -6,6 +6,7 @@ import { ChevronRight, FileText, Download, Calendar, Search } from "lucide-react
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { resolveFileUrl } from "@/lib/utils";
 
 interface Publication {
   id: string;
@@ -23,12 +24,6 @@ const categoryConfig: Record<string, { label: string; color: string }> = {
   "data-pokok": { label: "Data Pokok", color: "bg-sky-100 text-sky-700" },
   peraturan: { label: "Peraturan", color: "bg-violet-100 text-violet-700" },
 };
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
-}
 
 export default function PublikasiPage({ category }: { category: string }) {
   const { currentPage, navigateToDetail } = usePageRouter();

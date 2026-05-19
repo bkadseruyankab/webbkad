@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import { Upload, X, ImageOff, GripVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { compressImage, type CompressOptions } from '@/lib/image-compress'
-import { cn } from '@/lib/utils'
+import { cn, resolveFileUrl } from '@/lib/utils'
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -329,12 +329,6 @@ export function MultiImageUpload({
 }
 
 // Helper: Parse images from JSON string or return empty array
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
-}
 
 export function parseImages(jsonStr: string | undefined | null): ImageItem[] {
   if (!jsonStr) return []

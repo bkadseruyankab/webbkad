@@ -50,13 +50,7 @@ import { ImageUpload } from "@/components/bkad/ImageUpload";
 import { MultiImageUpload, parseImages, serializeImages, type ImageItem } from "@/components/bkad/MultiImageUpload";
 import { FileDownloadUpload, parseDownloadableFiles, serializeDownloadableFiles, type DownloadableFile } from "@/components/bkad/FileDownloadUpload";
 import PengaturanIdentitasSection from "@/components/bkad/PengaturanIdentitasSection";
-
-// Helper to resolve uploaded file URLs for display
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
-}
+import { resolveFileUrl } from "@/lib/utils";
 import { blobStore } from "@/lib/blob-store";
 import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
 import { useSetupStore } from "@/stores/useSetupStore";

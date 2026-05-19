@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
 import { useAppIdentity } from "@/hooks/useAppIdentity";
+import { resolveFileUrl } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
 /*  Icon resolver                                                             */
@@ -73,12 +74,6 @@ const iconComponentMap: Record<string, React.ElementType> = {
 
 function resolveIcon(iconName: string): React.ElementType {
   return iconComponentMap[iconName] || FileText;
-}
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
 }
 
 /* -------------------------------------------------------------------------- */

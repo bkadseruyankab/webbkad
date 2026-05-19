@@ -121,3 +121,38 @@ Stage Summary:
 - Admin panel refresh issue fixed: navigation state persists via URL hash, admin panel state via sessionStorage
 - Hydration mismatches fixed: InfografisSection uses suppressHydrationWarning, layout.tsx body already has it
 - All lint checks pass, dev server running correctly
+
+---
+Task ID: 4
+Agent: Main Agent
+Task: Fix corrupted images, broken file downloads, and 404 dynamic pages for uploaded content
+
+Work Log:
+- Diagnosed root cause: No API route existed at /api/files/uploads/* to serve uploaded files
+- The upload API returned /api/files/uploads/xxx.jpg as the URL path, but there was no route handler
+- Caddy only handled /uploads/* (without /api/files/ prefix), so uploaded images always returned 404
+- Found broken blob: URLs stored in database (HeroSlide records) - browser-only temporary URLs that don't persist
+- Created /api/files/uploads/[...path]/route.ts (catch-all) - worked but caused Next.js OOM crashes with Turbopack
+- Changed strategy: Use /uploads/xxx.jpg directly (served by Caddy static file server + Next.js static files from public/)
+- Updated resolveFileUrl() in @/lib/utils to convert /api/files/uploads/xxx → /uploads/xxx (static path)
+- Updated getDownloadUrl() to use /api/serve-upload?f=xxx&download=1 for reliable file downloads
+- Updated upload route to return /uploads/xxx.jpg instead of /api/files/uploads/xxx.jpg
+- Migrated all existing database records from /api/files/uploads/ to /uploads/ URL pattern
+- Fixed broken blob: URLs in HeroSlide database records (set to empty string)
+- Updated /api/serve-upload route to serve files from multiple directories (public/uploads, /home/z/my-project/upload, public/images) with proper binary serving and download support
+- Added auto-sync of external upload files to public/uploads/ in serve-upload route
+- Created /api/sync-uploads route to batch-sync external upload files
+- Replaced 20+ duplicate local resolveFileUrl() functions across all components with shared import from @/lib/utils
+- Updated FileDownloadUpload, ProfilPage, PublicationDetailPage, and [slug]/page.tsx to use getDownloadUrl() for download links
+- Copied pasted_image_1779153376721.png from external upload dir to public/uploads/ for static serving
+- Created start-dev.sh script that syncs external files and starts all services
+- All services tested and verified: Next.js (port 3000), file server (port 3001), Caddy gateway (port 81)
+
+Stage Summary:
+- Images now display correctly via /uploads/xxx.jpg (served by Caddy/Next.js static files)
+- File downloads work via /api/serve-upload?f=xxx&download=1 with proper Content-Disposition headers
+- Dynamic [slug] pages render correctly with uploaded images (e.g., /dokumen)
+- External upload directory files are auto-synced to public/uploads/
+- Broken blob: URLs in database have been cleaned up
+- All 20+ components now use shared resolveFileUrl/getDownloadUrl from @/lib/utils
+- Three file access paths all verified working: Caddy (production), Next.js static, Bun file server

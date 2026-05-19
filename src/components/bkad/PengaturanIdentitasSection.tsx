@@ -26,6 +26,7 @@ import {
   type AppIdentity,
 } from "@/lib/app-identity";
 import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
+import { resolveFileUrl } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
 /*  Section key type & defaults                                               */
@@ -35,12 +36,6 @@ type FormKey = keyof AppIdentity;
 
 const BKAD_GREEN = "#0D6B3F";
 const BKAD_GOLD = "#C5960C";
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
-}
 
 /* -------------------------------------------------------------------------- */
 /*  Field helper – builds a labelled input or textarea                        */

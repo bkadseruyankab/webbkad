@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { resolveFileUrl } from "@/lib/utils";
 
 interface VideoData {
   id: string;
@@ -39,12 +40,6 @@ function parseImages(jsonStr: string | null | undefined): { url: string; alt?: s
   } catch {
     return [];
   }
-}
-
-function resolveFileUrl(url: string): string {
-  if (!url) return url;
-  if (url.startsWith('/uploads/')) return `/api/files${url}`;
-  return url;
 }
 
 export default function VideoDetailPage({ id }: { id: string }) {
