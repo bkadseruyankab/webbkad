@@ -26,7 +26,7 @@ export default function SiteFooter() {
     >
       {/* Top Wave */}
       <div className="absolute -top-1 left-0 right-0 overflow-hidden">
-        <svg viewBox="0 0 1440 60" className="w-full h-8 md:h-12 fill-gray-50">
+        <svg viewBox="0 0 1440 60" className="w-full h-8 md:h-12 fill-gray-50 dark:fill-gray-900">
           <path d="M0,0 C360,60 1080,0 1440,40 L1440,0 L0,0 Z" />
         </svg>
       </div>

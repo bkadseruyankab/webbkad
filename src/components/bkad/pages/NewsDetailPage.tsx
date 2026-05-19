@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePageRouter } from "@/stores/usePageRouter";
-import { ChevronRight, Calendar, Clock, ArrowLeft, Share2, Facebook, Twitter, Download, Newspaper } from "lucide-react";
+import { ChevronRight, Calendar, Clock, ArrowLeft, Facebook, Twitter, Download, Newspaper, MessageCircle, Send, Linkedin, Mail, Check, Link2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { resolveFileUrl } from "@/lib/utils";
@@ -44,6 +44,7 @@ export default function NewsDetailPage({ id }: { id: string }) {
   const [news, setNews] = useState<NewsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [relatedNews, setRelatedNews] = useState<NewsData[]>([]);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function fetchNews() {
@@ -76,11 +77,11 @@ export default function NewsDetailPage({ id }: { id: string }) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="animate-pulse space-y-4 w-full max-w-4xl mx-auto px-4">
-          <div className="h-64 bg-gray-200 rounded-xl" />
-          <div className="h-8 bg-gray-200 rounded w-2/3" />
-          <div className="h-4 bg-gray-200 rounded w-1/3" />
-          <div className="h-4 bg-gray-200 rounded w-full" />
-          <div className="h-4 bg-gray-200 rounded w-5/6" />
+          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6" />
         </div>
       </div>
     );
@@ -89,7 +90,7 @@ export default function NewsDetailPage({ id }: { id: string }) {
   if (!news) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-        <p className="text-gray-500 text-lg">Berita tidak ditemukan</p>
+        <p className="text-gray-500 dark:text-gray-400 text-lg">Berita tidak ditemukan</p>
         <Button onClick={goHome} variant="outline" className="border-bkad-green text-bkad-green">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Kembali ke Beranda
@@ -102,7 +103,7 @@ export default function NewsDetailPage({ id }: { id: string }) {
     <div className="py-8">
       <div className="container mx-auto px-4">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <nav className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
           <a onClick={goHome} className="hover:text-bkad-green cursor-pointer">Beranda</a>
           <ChevronRight className="w-4 h-4" />
           <a onClick={() => usePageRouter.getState().navigate("berita")} className="hover:text-bkad-green cursor-pointer">Berita</a>
@@ -113,7 +114,7 @@ export default function NewsDetailPage({ id }: { id: string }) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <article className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
               {/* Hero Image */}
               <div className="relative h-64 md:h-96">
                 {resolveFileUrl(news.image) ? (
@@ -123,8 +124,8 @@ export default function NewsDetailPage({ id }: { id: string }) {
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-                    <Newspaper className="w-12 h-12 text-gray-400" />
+                  <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                    <Newspaper className="w-12 h-12 text-gray-400 dark:text-gray-500" />
                   </div>
                 )}
               </div>
@@ -146,7 +147,7 @@ export default function NewsDetailPage({ id }: { id: string }) {
                 </div>
 
                 {/* Title */}
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 leading-tight">
                   {news.title}
                 </h1>
 
@@ -154,12 +155,12 @@ export default function NewsDetailPage({ id }: { id: string }) {
                 <div className="prose prose-gray max-w-none">
                   {news.content ? (
                     news.content.split("\n\n").map((paragraph, i) => (
-                      <p key={i} className="text-gray-700 leading-relaxed mb-4 whitespace-pre-line">
+                      <p key={i} className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 whitespace-pre-line">
                         {paragraph}
                       </p>
                     ))
                   ) : (
-                    <p className="text-gray-700 leading-relaxed mb-4">{news.excerpt}</p>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">{news.excerpt}</p>
                   )}
                 </div>
 
@@ -168,14 +169,14 @@ export default function NewsDetailPage({ id }: { id: string }) {
                   const images = parseImages(news.images);
                   if (images.length === 0) return null;
                   return (
-                    <div className="mt-8 pt-6 border-t border-gray-100">
-                      <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Gambar</h3>
+                    <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Galeri Gambar</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {images.map((img, i) => {
                           const resolvedImgUrl = resolveFileUrl(img.url);
                           return (
-                          <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                            <div className="aspect-video bg-gray-100">
+                          <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow">
+                            <div className="aspect-video bg-gray-100 dark:bg-gray-700">
                               {resolvedImgUrl && <img
                                 src={resolvedImgUrl}
                                 alt={img.alt || img.caption || `Gambar ${i + 1}`}
@@ -183,8 +184,8 @@ export default function NewsDetailPage({ id }: { id: string }) {
                               />}
                             </div>
                             {img.caption && (
-                              <div className="p-2 bg-white">
-                                <p className="text-xs text-gray-600 truncate">{img.caption}</p>
+                              <div className="p-2 bg-white dark:bg-gray-700">
+                                <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{img.caption}</p>
                               </div>
                             )}
                           </div>
@@ -196,27 +197,96 @@ export default function NewsDetailPage({ id }: { id: string }) {
                 })()}
 
                 {/* Share */}
-                <div className="mt-8 pt-6 border-t border-gray-100">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-gray-500 font-medium">Bagikan:</span>
-                    <Button variant="outline" size="sm" className="text-blue-600 border-blue-200 hover:bg-blue-50">
-                      <Facebook className="w-4 h-4 mr-1" />
-                      Facebook
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-sky-500 border-sky-200 hover:bg-sky-50">
-                      <Twitter className="w-4 h-4 mr-1" />
-                      Twitter
+                <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Bagikan:</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+                      onClick={() => {
+                        const shareUrl = window.location.origin + window.location.pathname;
+                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'noopener,noreferrer');
+                      }}
+                    >
+                      <Facebook className="w-4 h-4 sm:mr-1.5" />
+                      <span className="hidden sm:inline">Facebook</span>
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-gray-600 border-gray-200 hover:bg-gray-50"
+                      className="text-sky-500 border-sky-200 hover:bg-sky-50 hover:border-sky-300"
                       onClick={() => {
-                        navigator.clipboard.writeText(window.location.href);
+                        const shareUrl = window.location.origin + window.location.pathname;
+                        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(news.title)}`, '_blank', 'noopener,noreferrer');
                       }}
                     >
-                      <Share2 className="w-4 h-4 mr-1" />
-                      Salin Link
+                      <Twitter className="w-4 h-4 sm:mr-1.5" />
+                      <span className="hidden sm:inline">Twitter</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300"
+                      onClick={() => {
+                        const shareUrl = window.location.origin + window.location.pathname;
+                        window.open(`https://wa.me/?text=${encodeURIComponent(news.title + ' ' + shareUrl)}`, '_blank', 'noopener,noreferrer');
+                      }}
+                    >
+                      <MessageCircle className="w-4 h-4 sm:mr-1.5" />
+                      <span className="hidden sm:inline">WhatsApp</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-sky-600 border-sky-200 hover:bg-sky-50 hover:border-sky-300"
+                      onClick={() => {
+                        const shareUrl = window.location.origin + window.location.pathname;
+                        window.open(`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(news.title)}`, '_blank', 'noopener,noreferrer');
+                      }}
+                    >
+                      <Send className="w-4 h-4 sm:mr-1.5" />
+                      <span className="hidden sm:inline">Telegram</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-700 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+                      onClick={() => {
+                        const shareUrl = window.location.origin + window.location.pathname;
+                        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank', 'noopener,noreferrer');
+                      }}
+                    >
+                      <Linkedin className="w-4 h-4 sm:mr-1.5" />
+                      <span className="hidden sm:inline">LinkedIn</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                      onClick={() => {
+                        const shareUrl = window.location.origin + window.location.pathname;
+                        window.location.href = `mailto:?subject=${encodeURIComponent(news.title)}&body=${encodeURIComponent(shareUrl)}`;
+                      }}
+                    >
+                      <Mail className="w-4 h-4 sm:mr-1.5" />
+                      <span className="hidden sm:inline">Email</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={`transition-all ${copied ? 'text-green-600 border-green-300 bg-green-50' : 'text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300'}`}
+                      onClick={() => {
+                        const shareUrl = window.location.origin + window.location.pathname;
+                        navigator.clipboard.writeText(shareUrl);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                    >
+                      {copied ? <Check className="w-4 h-4 sm:mr-1.5" /> : <Link2 className="w-4 h-4 sm:mr-1.5" />}
+                      <span className="hidden sm:inline">{copied ? 'Tersalin!' : 'Salin Link'}</span>
                     </Button>
                   </div>
                 </div>
@@ -238,8 +308,8 @@ export default function NewsDetailPage({ id }: { id: string }) {
 
           {/* Sidebar - Related News */}
           <aside className="space-y-4">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-              <h3 className="font-bold text-gray-900 mb-4">Berita Lainnya</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+              <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-4">Berita Lainnya</h3>
               <div className="space-y-4">
                 {relatedNews.map((item) => (
                   <div
@@ -247,7 +317,7 @@ export default function NewsDetailPage({ id }: { id: string }) {
                     className="flex gap-3 cursor-pointer group"
                     onClick={() => usePageRouter.getState().navigateToDetail("news-detail", item.id)}
                   >
-                    <div className="w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                    <div className="w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700">
                       {resolveFileUrl(item.image) ? (
                         <img
                           src={resolveFileUrl(item.image)!}
@@ -255,13 +325,13 @@ export default function NewsDetailPage({ id }: { id: string }) {
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <Newspaper className="w-4 h-4 text-gray-400" />
+                        <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                          <Newspaper className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-bkad-green transition-colors">
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-bkad-green transition-colors">
                         {item.title}
                       </h4>
                       <p className="text-xs text-gray-400 mt-1">{item.date}</p>
@@ -275,8 +345,8 @@ export default function NewsDetailPage({ id }: { id: string }) {
             </div>
 
             <div className="bg-bkad-green/5 rounded-xl p-5 border border-bkad-green/10">
-              <h3 className="font-bold text-gray-900 mb-2">Lapor!</h3>
-              <p className="text-sm text-gray-600 mb-3">
+              <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-2">Lapor!</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 Punya pertanyaan atau laporan terkait keuangan daerah? Sampaikan kepada kami.
               </p>
               <Button

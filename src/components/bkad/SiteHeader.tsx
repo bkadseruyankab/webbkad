@@ -60,6 +60,7 @@ import {
 import { usePageRouter, type PageKey } from "@/stores/usePageRouter";
 import { useAppIdentity } from "@/hooks/useAppIdentity";
 import { resolveFileUrl } from "@/lib/utils";
+import ThemeToggle from "@/components/bkad/ThemeToggle";
 
 /* -------------------------------------------------------------------------- */
 /*  Icon resolver                                                             */
@@ -341,7 +342,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
     <>
       {/* Top Header */}
       <header
-        className={`bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50 transition-all duration-300 ${
+        className={`bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-all duration-300 ${
           scrolled ? "shadow-md" : ""
         }`}
       >
@@ -370,7 +371,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                 </div>
               )}
               <div className="flex flex-col">
-                <h1 className="text-bkad-dark font-bold text-sm sm:text-base md:text-lg leading-tight">
+                <h1 className="text-bkad-dark dark:text-bkad-green font-bold text-sm sm:text-base md:text-lg leading-tight">
                   {resolved.appName}
                 </h1>
                 <p
@@ -424,6 +425,9 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
 
+              {/* Theme Toggle */}
+              <ThemeToggle />
+
               {/* Search Button */}
               <Button
                 variant="ghost"
@@ -438,6 +442,9 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
 
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center space-x-2">
+              {/* Theme Toggle */}
+              <ThemeToggle />
+
               <Button
                 variant="ghost"
                 size="icon"
@@ -506,7 +513,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                         {item.isStatic ? (
                           // Static SPA menu item
                           <button
-                            className="flex items-center justify-between w-full px-4 py-3 text-gray-700 hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                            className="flex items-center justify-between w-full px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-bkad-light hover:text-bkad-green transition-colors"
                             onClick={() => {
                               if (item.children) {
                                 setMobileDropdown(
@@ -537,7 +544,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                           // Dynamic menu item - renders as Link to /[slug]
                           <Link
                             href={`/${dynamicMenus.find(dm => dm.label === item.label)?.slug || item.label.toLowerCase()}`}
-                            className="flex items-center justify-between w-full px-4 py-3 text-gray-700 hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                            className="flex items-center justify-between w-full px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-bkad-light hover:text-bkad-green transition-colors"
                             onClick={() => {
                               if (item.children) {
                                 setMobileDropdown(
@@ -567,14 +574,14 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                         )}
                         {/* Children for static items */}
                         {item.isStatic && item.children && mobileDropdown === item.label && (
-                          <div className="bg-gray-50">
+                          <div className="bg-gray-50 dark:bg-gray-800">
                             {item.children.map((child) => (
                               <button
                                 key={child.label}
                                 className={`block w-full text-left px-8 py-2.5 text-sm transition-colors ${
                                   currentPage === child.page
                                     ? "bg-bkad-light text-bkad-green font-medium"
-                                    : "text-gray-600 hover:bg-bkad-light hover:text-bkad-green"
+                                    : "text-gray-600 dark:text-gray-400 hover:bg-bkad-light hover:text-bkad-green"
                                 }`}
                                 onClick={() => handleNavClick(child.page)}
                               >
@@ -585,7 +592,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                         )}
                         {/* Children for dynamic items - use Link to /[slug] */}
                         {!item.isStatic && item.children && mobileDropdown === item.label && (
-                          <div className="bg-gray-50">
+                          <div className="bg-gray-50 dark:bg-gray-800">
                             {(() => {
                               const dm = dynamicMenus.find(m => m.label === item.label);
                               if (!dm) return null;
@@ -595,7 +602,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                                   href={child.isDynamic ? `/${child.slug}` : (child.externalUrl || "#")}
                                   target={child.openInNewTab ? "_blank" : undefined}
                                   rel={child.openInNewTab ? "noopener noreferrer" : undefined}
-                                  className="block w-full text-left px-8 py-2.5 text-sm text-gray-600 hover:bg-bkad-light hover:text-bkad-green transition-colors"
+                                  className="block w-full text-left px-8 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-bkad-light hover:text-bkad-green transition-colors"
                                   onClick={() => setMobileMenuOpen(false)}
                                 >
                                   {child.label}
@@ -615,14 +622,14 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
 
         {/* Search Bar */}
         {searchOpen && (
-          <div className="border-t border-gray-200 bg-white py-3 px-4 animate-slide-up">
+          <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 py-3 px-4 animate-slide-up">
             <div className="container mx-auto">
               <div className="relative max-w-xl mx-auto">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   placeholder="Cari informasi..."
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm"
                   autoFocus
                 />
               </div>
@@ -664,7 +671,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                         <ChevronDown className="w-3.5 h-3.5 ml-1 group-hover:rotate-180 transition-transform duration-200" />
                       </Link>
                       <div
-                        className={`absolute top-full left-0 w-52 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
+                        className={`absolute top-full left-0 w-52 bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 rounded-md transition-all duration-200 z-50 ${
                           openDropdown === `dyn-${idx}`
                             ? "opacity-100 visible translate-y-0"
                             : "opacity-0 invisible -translate-y-2"
@@ -677,7 +684,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                               href={child.isDynamic ? `/${child.slug}` : (child.externalUrl || "#")}
                               target={child.openInNewTab ? "_blank" : undefined}
                               rel={child.openInNewTab ? "noopener noreferrer" : undefined}
-                              className="block w-full text-left px-4 py-2 text-sm hover:bg-bkad-light hover:text-bkad-green transition-colors duration-150 text-gray-700"
+                              className="block w-full text-left px-4 py-2 text-sm hover:bg-bkad-light hover:text-bkad-green transition-colors duration-150 text-gray-700 dark:text-gray-300"
                             >
                               {child.label}
                             </Link>
@@ -736,7 +743,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                   </button>
                   {hasChildren && (
                     <div
-                      className={`absolute top-full left-0 w-52 bg-white shadow-lg border border-gray-200 rounded-md transition-all duration-200 z-50 ${
+                      className={`absolute top-full left-0 w-52 bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 rounded-md transition-all duration-200 z-50 ${
                         openDropdown === `static-${idx}`
                           ? "opacity-100 visible translate-y-0"
                           : "opacity-0 invisible -translate-y-2"
@@ -750,7 +757,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                             className={`block w-full text-left px-4 py-2 text-sm hover:bg-bkad-light hover:text-bkad-green transition-colors duration-150 ${
                               currentPage === child.page
                                 ? "bg-bkad-light text-bkad-green font-medium"
-                                : "text-gray-700"
+                                : "text-gray-700 dark:text-gray-300"
                             }`}
                           >
                             {child.label}

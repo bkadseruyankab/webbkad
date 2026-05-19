@@ -122,10 +122,10 @@ function PageRouter() {
     return (
       <div className="py-12">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Informasi Publik</h1>
-          <p className="text-gray-600 mb-8">Keterbukaan informasi publik sesuai UU No. 14 Tahun 2008</p>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-            <p className="text-gray-700 leading-relaxed">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">Informasi Publik</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">Keterbukaan informasi publik sesuai UU No. 14 Tahun 2008</p>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               Badan Keuangan dan Aset Daerah Kabupaten Seruyan berkomitmen untuk mengimplementasikan keterbukaan informasi publik sesuai dengan ketentuan Undang-Undang No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik. Masyarakat berhak memperoleh informasi mengenai pengelolaan keuangan dan aset daerah.
             </p>
           </div>
@@ -179,23 +179,23 @@ function PageRouter() {
     return (
       <div className="py-12">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Hubungi Kami</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">Hubungi Kami</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="font-bold text-lg mb-4">Informasi Kontak</h2>
-              <div className="space-y-4 text-gray-600">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+              <h2 className="font-bold text-lg dark:text-gray-100 mb-4">Informasi Kontak</h2>
+              <div className="space-y-4 text-gray-600 dark:text-gray-400">
                 <p><strong>Alamat:</strong> Jl. Trans Kalimantan, Kuala Pembuang, Kab. Seruyan, Kalimantan Tengah 74211</p>
                 <p><strong>Telepon:</strong> (0532) 882123</p>
                 <p><strong>Email:</strong> bkad@seruyankab.go.id</p>
                 <p><strong>Jam Kerja:</strong> Senin - Jumat, 08:00 - 16:00 WIB</p>
               </div>
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="font-bold text-lg mb-4">Kirim Pesan</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+              <h2 className="font-bold text-lg dark:text-gray-100 mb-4">Kirim Pesan</h2>
               <div className="space-y-3">
-                <input type="text" placeholder="Nama Lengkap" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm" />
-                <input type="email" placeholder="Email" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm" />
-                <textarea placeholder="Pesan" rows={4} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm" />
+                <input type="text" placeholder="Nama Lengkap" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm" />
+                <input type="email" placeholder="Email" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm" />
+                <textarea placeholder="Pesan" rows={4} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 focus:border-bkad-green focus:ring-1 focus:ring-bkad-green outline-none text-sm" />
                 <Button className="bg-bkad-green hover:bg-bkad-dark text-white w-full">Kirim Pesan</Button>
               </div>
             </div>
@@ -294,7 +294,7 @@ export default function Home() {
                 <Button
                   onClick={handleLogout}
                   variant="outline"
-                  className="bg-white/90 backdrop-blur-sm border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-300 rounded-full w-14 h-14 shadow-lg transition-all"
+                  className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:text-red-600 hover:border-red-300 rounded-full w-14 h-14 shadow-lg transition-all"
                   size="icon"
                   aria-label="Logout"
                 >
