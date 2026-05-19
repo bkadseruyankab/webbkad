@@ -203,11 +203,17 @@ export default function PublicationDetailPage({ id }: { id: string }) {
             <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               {/* Cover Image */}
               <div className="relative h-64 md:h-[420px] bg-gray-100">
-                <img
-                  src={resolveFileUrl(publication.coverImage || "/images/infografis-1.png")}
-                  alt={publication.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+                {resolveFileUrl(publication.coverImage) ? (
+                  <img
+                    src={resolveFileUrl(publication.coverImage)!}
+                    alt={publication.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                    <BookOpen className="w-12 h-12 text-gray-400" />
+                  </div>
+                )}
                 {/* Overlay gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 {/* Category badge on image */}
@@ -276,7 +282,7 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                         className="bg-bkad-green hover:bg-bkad-dark text-white"
                       >
                         <a
-                          href={resolveFileUrl(publication.fileUrl)}
+                          href={resolveFileUrl(publication.fileUrl) || '#'}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -296,14 +302,16 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                     <div className="mt-8 pt-6 border-t border-gray-100">
                       <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Gambar</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {images.map((img, i) => (
+                        {images.map((img, i) => {
+                          const resolvedImgUrl = resolveFileUrl(img.url);
+                          return (
                           <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                             <div className="aspect-video bg-gray-100">
-                              <img
-                                src={resolveFileUrl(img.url)}
+                              {resolvedImgUrl && <img
+                                src={resolvedImgUrl}
                                 alt={img.alt || img.caption || `Gambar ${i + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
+                              />}
                             </div>
                             {img.caption && (
                               <div className="p-2 bg-white">
@@ -311,7 +319,8 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                               </div>
                             )}
                           </div>
-                        ))}
+                        );
+                        })}
                       </div>
                     </div>
                   );
@@ -429,11 +438,17 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                       }
                     >
                       <div className="w-20 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                        <img
-                          src={resolveFileUrl(item.coverImage || "/images/infografis-1.png")}
-                          alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                        />
+                        {resolveFileUrl(item.coverImage) ? (
+                          <img
+                            src={resolveFileUrl(item.coverImage)!}
+                            alt={item.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                            <FileText className="w-6 h-6 text-gray-400" />
+                          </div>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <Badge

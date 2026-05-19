@@ -109,11 +109,17 @@ export default function MediaPage({ type }: { type: MediaType }) {
                         style={{ aspectRatio: "4/3" }}
                         onClick={() => setSelectedImage(item.image)}
                       >
-                        <img
-                          src={resolveFileUrl(item.image)}
-                          alt={item.caption}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
+                        {resolveFileUrl(item.image) ? (
+                          <img
+                            src={resolveFileUrl(item.image)!}
+                            alt={item.caption}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <ImageIcon className="w-6 h-6 text-gray-400" />
+                          </div>
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform">
                           <p className="text-white text-xs font-medium">{item.caption}</p>
@@ -133,11 +139,17 @@ export default function MediaPage({ type }: { type: MediaType }) {
                         onClick={() => navigateToDetail("video-detail", video.id)}
                       >
                         <div className="relative aspect-video bg-gray-100">
-                          <img
-                            src={resolveFileUrl(video.thumbnail || "/images/hero-1.png")}
-                            alt={video.title}
-                            className="w-full h-full object-cover"
-                          />
+                          {resolveFileUrl(video.thumbnail) ? (
+                            <img
+                              src={resolveFileUrl(video.thumbnail)!}
+                              alt={video.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <Play className="w-8 h-8 text-gray-400" />
+                            </div>
+                          )}
                           <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/40 transition-colors">
                             <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                               <Play className="w-6 h-6 text-bkad-green ml-1" />
@@ -162,11 +174,17 @@ export default function MediaPage({ type }: { type: MediaType }) {
                         className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow cursor-pointer"
                       >
                         <div className="relative aspect-square bg-gray-100">
-                          <img
-                            src={resolveFileUrl(infographic.image)}
-                            alt={infographic.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
+                          {resolveFileUrl(infographic.image) ? (
+                            <img
+                              src={resolveFileUrl(infographic.image)!}
+                              alt={infographic.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <BarChart3 className="w-8 h-8 text-gray-400" />
+                            </div>
+                          )}
                         </div>
                         <div className="p-4">
                           <h3 className="font-semibold text-gray-900 text-sm line-clamp-2">{infographic.title}</h3>
@@ -226,14 +244,14 @@ export default function MediaPage({ type }: { type: MediaType }) {
       </div>
 
       {/* Image Lightbox */}
-      {selectedImage && (
+      {selectedImage && resolveFileUrl(selectedImage) && (
         <div
           className="fixed inset-0 z-[90] bg-black/80 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
           <div className="relative max-w-4xl max-h-[90vh]">
             <img
-              src={resolveFileUrl(selectedImage)}
+              src={resolveFileUrl(selectedImage)!}
               alt="Preview"
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
             />

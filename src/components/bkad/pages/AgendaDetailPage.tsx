@@ -302,14 +302,16 @@ export default function AgendaDetailPage({ id }: { id: string }) {
                         <h2 className="text-lg font-bold text-gray-900">Galeri Dokumentasi</h2>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {images.map((img, i) => (
+                        {images.map((img, i) => {
+                          const resolvedImgUrl = resolveFileUrl(img.url);
+                          return (
                           <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                             <div className="aspect-video bg-gray-100">
-                              <img
-                                src={resolveFileUrl(img.url)}
+                              {resolvedImgUrl && <img
+                                src={resolvedImgUrl}
                                 alt={img.alt || img.caption || `Dokumentasi ${i + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
+                              />}
                             </div>
                             {img.caption && (
                               <div className="p-2 bg-white">
@@ -317,7 +319,8 @@ export default function AgendaDetailPage({ id }: { id: string }) {
                               </div>
                             )}
                           </div>
-                        ))}
+                        );
+                        })}
                       </div>
                     </div>
                   );

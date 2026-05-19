@@ -320,9 +320,9 @@ export default function PengaturanIdentitasSection() {
       {/* Header Preview */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
         {/* Logo circle */}
-        {form.logoUrl ? (
+        {resolveFileUrl(form.logoUrl) ? (
           <img
-            src={resolveFileUrl(form.logoUrl)}
+            src={resolveFileUrl(form.logoUrl)!}
             alt="Logo"
             className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2"
             style={{ borderColor: form.primaryColor || BKAD_GREEN }}

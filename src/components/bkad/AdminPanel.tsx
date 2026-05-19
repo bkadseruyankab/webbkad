@@ -2312,7 +2312,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-20 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                  {item.image && <img src={resolveFileUrl(item.image)} alt="" className="w-full h-full object-cover" />}
+                  {resolveFileUrl(item.image) && <img src={resolveFileUrl(item.image)!} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm truncate">{item.title}</h4>
@@ -2334,7 +2334,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-20 h-14 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                  {item.image && <img src={resolveFileUrl(item.image)} alt="" className="w-full h-full object-cover" />}
+                  {resolveFileUrl(item.image) && <img src={resolveFileUrl(item.image)!} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm line-clamp-1">{item.title}</h4>
@@ -2395,7 +2395,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg border shadow-sm overflow-hidden ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="aspect-video bg-gray-100">
-                  {item.image && <img src={resolveFileUrl(item.image)} alt={item.caption} className="w-full h-full object-cover" />}
+                  {resolveFileUrl(item.image) && <img src={resolveFileUrl(item.image)!} alt={item.caption} className="w-full h-full object-cover" />}
                 </div>
                 <div className="p-2">
                   <p className="text-xs truncate">{item.caption || "Tanpa keterangan"}</p>
@@ -2504,7 +2504,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className="bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4"
               >
                 <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                  {item.image && <img src={resolveFileUrl(item.image)} alt="" className="w-full h-full object-cover" />}
+                  {resolveFileUrl(item.image) && <img src={resolveFileUrl(item.image)!} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm truncate">{item.title}</h4>
@@ -2528,7 +2528,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-12 h-12 bg-gray-100 rounded-full overflow-hidden flex-shrink-0">
-                  {item.photo && <img src={resolveFileUrl(item.photo)} alt="" className="w-full h-full object-cover" />}
+                  {resolveFileUrl(item.photo) && <img src={resolveFileUrl(item.photo)!} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm truncate">{item.name}</h4>
@@ -2549,7 +2549,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-14 h-18 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                  {item.coverImage && <img src={resolveFileUrl(item.coverImage)} alt="" className="w-full h-full object-cover" />}
+                  {resolveFileUrl(item.coverImage) && <img src={resolveFileUrl(item.coverImage)!} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm line-clamp-1">{item.title}</h4>
@@ -2575,7 +2575,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-20 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0 relative">
-                  {item.thumbnail && <img src={resolveFileUrl(item.thumbnail)} alt="" className="w-full h-full object-cover" />}
+                  {resolveFileUrl(item.thumbnail) && <img src={resolveFileUrl(item.thumbnail)!} alt="" className="w-full h-full object-cover" />}
                   <Video className="w-4 h-4 text-white absolute bottom-1 right-1 drop-shadow" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -2597,7 +2597,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg border shadow-sm overflow-hidden ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="aspect-video bg-gray-100">
-                  {item.image && <img src={resolveFileUrl(item.image)} alt={item.title} className="w-full h-full object-cover" />}
+                  {resolveFileUrl(item.image) && <img src={resolveFileUrl(item.image)!} alt={item.title} className="w-full h-full object-cover" />}
                 </div>
                 <div className="p-2">
                   <p className="text-xs truncate font-medium">{item.title}</p>
@@ -2670,8 +2670,8 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-10 h-10 bg-gray-100 rounded-full overflow-hidden flex-shrink-0">
-                  {item.avatar ? (
-                    <img src={resolveFileUrl(item.avatar)} alt={item.name} className="w-full h-full object-cover" />
+                  {resolveFileUrl(item.avatar) ? (
+                    <img src={resolveFileUrl(item.avatar)!} alt={item.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-bkad-light text-bkad-green font-bold text-sm">
                       {item.name.charAt(0).toUpperCase()}

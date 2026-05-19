@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePageRouter } from "@/stores/usePageRouter";
-import { ChevronRight, Calendar, Clock, ArrowLeft, Share2, Facebook, Twitter, Download } from "lucide-react";
+import { ChevronRight, Calendar, Clock, ArrowLeft, Share2, Facebook, Twitter, Download, Newspaper } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { resolveFileUrl } from "@/lib/utils";
@@ -116,11 +116,17 @@ export default function NewsDetailPage({ id }: { id: string }) {
             <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               {/* Hero Image */}
               <div className="relative h-64 md:h-96">
-                <img
-                  src={resolveFileUrl(news.image)}
-                  alt={news.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+                {resolveFileUrl(news.image) ? (
+                  <img
+                    src={resolveFileUrl(news.image)!}
+                    alt={news.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+                    <Newspaper className="w-12 h-12 text-gray-400" />
+                  </div>
+                )}
               </div>
 
               <div className="p-6 md:p-8">
@@ -165,14 +171,16 @@ export default function NewsDetailPage({ id }: { id: string }) {
                     <div className="mt-8 pt-6 border-t border-gray-100">
                       <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Gambar</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {images.map((img, i) => (
+                        {images.map((img, i) => {
+                          const resolvedImgUrl = resolveFileUrl(img.url);
+                          return (
                           <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                             <div className="aspect-video bg-gray-100">
-                              <img
-                                src={resolveFileUrl(img.url)}
+                              {resolvedImgUrl && <img
+                                src={resolvedImgUrl}
                                 alt={img.alt || img.caption || `Gambar ${i + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
+                              />}
                             </div>
                             {img.caption && (
                               <div className="p-2 bg-white">
@@ -180,7 +188,8 @@ export default function NewsDetailPage({ id }: { id: string }) {
                               </div>
                             )}
                           </div>
-                        ))}
+                        );
+                        })}
                       </div>
                     </div>
                   );
@@ -239,11 +248,17 @@ export default function NewsDetailPage({ id }: { id: string }) {
                     onClick={() => usePageRouter.getState().navigateToDetail("news-detail", item.id)}
                   >
                     <div className="w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                      <img
-                        src={resolveFileUrl(item.image)}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                      />
+                      {resolveFileUrl(item.image) ? (
+                        <img
+                          src={resolveFileUrl(item.image)!}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <Newspaper className="w-4 h-4 text-gray-400" />
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-bkad-green transition-colors">

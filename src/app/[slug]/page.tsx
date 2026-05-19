@@ -248,9 +248,9 @@ export default async function DynamicPage({
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
             <Link href="/" className="flex items-center space-x-3">
-              {resolved.logoUrl ? (
+              {resolveFileUrl(resolved.logoUrl) ? (
                 <img
-                  src={resolveFileUrl(resolved.logoUrl)}
+                  src={resolveFileUrl(resolved.logoUrl)!}
                   alt={resolved.appShortName}
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover flex-shrink-0 border-2"
                   style={{ borderColor: resolved.primaryColor }}
@@ -343,7 +343,7 @@ export default async function DynamicPage({
         style={{ backgroundColor: resolved.primaryColor }}
       >
         {/* Background overlay */}
-        {pageData.heroImage && (
+        {resolveFileUrl(pageData.heroImage) && (
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${resolveFileUrl(pageData.heroImage)})` }}
@@ -384,10 +384,10 @@ export default async function DynamicPage({
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             {/* Page image */}
-            {pageData.image && (
+            {resolveFileUrl(pageData.image) && (
               <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
                 <img
-                  src={resolveFileUrl(pageData.image)}
+                  src={resolveFileUrl(pageData.image)!}
                   alt={pageData.title}
                   className="w-full h-auto object-cover max-h-96"
                 />
@@ -408,14 +408,16 @@ export default async function DynamicPage({
                 <div className="mt-8">
                   <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Gambar</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {images.map((img, i) => (
+                    {images.map((img, i) => {
+                      const resolvedImgUrl = resolveFileUrl(img.url);
+                      return (
                       <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                         <div className="aspect-video bg-gray-100">
-                          <img
-                            src={resolveFileUrl(img.url)}
+                          {resolvedImgUrl && <img
+                            src={resolvedImgUrl}
                             alt={img.alt || img.caption || `Gambar ${i + 1}`}
                             className="w-full h-full object-cover"
-                          />
+                          />}
                         </div>
                         {img.caption && (
                           <div className="p-2 bg-white">
@@ -423,7 +425,8 @@ export default async function DynamicPage({
                           </div>
                         )}
                       </div>
-                    ))}
+                    );
+                    })}
                   </div>
                 </div>
               );
@@ -490,8 +493,8 @@ export default async function DynamicPage({
             {/* About */}
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                {resolved.logoUrl ? (
-                  <img src={resolveFileUrl(resolved.logoUrl)} alt={resolved.appShortName} className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2" style={{ borderColor: resolved.primaryColor }} />
+                {resolveFileUrl(resolved.logoUrl) ? (
+                  <img src={resolveFileUrl(resolved.logoUrl)!} alt={resolved.appShortName} className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2" style={{ borderColor: resolved.primaryColor }} />
                 ) : (
                   <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: resolved.primaryColor }}>
                     <span className="text-white font-bold text-sm">{resolved.logoText}</span>

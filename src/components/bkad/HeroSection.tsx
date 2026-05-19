@@ -78,6 +78,9 @@ export default function HeroSection() {
     return () => clearInterval(timer);
   }, [nextSlide]);
 
+  const currentSlide = slides[current];
+  const resolvedImage = resolveFileUrl(currentSlide?.image);
+
   return (
     <section id="beranda" className="relative w-full overflow-hidden">
       <div className="relative w-full" style={{ aspectRatio: "21/9" }}>
@@ -87,11 +90,15 @@ export default function HeroSection() {
             isAnimating ? "opacity-100" : "opacity-0"
           }`}
         >
-          <img
-            src={resolveFileUrl(slides[current].image)}
-            alt={slides[current].title}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          {resolvedImage ? (
+            <img
+              src={resolvedImage}
+              alt={currentSlide?.title || "Hero"}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-bkad-dark via-bkad-green to-bkad-dark" />
+          )}
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-bkad-dark/80 via-bkad-dark/50 to-transparent" />
         </div>
@@ -110,10 +117,10 @@ export default function HeroSection() {
                 BKAD KABUPATEN SERUYAN
               </span>
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-                {slides[current].title}
+                {currentSlide?.title}
               </h2>
               <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 leading-relaxed">
-                {slides[current].subtitle}
+                {currentSlide?.subtitle}
               </p>
 
             </div>

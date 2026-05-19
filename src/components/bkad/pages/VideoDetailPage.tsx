@@ -185,7 +185,7 @@ export default function VideoDetailPage({ id }: { id: string }) {
                 ) : (
                   <video
                     src={video.url}
-                    poster={resolveFileUrl(video.thumbnail || "/images/hero-1.png")}
+                    poster={resolveFileUrl(video.thumbnail) || undefined}
                     controls
                     className="absolute inset-0 w-full h-full object-contain bg-black"
                   >
@@ -277,14 +277,16 @@ export default function VideoDetailPage({ id }: { id: string }) {
                     <div className="mt-6">
                       <h3 className="text-lg font-bold text-gray-900 mb-4">Galeri Screenshot</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {images.map((img, i) => (
+                        {images.map((img, i) => {
+                          const resolvedImgUrl = resolveFileUrl(img.url);
+                          return (
                           <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                             <div className="aspect-video bg-gray-100">
-                              <img
-                                src={resolveFileUrl(img.url)}
+                              {resolvedImgUrl && <img
+                                src={resolvedImgUrl}
                                 alt={img.alt || img.caption || `Screenshot ${i + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
+                              />}
                             </div>
                             {img.caption && (
                               <div className="p-2 bg-white">
@@ -292,7 +294,8 @@ export default function VideoDetailPage({ id }: { id: string }) {
                               </div>
                             )}
                           </div>
-                        ))}
+                        );
+                        })}
                       </div>
                     </div>
                   );
@@ -352,11 +355,17 @@ export default function VideoDetailPage({ id }: { id: string }) {
                       }
                     >
                       <div className="w-28 h-[4.2rem] rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 relative">
-                        <img
-                          src={resolveFileUrl(item.thumbnail || "/images/hero-1.png")}
-                          alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
+                        {resolveFileUrl(item.thumbnail) ? (
+                          <img
+                            src={resolveFileUrl(item.thumbnail)!}
+                            alt={item.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <Play className="w-4 h-4 text-gray-400" />
+                          </div>
+                        )}
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center group-hover:bg-black/30 transition-colors">
                           <div className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center">
                             <Play className="w-3 h-3 text-bkad-green ml-0.5" />

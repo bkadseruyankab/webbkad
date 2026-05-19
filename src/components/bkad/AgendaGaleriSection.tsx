@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
+import { Calendar, MapPin, Clock, ArrowRight, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePageRouter } from "@/stores/usePageRouter";
@@ -241,11 +241,17 @@ export default function AgendaGaleriSection() {
                     className="relative rounded-xl overflow-hidden group cursor-pointer"
                     style={{ aspectRatio: "4/3" }}
                   >
-                    <img
-                      src={resolveFileUrl(item.image)}
-                      alt={item.caption}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
+                    {resolveFileUrl(item.image) ? (
+                      <img
+                        src={resolveFileUrl(item.image)!}
+                        alt={item.caption}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+                        <ImageIcon className="w-6 h-6 text-gray-400" />
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                       <p className="text-white text-xs font-medium">

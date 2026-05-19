@@ -347,9 +347,9 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
               className="flex items-center space-x-3 cursor-pointer"
               onClick={goHome}
             >
-              {resolved.logoUrl ? (
+              {resolveFileUrl(resolved.logoUrl) ? (
                 <img
-                  src={resolveFileUrl(resolved.logoUrl)}
+                  src={resolveFileUrl(resolved.logoUrl)!}
                   alt={resolved.appShortName || 'Logo'}
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover flex-shrink-0 border-2"
                   style={{ borderColor: resolved.primaryColor }}
@@ -461,13 +461,21 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        {resolved.logoUrl ? (
+                        {resolveFileUrl(resolved.logoUrl) ? (
                           <img
-                            src={resolveFileUrl(resolved.logoUrl)}
+                            src={resolveFileUrl(resolved.logoUrl)!}
                             alt={resolved.appShortName || 'Logo'}
                             className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-white/30"
                           />
-                        ) : null}
+                        ) : (
+                          <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-white/20"
+                          >
+                            <span className="text-white font-bold text-sm">
+                              {resolved.logoText}
+                            </span>
+                          </div>
+                        )}
                         <div>
                           <h2 className="font-bold text-lg">
                             {resolved.appShortName || resolved.logoText}

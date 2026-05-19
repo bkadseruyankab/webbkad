@@ -361,7 +361,11 @@ export function ImageUpload({
   )
 
   // ── Determine the image to display ──────────────────────────────────
-  const displayUrl = previewUrl || resolveFileUrl(value)
+  // resolveFileUrl returns null for blob: URLs, but those are valid for the
+  // current browser session (created via URL.createObjectURL).  Handle them
+  // separately so that previews still work during offline / pre-upload flows.
+  const resolvedUrl = value?.startsWith('blob:') ? value : resolveFileUrl(value)
+  const displayUrl = previewUrl || resolvedUrl
   const hasImage = Boolean(displayUrl)
   const isProcessing = status === 'compressing' || status === 'uploading'
 

@@ -37,9 +37,9 @@ export default function SiteFooter() {
           {/* About */}
           <div>
             <div className="flex items-center space-x-3 mb-4">
-              {resolved.logoUrl ? (
+              {resolveFileUrl(resolved.logoUrl) ? (
                 <img
-                  src={resolveFileUrl(resolved.logoUrl)}
+                  src={resolveFileUrl(resolved.logoUrl)!}
                   alt={resolved.appShortName || 'Logo'}
                   className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2"
                   style={{ borderColor: resolved.primaryColor }}

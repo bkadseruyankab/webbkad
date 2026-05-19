@@ -195,11 +195,17 @@ export function MultiImageUpload({
               className="relative group rounded-xl border-2 border-muted overflow-hidden bg-muted/30"
             >
               <div className="aspect-square relative">
-                <img
-                  src={resolveFileUrl(img.url)}
-                  alt={img.alt || `Gambar ${index + 1}`}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+                {resolveFileUrl(img.url) ? (
+                  <img
+                    src={resolveFileUrl(img.url)!}
+                    alt={img.alt || `Gambar ${index + 1}`}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-muted flex items-center justify-center">
+                    <ImageOff className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                )}
                 {/* Overlay on hover */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <div className="flex gap-1">

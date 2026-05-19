@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, ArrowRight, Clock } from "lucide-react";
+import { Calendar, ArrowRight, Clock, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePageRouter } from "@/stores/usePageRouter";
@@ -112,11 +112,17 @@ export default function NewsSection() {
                 onClick={() => navigateToDetail("news-detail", item.id)}
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={resolveFileUrl(item.image)}
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                  {resolveFileUrl(item.image) ? (
+                    <img
+                      src={resolveFileUrl(item.image)!}
+                      alt={item.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+                      <Newspaper className="w-8 h-8 text-gray-400" />
+                    </div>
+                  )}
                   <Badge
                     className={`absolute top-3 left-3 text-xs font-medium ${
                       categoryColors[item.category] || "bg-gray-100 text-gray-700"

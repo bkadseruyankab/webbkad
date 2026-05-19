@@ -115,11 +115,17 @@ export default function PublikasiPage({ category }: { category: string }) {
                   >
                     <div className="flex gap-4">
                       <div className="w-24 h-32 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                        <img
-                          src={resolveFileUrl(pub.coverImage || "/images/infografis-1.png")}
-                          alt={pub.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
+                        {resolveFileUrl(pub.coverImage) ? (
+                          <img
+                            src={resolveFileUrl(pub.coverImage)!}
+                            alt={pub.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                            <FileText className="w-8 h-8 text-gray-300" />
+                          </div>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <Badge className={`text-[10px] mb-2 ${config.color}`}>

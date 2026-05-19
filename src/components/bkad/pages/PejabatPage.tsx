@@ -78,11 +78,17 @@ export default function PejabatPage() {
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 border-2 border-bkad-light">
-                        <img
-                          src={resolveFileUrl(official.photo)}
-                          alt={official.name}
-                          className="w-full h-full object-cover"
-                        />
+                        {resolveFileUrl(official.photo) ? (
+                          <img
+                            src={resolveFileUrl(official.photo)!}
+                            alt={official.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-bkad-light text-bkad-green">
+                            <User className="w-8 h-8" />
+                          </div>
+                        )}
                       </div>
                       <div>
                         <h3 className="font-bold text-gray-900">{official.name}</h3>
