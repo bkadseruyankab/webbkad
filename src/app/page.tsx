@@ -209,12 +209,7 @@ function PageRouter() {
 }
 
 export default function Home() {
-  const [showAdmin, setShowAdmin] = useState(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("bkad_admin_open") === "true";
-    }
-    return false;
-  });
+  const [showAdmin, setShowAdmin] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [adminSection, setAdminSection] = useState<string | undefined>(undefined);
   const { isAuthenticated, user, verify, logout } = useAuthStore();
@@ -228,14 +223,7 @@ export default function Home() {
     usePageRouter.getState()._hydrateFromHash();
   }, [verify, checkSetupStatus]);
 
-  // Persist admin panel open state to sessionStorage
-  useEffect(() => {
-    if (showAdmin) {
-      sessionStorage.setItem("bkad_admin_open", "true");
-    } else {
-      sessionStorage.removeItem("bkad_admin_open");
-    }
-  }, [showAdmin]);
+
 
   const handleAdminClose = useCallback(() => {
     setShowAdmin(false);
@@ -278,7 +266,7 @@ export default function Home() {
         </main>
       ) : (
         /* Main Website */
-        <div style={{ display: showAdmin ? "none" : undefined }}>
+        <div className={showAdmin ? "hidden" : ""}>
           <TopInfoBar />
           <SiteHeader onQuickAdd={isAuthenticated ? handleQuickAdd : undefined} />
           <main className="flex-1" key={refreshKey}>

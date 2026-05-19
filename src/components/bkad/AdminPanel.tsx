@@ -480,6 +480,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
         heroRes, newsRes, agendaRes, galleryRes, statsRes,
         servicesRes, financeRes, pcRes, offRes, pubRes,
         vidRes, infoRes, lapRes, catRes, usersRes, navMenuRes,
+        adBubbleRes,
       ] = await Promise.all([
         fetch("/api/hero-slides?all=true"),
         fetch("/api/news?all=true"),
