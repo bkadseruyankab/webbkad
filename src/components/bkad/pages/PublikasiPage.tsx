@@ -24,6 +24,12 @@ const categoryConfig: Record<string, { label: string; color: string }> = {
   peraturan: { label: "Peraturan", color: "bg-violet-100 text-violet-700" },
 };
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export default function PublikasiPage({ category }: { category: string }) {
   const { currentPage, navigateToDetail } = usePageRouter();
   const [publications, setPublications] = useState<Publication[]>([]);
@@ -115,7 +121,7 @@ export default function PublikasiPage({ category }: { category: string }) {
                     <div className="flex gap-4">
                       <div className="w-24 h-32 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                         <img
-                          src={pub.coverImage || "/images/infografis-1.png"}
+                          src={resolveFileUrl(pub.coverImage || "/images/infografis-1.png")}
                           alt={pub.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         />

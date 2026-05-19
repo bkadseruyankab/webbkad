@@ -45,6 +45,12 @@ const statusConfig = {
   completed: { label: "Selesai", class: "bg-gray-100 text-gray-600" },
 };
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export default function AgendaGaleriSection() {
   const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
@@ -241,7 +247,7 @@ export default function AgendaGaleriSection() {
                     style={{ aspectRatio: "4/3" }}
                   >
                     <img
-                      src={item.image}
+                      src={resolveFileUrl(item.image)}
                       alt={item.caption}
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />

@@ -41,6 +41,13 @@ function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
 }
 
+// Helper to resolve uploaded file URLs for display
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 // ─── Component ──────────────────────────────────────────────────────────
 
 export function ImageUpload({
@@ -361,7 +368,7 @@ export function ImageUpload({
   )
 
   // ── Determine the image to display ──────────────────────────────────
-  const displayUrl = previewUrl || value
+  const displayUrl = previewUrl || resolveFileUrl(value)
   const hasImage = Boolean(displayUrl)
   const isProcessing = status === 'compressing' || status === 'uploading'
 

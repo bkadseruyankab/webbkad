@@ -149,6 +149,17 @@ export async function generateMetadata({
   };
 }
 
+// ─── Helper: resolve uploaded file URLs ────────────────────────────────────
+
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  // Convert /uploads/... to /api/files/uploads/...
+  if (url.startsWith('/uploads/')) {
+    return `/api/files${url}`;
+  }
+  return url;
+}
+
 // ─── Helper: parse "Label|url" format links ──────────────────────────────────
 
 function parseLinks(raw: string): { label: string; url: string }[] {
@@ -249,7 +260,7 @@ export default async function DynamicPage({
             <Link href="/" className="flex items-center space-x-3">
               {resolved.logoUrl ? (
                 <img
-                  src={resolved.logoUrl}
+                  src={resolveFileUrl(resolved.logoUrl)}
                   alt={resolved.appShortName}
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover flex-shrink-0 border-2"
                   style={{ borderColor: resolved.primaryColor }}
@@ -345,7 +356,7 @@ export default async function DynamicPage({
         {pageData.heroImage && (
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${pageData.heroImage})` }}
+            style={{ backgroundImage: `url(${resolveFileUrl(pageData.heroImage)})` }}
           >
             <div className="absolute inset-0 bg-black/50" />
           </div>
@@ -386,7 +397,7 @@ export default async function DynamicPage({
             {pageData.image && (
               <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
                 <img
-                  src={pageData.image}
+                  src={resolveFileUrl(pageData.image)}
                   alt={pageData.title}
                   className="w-full h-auto object-cover max-h-96"
                 />
@@ -411,7 +422,7 @@ export default async function DynamicPage({
                       <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                         <div className="aspect-video bg-gray-100">
                           <img
-                            src={img.url}
+                            src={resolveFileUrl(img.url)}
                             alt={img.alt || img.caption || `Gambar ${i + 1}`}
                             className="w-full h-full object-cover"
                           />
@@ -439,7 +450,7 @@ export default async function DynamicPage({
                     {files.map((file, i) => (
                       <a
                         key={i}
-                        href={file.url}
+                        href={resolveFileUrl(file.url)}
                         download
                         target="_blank"
                         rel="noopener noreferrer"
@@ -490,7 +501,7 @@ export default async function DynamicPage({
             <div>
               <div className="flex items-center space-x-3 mb-4">
                 {resolved.logoUrl ? (
-                  <img src={resolved.logoUrl} alt={resolved.appShortName} className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2" style={{ borderColor: resolved.primaryColor }} />
+                  <img src={resolveFileUrl(resolved.logoUrl)} alt={resolved.appShortName} className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2" style={{ borderColor: resolved.primaryColor }} />
                 ) : (
                   <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: resolved.primaryColor }}>
                     <span className="text-white font-bold text-sm">{resolved.logoText}</span>

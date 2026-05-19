@@ -36,6 +36,12 @@ type FormKey = keyof AppIdentity;
 const BKAD_GREEN = "#0D6B3F";
 const BKAD_GOLD = "#C5960C";
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 /* -------------------------------------------------------------------------- */
 /*  Field helper – builds a labelled input or textarea                        */
 /* -------------------------------------------------------------------------- */
@@ -321,7 +327,7 @@ export default function PengaturanIdentitasSection() {
         {/* Logo circle */}
         {form.logoUrl ? (
           <img
-            src={form.logoUrl}
+            src={resolveFileUrl(form.logoUrl)}
             alt="Logo"
             className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2"
             style={{ borderColor: form.primaryColor || BKAD_GREEN }}

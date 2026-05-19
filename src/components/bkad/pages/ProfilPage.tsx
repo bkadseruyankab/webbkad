@@ -51,6 +51,12 @@ function parseDownloadableFiles(jsonStr: string | null | undefined): Downloadabl
   }
 }
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes}B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
@@ -136,7 +142,7 @@ export default function ProfilPage({ slug }: { slug: string }) {
               {isStruktur && data.image && (
                 <div className="mb-8 rounded-xl overflow-hidden border border-gray-200">
                   <img
-                    src={data.image}
+                    src={resolveFileUrl(data.image)}
                     alt="Struktur Organisasi"
                     className="w-full object-contain bg-white"
                   />
@@ -165,7 +171,7 @@ export default function ProfilPage({ slug }: { slug: string }) {
                       >
                         <div className="aspect-video bg-gray-100">
                           <img
-                            src={img.url}
+                            src={resolveFileUrl(img.url)}
                             alt={img.alt || img.caption || `Gambar ${i + 1}`}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
@@ -189,7 +195,7 @@ export default function ProfilPage({ slug }: { slug: string }) {
                     {downloadableFiles.map((file, i) => (
                       <a
                         key={i}
-                        href={file.url}
+                        href={resolveFileUrl(file.url)}
                         download
                         target="_blank"
                         rel="noopener noreferrer"
@@ -252,7 +258,7 @@ export default function ProfilPage({ slug }: { slug: string }) {
         >
           <div className="relative max-w-4xl max-h-[90vh]">
             <img
-              src={lightboxImg}
+              src={resolveFileUrl(lightboxImg)}
               alt="Preview"
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
             />

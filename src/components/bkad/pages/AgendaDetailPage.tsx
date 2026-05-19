@@ -71,6 +71,12 @@ function parseImages(jsonStr: string | null | undefined): { url: string; alt?: s
   }
 }
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export default function AgendaDetailPage({ id }: { id: string }) {
   const { goHome } = usePageRouter();
   const [agenda, setAgenda] = useState<AgendaData | null>(null);
@@ -305,7 +311,7 @@ export default function AgendaDetailPage({ id }: { id: string }) {
                           <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                             <div className="aspect-video bg-gray-100">
                               <img
-                                src={img.url}
+                                src={resolveFileUrl(img.url)}
                                 alt={img.alt || img.caption || `Dokumentasi ${i + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />

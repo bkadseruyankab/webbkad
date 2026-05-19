@@ -75,6 +75,12 @@ function resolveIcon(iconName: string): React.ElementType {
   return iconComponentMap[iconName] || FileText;
 }
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 /* -------------------------------------------------------------------------- */
 /*  Types for dynamic menus                                                   */
 /* -------------------------------------------------------------------------- */
@@ -348,7 +354,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
             >
               {resolved.logoUrl ? (
                 <img
-                  src={resolved.logoUrl}
+                  src={resolveFileUrl(resolved.logoUrl)}
                   alt={resolved.appShortName || 'Logo'}
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover flex-shrink-0 border-2"
                   style={{ borderColor: resolved.primaryColor }}
@@ -462,7 +468,7 @@ export default function SiteHeader({ onQuickAdd }: SiteHeaderProps) {
                       <div className="flex items-center gap-3">
                         {resolved.logoUrl ? (
                           <img
-                            src={resolved.logoUrl}
+                            src={resolveFileUrl(resolved.logoUrl)}
                             alt={resolved.appShortName || 'Logo'}
                             className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-white/30"
                           />

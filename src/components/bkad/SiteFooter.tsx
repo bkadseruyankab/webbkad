@@ -12,6 +12,12 @@ import {
 } from "lucide-react";
 import { useAppIdentity, parseLinks } from "@/hooks/useAppIdentity";
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export default function SiteFooter() {
   const { resolved } = useAppIdentity();
 
@@ -38,7 +44,7 @@ export default function SiteFooter() {
             <div className="flex items-center space-x-3 mb-4">
               {resolved.logoUrl ? (
                 <img
-                  src={resolved.logoUrl}
+                  src={resolveFileUrl(resolved.logoUrl)}
                   alt={resolved.appShortName || 'Logo'}
                   className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2"
                   style={{ borderColor: resolved.primaryColor }}

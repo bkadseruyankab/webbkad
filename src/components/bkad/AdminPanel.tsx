@@ -50,6 +50,13 @@ import { ImageUpload } from "@/components/bkad/ImageUpload";
 import { MultiImageUpload, parseImages, serializeImages, type ImageItem } from "@/components/bkad/MultiImageUpload";
 import { FileDownloadUpload, parseDownloadableFiles, serializeDownloadableFiles, type DownloadableFile } from "@/components/bkad/FileDownloadUpload";
 import PengaturanIdentitasSection from "@/components/bkad/PengaturanIdentitasSection";
+
+// Helper to resolve uploaded file URLs for display
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
 import { blobStore } from "@/lib/blob-store";
 import { useAppIdentityStore } from "@/stores/useAppIdentityStore";
 import { useSetupStore } from "@/stores/useSetupStore";
@@ -642,6 +649,9 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
       base.openInNewTab = false;
       base.externalUrl = "";
     }
+    if (section === "page-content") {
+      base.published = true;
+    }
     return base;
   };
 
@@ -689,13 +699,14 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
             );
           } else if (key === "active") {
             displayValue = value ? "Aktif" : "Nonaktif";
-          } else if (key === "image" || key === "photo" || key === "thumbnail" || key === "coverImage") {
+          } else if (key === "image" || key === "photo" || key === "thumbnail" || key === "coverImage" || key === "heroImage") {
             if (value) {
+              const resolvedUrl = String(value).startsWith('/uploads/') ? `/api/files${String(value)}` : String(value);
               return (
                 <div key={key}>
                   <label className="text-sm font-medium text-gray-500 block mb-1">{label}</label>
                   <div className="bg-gray-50 rounded-lg p-2">
-                    <img src={String(value)} alt={label} className="max-h-40 object-contain rounded" />
+                    <img src={resolvedUrl} alt={label} className="max-h-40 object-contain rounded" />
                     <p className="text-xs text-gray-400 mt-1 break-all">{String(value)}</p>
                   </div>
                 </div>
@@ -1617,6 +1628,48 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               onChange={(files) => setFormData({ ...formData, downloadableFiles: serializeDownloadableFiles(files) })}
               label="File Unduhan (Button Download)"
             />
+            <div>
+              <label className="text-sm font-medium mb-1 block">Deskripsi</label>
+              <Textarea
+                value={String(formData.description || "")}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Deskripsi singkat halaman"
+                rows={2}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Meta Title</label>
+                <Input
+                  value={String(formData.metaTitle || "")}
+                  onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                  placeholder="SEO title"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Meta Description</label>
+                <Input
+                  value={String(formData.metaDescription || "")}
+                  onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                  placeholder="SEO description"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Dipublikasikan</label>
+              <Select
+                value={formData.published !== false ? "true" : "false"}
+                onValueChange={(v) => setFormData({ ...formData, published: v === "true" })}
+              >
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Ya</SelectItem>
+                  <SelectItem value="false">Tidak</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </>
         );
 
@@ -2265,7 +2318,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-20 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                  {item.image && <img src={item.image} alt="" className="w-full h-full object-cover" />}
+                  {item.image && <img src={resolveFileUrl(item.image)} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm truncate">{item.title}</h4>
@@ -2287,7 +2340,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-20 h-14 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                  {item.image && <img src={item.image} alt="" className="w-full h-full object-cover" />}
+                  {item.image && <img src={resolveFileUrl(item.image)} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm line-clamp-1">{item.title}</h4>
@@ -2348,7 +2401,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg border shadow-sm overflow-hidden ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="aspect-video bg-gray-100">
-                  {item.image && <img src={item.image} alt={item.caption} className="w-full h-full object-cover" />}
+                  {item.image && <img src={resolveFileUrl(item.image)} alt={item.caption} className="w-full h-full object-cover" />}
                 </div>
                 <div className="p-2">
                   <p className="text-xs truncate">{item.caption || "Tanpa keterangan"}</p>
@@ -2457,11 +2510,14 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className="bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4"
               >
                 <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                  {item.image && <img src={item.image} alt="" className="w-full h-full object-cover" />}
+                  {item.image && <img src={resolveFileUrl(item.image)} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm truncate">{item.title}</h4>
                   <p className="text-xs text-gray-400">/{item.slug}</p>
+                  {item.published === false && (
+                    <span className="text-[10px] text-amber-600 font-medium">Draft</span>
+                  )}
                 </div>
                 {renderActionButtons(item, "page-content", false)}
               </div>
@@ -2478,7 +2534,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-12 h-12 bg-gray-100 rounded-full overflow-hidden flex-shrink-0">
-                  {item.photo && <img src={item.photo} alt="" className="w-full h-full object-cover" />}
+                  {item.photo && <img src={resolveFileUrl(item.photo)} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm truncate">{item.name}</h4>
@@ -2499,7 +2555,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-14 h-18 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                  {item.coverImage && <img src={item.coverImage} alt="" className="w-full h-full object-cover" />}
+                  {item.coverImage && <img src={resolveFileUrl(item.coverImage)} alt="" className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-sm line-clamp-1">{item.title}</h4>
@@ -2525,7 +2581,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg p-4 border shadow-sm flex items-center gap-4 ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="w-20 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0 relative">
-                  {item.thumbnail && <img src={item.thumbnail} alt="" className="w-full h-full object-cover" />}
+                  {item.thumbnail && <img src={resolveFileUrl(item.thumbnail)} alt="" className="w-full h-full object-cover" />}
                   <Video className="w-4 h-4 text-white absolute bottom-1 right-1 drop-shadow" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -2547,7 +2603,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
                 className={`bg-white rounded-lg border shadow-sm overflow-hidden ${!item.active ? "opacity-50" : ""}`}
               >
                 <div className="aspect-video bg-gray-100">
-                  {item.image && <img src={item.image} alt={item.title} className="w-full h-full object-cover" />}
+                  {item.image && <img src={resolveFileUrl(item.image)} alt={item.title} className="w-full h-full object-cover" />}
                 </div>
                 <div className="p-2">
                   <p className="text-xs truncate font-medium">{item.title}</p>
@@ -2621,7 +2677,7 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
               >
                 <div className="w-10 h-10 bg-gray-100 rounded-full overflow-hidden flex-shrink-0">
                   {item.avatar ? (
-                    <img src={item.avatar} alt={item.name} className="w-full h-full object-cover" />
+                    <img src={resolveFileUrl(item.avatar)} alt={item.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-bkad-light text-bkad-green font-bold text-sm">
                       {item.name.charAt(0).toUpperCase()}

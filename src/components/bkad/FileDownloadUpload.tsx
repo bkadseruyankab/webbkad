@@ -43,6 +43,13 @@ function getFileIcon(mimeType: string): string {
   return '📎'
 }
 
+// Helper to resolve uploaded file URLs
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 // ─── Component ──────────────────────────────────────────────────────────
 
 export function FileDownloadUpload({
@@ -253,7 +260,7 @@ export function FileDownloadUpload({
                   variant="outline"
                   size="sm"
                   className="h-7 gap-1 text-xs border-[#0D6B3F]/30 text-[#0D6B3F] hover:bg-[#0D6B3F]/5"
-                  onClick={() => window.open(file.url, '_blank')}
+                  onClick={() => window.open(resolveFileUrl(file.url), '_blank')}
                   title="Unduh file"
                 >
                   <Download className="h-3 w-3" />

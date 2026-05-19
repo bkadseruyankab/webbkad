@@ -28,6 +28,12 @@ const defaultSlide: HeroSlide = {
   active: true,
 };
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export default function HeroSection() {
   const [slides, setSlides] = useState<HeroSlide[]>([defaultSlide]);
   const [loading, setLoading] = useState(true);
@@ -87,7 +93,7 @@ export default function HeroSection() {
           }`}
         >
           <img
-            src={slides[current].image}
+            src={resolveFileUrl(slides[current].image)}
             alt={slides[current].title}
             className="absolute inset-0 w-full h-full object-cover"
           />

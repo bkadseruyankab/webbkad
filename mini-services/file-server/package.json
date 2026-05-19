@@ -1,0 +1,7 @@
+{
+  "name": "bkad-file-server",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "bun index.ts"
+  }
+}

@@ -14,6 +14,12 @@ interface Official {
   order: number;
 }
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export default function PejabatPage() {
   const { currentPage } = usePageRouter();
   const [officials, setOfficials] = useState<Official[]>([]);
@@ -78,7 +84,7 @@ export default function PejabatPage() {
                     <div className="flex items-center gap-4">
                       <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 border-2 border-bkad-light">
                         <img
-                          src={official.photo}
+                          src={resolveFileUrl(official.photo)}
                           alt={official.name}
                           className="w-full h-full object-cover"
                         />

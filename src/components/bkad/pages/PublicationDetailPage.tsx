@@ -77,6 +77,12 @@ function parseDownloadableFiles(jsonStr: string | null | undefined): { url: stri
   }
 }
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes}B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
@@ -203,7 +209,7 @@ export default function PublicationDetailPage({ id }: { id: string }) {
               {/* Cover Image */}
               <div className="relative h-64 md:h-[420px] bg-gray-100">
                 <img
-                  src={publication.coverImage || "/images/infografis-1.png"}
+                  src={resolveFileUrl(publication.coverImage || "/images/infografis-1.png")}
                   alt={publication.title}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
@@ -275,7 +281,7 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                         className="bg-bkad-green hover:bg-bkad-dark text-white"
                       >
                         <a
-                          href={publication.fileUrl}
+                          href={resolveFileUrl(publication.fileUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -299,7 +305,7 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                           <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                             <div className="aspect-video bg-gray-100">
                               <img
-                                src={img.url}
+                                src={resolveFileUrl(img.url)}
                                 alt={img.alt || img.caption || `Gambar ${i + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
@@ -327,7 +333,7 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                         {files.map((file, i) => (
                           <a
                             key={i}
-                            href={file.url}
+                            href={resolveFileUrl(file.url)}
                             download
                             target="_blank"
                             rel="noopener noreferrer"
@@ -429,9 +435,7 @@ export default function PublicationDetailPage({ id }: { id: string }) {
                     >
                       <div className="w-20 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
                         <img
-                          src={
-                            item.coverImage || "/images/infografis-1.png"
-                          }
+                          src={resolveFileUrl(item.coverImage || "/images/infografis-1.png")}
                           alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                         />

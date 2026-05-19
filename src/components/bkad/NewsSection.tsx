@@ -33,6 +33,12 @@ const categoryColors: Record<string, string> = {
   PAD: "bg-orange-100 text-orange-700",
 };
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export default function NewsSection() {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,7 +118,7 @@ export default function NewsSection() {
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={item.image}
+                    src={resolveFileUrl(item.image)}
                     alt={item.title}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

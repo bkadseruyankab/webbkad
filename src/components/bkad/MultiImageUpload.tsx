@@ -36,7 +36,7 @@ export function MultiImageUpload({
   onChange,
   label = 'Upload Gambar',
   maxImages = 10,
-  compress = true,
+  compress = false,
   maxWidth,
   maxHeight,
   quality,
@@ -196,7 +196,7 @@ export function MultiImageUpload({
             >
               <div className="aspect-square relative">
                 <img
-                  src={img.url}
+                  src={resolveFileUrl(img.url)}
                   alt={img.alt || `Gambar ${index + 1}`}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
@@ -329,6 +329,13 @@ export function MultiImageUpload({
 }
 
 // Helper: Parse images from JSON string or return empty array
+
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export function parseImages(jsonStr: string | undefined | null): ImageItem[] {
   if (!jsonStr) return []
   try {

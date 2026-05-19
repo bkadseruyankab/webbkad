@@ -41,6 +41,12 @@ function parseImages(jsonStr: string | null | undefined): { url: string; alt?: s
   }
 }
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export default function VideoDetailPage({ id }: { id: string }) {
   const { goHome } = usePageRouter();
   const [video, setVideo] = useState<VideoData | null>(null);
@@ -184,7 +190,7 @@ export default function VideoDetailPage({ id }: { id: string }) {
                 ) : (
                   <video
                     src={video.url}
-                    poster={video.thumbnail || "/images/hero-1.png"}
+                    poster={resolveFileUrl(video.thumbnail || "/images/hero-1.png")}
                     controls
                     className="absolute inset-0 w-full h-full object-contain bg-black"
                   >
@@ -280,7 +286,7 @@ export default function VideoDetailPage({ id }: { id: string }) {
                           <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                             <div className="aspect-video bg-gray-100">
                               <img
-                                src={img.url}
+                                src={resolveFileUrl(img.url)}
                                 alt={img.alt || img.caption || `Screenshot ${i + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
@@ -352,7 +358,7 @@ export default function VideoDetailPage({ id }: { id: string }) {
                     >
                       <div className="w-28 h-[4.2rem] rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 relative">
                         <img
-                          src={item.thumbnail || "/images/hero-1.png"}
+                          src={resolveFileUrl(item.thumbnail || "/images/hero-1.png")}
                           alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         />

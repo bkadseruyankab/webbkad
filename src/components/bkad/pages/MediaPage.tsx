@@ -26,6 +26,12 @@ interface InfographicItem {
   date: string;
 }
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 type MediaType = "foto" | "video" | "infografis";
 
 export default function MediaPage({ type }: { type: MediaType }) {
@@ -109,7 +115,7 @@ export default function MediaPage({ type }: { type: MediaType }) {
                         onClick={() => setSelectedImage(item.image)}
                       >
                         <img
-                          src={item.image}
+                          src={resolveFileUrl(item.image)}
                           alt={item.caption}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
@@ -133,7 +139,7 @@ export default function MediaPage({ type }: { type: MediaType }) {
                       >
                         <div className="relative aspect-video bg-gray-100">
                           <img
-                            src={video.thumbnail || "/images/hero-1.png"}
+                            src={resolveFileUrl(video.thumbnail || "/images/hero-1.png")}
                             alt={video.title}
                             className="w-full h-full object-cover"
                           />
@@ -162,7 +168,7 @@ export default function MediaPage({ type }: { type: MediaType }) {
                       >
                         <div className="relative aspect-square bg-gray-100">
                           <img
-                            src={infographic.image}
+                            src={resolveFileUrl(infographic.image)}
                             alt={infographic.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
@@ -232,7 +238,7 @@ export default function MediaPage({ type }: { type: MediaType }) {
         >
           <div className="relative max-w-4xl max-h-[90vh]">
             <img
-              src={selectedImage}
+              src={resolveFileUrl(selectedImage)}
               alt="Preview"
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
             />

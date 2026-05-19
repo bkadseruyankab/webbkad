@@ -38,6 +38,12 @@ function parseImages(jsonStr: string | null | undefined): { url: string; alt?: s
   }
 }
 
+function resolveFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('/uploads/')) return `/api/files${url}`;
+  return url;
+}
+
 export default function NewsDetailPage({ id }: { id: string }) {
   const { goHome } = usePageRouter();
   const [news, setNews] = useState<NewsData | null>(null);
@@ -116,7 +122,7 @@ export default function NewsDetailPage({ id }: { id: string }) {
               {/* Hero Image */}
               <div className="relative h-64 md:h-96">
                 <img
-                  src={news.image}
+                  src={resolveFileUrl(news.image)}
                   alt={news.title}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
@@ -168,7 +174,7 @@ export default function NewsDetailPage({ id }: { id: string }) {
                           <div key={i} className="group relative rounded-xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                             <div className="aspect-video bg-gray-100">
                               <img
-                                src={img.url}
+                                src={resolveFileUrl(img.url)}
                                 alt={img.alt || img.caption || `Gambar ${i + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
@@ -239,7 +245,7 @@ export default function NewsDetailPage({ id }: { id: string }) {
                   >
                     <div className="w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
                       <img
-                        src={item.image}
+                        src={resolveFileUrl(item.image)}
                         alt={item.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                       />
