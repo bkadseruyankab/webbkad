@@ -158,3 +158,25 @@ Stage Summary:
 - Dark mode CSS variables already provided by shadcn/ui defaults
 - All key components updated with dark: Tailwind variants
 - BKAD brand colors (green, dark, gold, light) preserved in both modes
+
+---
+Task ID: 4
+Agent: Main Agent
+Task: Fix "Failed to fetch" error in AdminPanel fetchData when saving data
+
+Work Log:
+- Identified root cause: `fetchData` used `Promise.all` which throws entirely if ANY single fetch fails
+- When one API call (e.g., /api/publications?all=true) fails transiently, it crashes all 17 data fetches
+- The error appeared during `handleSave` which calls `fetchData()` after a successful save, making it look like the save failed
+- Refactored `fetchData` to use `Promise.allSettled` instead of `Promise.all`
+- Each failed request now logs a console.warn but doesn't crash the rest
+- Data setters only called for successfully fetched results
+- Also fixed `menuItems is not defined` in renderDashboard by deriving it from `sidebarGroups.flatMap(g => g.items)`
+- Consolidated sidebar groups from 6 to 4: Menu, Publikasi & Data, Interaksi, Pengaturan
+- Added smart collapse behavior: groups default to collapsed except the one with the active section
+
+Stage Summary:
+- fetchData is now resilient — one failed API call won't crash the admin panel
+- handleSave no longer shows false error messages when fetchData has a transient failure
+- Sidebar consolidated to 4 cleaner groups with smart collapse
+- menuItems variable properly defined in renderDashboard

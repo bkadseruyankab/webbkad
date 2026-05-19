@@ -477,65 +477,51 @@ export default function AdminPanel({ onClose, initialSection }: { onClose: () =>
   // ─── Fetch Data ───────────────────────────────────────────────────────────
 
   const fetchData = useCallback(async () => {
-    try {
-      const [
-        heroRes, newsRes, agendaRes, galleryRes, statsRes,
-        servicesRes, financeRes, pcRes, offRes, pubRes,
-        vidRes, infoRes, lapRes, catRes, usersRes, navMenuRes,
-        adBubbleRes,
-      ] = await Promise.all([
-        fetch("/api/hero-slides?all=true"),
-        fetch("/api/news?all=true"),
-        fetch("/api/agenda"),
-        fetch("/api/gallery?all=true"),
-        fetch("/api/stats?all=true"),
-        fetch("/api/services?all=true"),
-        fetch("/api/financial-data"),
-        fetch("/api/page-content"),
-        fetch("/api/officials?all=true"),
-        fetch("/api/publications?all=true"),
-        fetch("/api/videos?all=true"),
-        fetch("/api/infographics?all=true"),
-        fetch("/api/laporan?all=true"),
-        fetch("/api/categories"),
-        fetch("/api/users"),
-        fetch("/api/navbar-menus?all=true"),
-        fetch("/api/ad-bubbles?all=true"),
-      ]);
+    const apiUrls = [
+      "/api/hero-slides?all=true",
+      "/api/news?all=true",
+      "/api/agenda",
+      "/api/gallery?all=true",
+      "/api/stats?all=true",
+      "/api/services?all=true",
+      "/api/financial-data",
+      "/api/page-content",
+      "/api/officials?all=true",
+      "/api/publications?all=true",
+      "/api/videos?all=true",
+      "/api/infographics?all=true",
+      "/api/laporan?all=true",
+      "/api/categories",
+      "/api/users",
+      "/api/navbar-menus?all=true",
+      "/api/ad-bubbles?all=true",
+    ];
 
-      const [
-        heroData, newsData, agendaData, galleryData, statsData,
-        servicesData, financeData, pcData, offData, pubData,
-        vidData, infoData, lapData, catData, usersData, navMenuData,
-        adBubbleData,
-      ] = await Promise.all([
-        heroRes.json(), newsRes.json(), agendaRes.json(), galleryRes.json(),
-        statsRes.json(), servicesRes.json(), financeRes.json(), pcRes.json(),
-        offRes.json(), pubRes.json(), vidRes.json(), infoRes.json(),
-        lapRes.json(), catRes.json(), usersRes.json(), navMenuRes.json(),
-        adBubbleRes.json(),
-      ]);
+    const setters = [
+      setHeroSlides, setNews, setAgenda, setGallery, setStats,
+      setServices, setFinancialData, setPageContents, setOfficials,
+      setPublications, setVideos, setInfographics, setLaporan,
+      setCategories, setUsers, setNavbarMenus, setAdBubbles,
+    ];
 
-      setHeroSlides(heroData.data || []);
-      setNews(newsData.data || []);
-      setAgenda(agendaData.data || []);
-      setGallery(galleryData.data || []);
-      setStats(statsData.data || []);
-      setServices(servicesData.data || []);
-      setFinancialData(financeData.data || []);
-      setPageContents(pcData.data || []);
-      setOfficials(offData.data || []);
-      setPublications(pubData.data || []);
-      setVideos(vidData.data || []);
-      setInfographics(infoData.data || []);
-      setLaporan(lapData.data || []);
-      setCategories(catData.data || []);
-      setUsers(usersData.data || []);
-      setNavbarMenus(navMenuData.data || []);
-      setAdBubbles(adBubbleData.data || []);
-    } catch (err) {
-      console.error("Failed to fetch data:", err);
-    }
+    // Use allSettled so one failed request doesn't crash the rest
+    const results = await Promise.allSettled(apiUrls.map((url) => fetch(url)));
+
+    const jsonResults = await Promise.allSettled(
+      results.map((res, i) => {
+        if (res.status === "fulfilled" && res.value.ok) {
+          return res.value.json();
+        }
+        console.warn(`[fetchData] Failed to fetch ${apiUrls[i]}:`, res.status === "rejected" ? res.reason : `HTTP ${res.value?.status}`);
+        return Promise.resolve(null);
+      })
+    );
+
+    jsonResults.forEach((result, i) => {
+      if (result.status === "fulfilled" && result.value?.data) {
+        setters[i](result.value.data);
+      }
+    });
   }, []);
 
   // ─── Update Blob Store Status ────────────────────────────────────────────
